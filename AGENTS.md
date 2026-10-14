@@ -17,12 +17,20 @@ Extends the Global Rules. May add stricter requirements, never weaken them.
   Tailwind CSS 4.3.3, ESLint 9.39.5.
 - next.config.ts sets `agentRules: false` so that `next dev` does not write to this file. Do not
   remove it.
+- Prisma 7.10.0 (prisma, @prisma/client, @prisma/adapter-pg) is pinned to exact versions. Do not
+  upgrade, do not use Prisma 8 RC, and do not add packages without asking.
+- Database: local PostgreSQL (Postgres.app), database zks_catering_dev, fake data only. The connection
+  string lives in .env (git-ignored): never print or commit it.
+- After a fresh clone: run `npm ci`, then `npm run db:generate` (src/generated is git-ignored).
 
 ## Off-limits (require explicit approval each time)
 - Production database, backups, and production environment variables.
 - Payment gateway keys and webhook secrets: never print, log, or commit them.
 - Real customer data: never use it in tests, fixtures, logs, or screenshots.
 - Admin authentication and session logic: show the planned change before editing.
+- Database schema changes and migrations. The user runs `npx prisma migrate dev` in an interactive
+  Terminal. Agents may edit prisma/schema.prisma only when explicitly approved, and must never run
+  migrate, db push, or reset.
 
 ## Rules specific to this project
 - Never store card numbers or card security codes. Use a hosted payment page from the

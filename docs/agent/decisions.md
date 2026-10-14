@@ -96,5 +96,35 @@ Keputusan teknologi berikut secara sengaja ditunda dan akan diputuskan bersama p
 - Alamat koneksi database tidak boleh ditulis di repositori; hanya di file .env* yang diabaikan git
   (dibuat di Fase 3).
 
-*Fase 2 selesai (lint dan build lolos). Database pengembangan siap. Fase 3 menunggu keputusan versi
-Prisma dan persetujuan eksplisit.*
+## 9. Hasil Fase 3 dan 3b: Prisma dan Skema (2026-10-14)
+- Prisma dikunci eksak di 7.10.0 (prisma, @prisma/client, @prisma/adapter-pg). Prisma 8.0.0-rc.22 tidak
+  dipakai: masih release candidate, dan menurut dokumentasi yang dibaca agen mensyaratkan Node yang lebih
+  tinggi dari Node pengguna serta belum memiliki beberapa fitur (misalnya transaksi dan nested writes).
+  Klaim ini belum diverifikasi independen.
+- Paket tambahan: hanya @prisma/adapter-pg. pg dan @types/pg ikut sebagai dependensi adapter. dotenv
+  tidak dipakai: prisma.config.ts memakai process.loadEnvFile() bawaan Node dan terbukti berfungsi di
+  Node v22.14.0 (migrate dev terhubung ke 127.0.0.1:5432).
+- Generator prisma-client dengan keluaran src/generated/prisma, diabaikan git. Tidak memakai postinstall.
+  Setelah clone: npm ci lalu npm run db:generate.
+- prisma migrate dev membutuhkan terminal interaktif, sehingga migrasi dijalankan oleh pengguna sendiri.
+  Agen tidak boleh menjalankan migrate, db push, atau reset.
+- Migrasi diterapkan ke zks_catering_dev: 20261013121902_init dan 20261014021124_schema_fixes (tabel kosong
+  saat schema_fixes dijalankan).
+- Perubahan 3b: kolom Payment (providerTransactionId, paymentUrl, paymentChannel, sessionExpiresAt, unik
+  pada gatewayName dan providerTransactionId), foreign key Payment dan OrderItem ke Order menjadi
+  ON DELETE RESTRICT (catatan keuangan tidak ikut terhapus), kolom Order (totalPcs, termsAcceptedAt,
+  initialPaymentDueAt, cancelledAt, cancellationReason, forfeitedAmount, refundAmount, refundedAt), dan
+  status IN_DELIVERY.
+- Peta nama: CONFIRMED_AWAITING_PAYMENT = TOTAL_LOCKED; DP_PAID = DOWN_PAYMENT_PAID;
+  EXPIRED_PAYMENT_TIMEOUT = EXPIRED. shippingFee = ongkir; dpAmount = nominal DP. Admin memakai
+  username, bukan email. Batas pelunasan H-1 23.59.59 WIB dihitung dari eventDate dan tidak disimpan.
+- Ditunda: pembatasan satu Payment PENDING per jenis per pesanan di tingkat database (dijaga di aplikasi,
+  Fase 7B); pembersihan berkala RateLimitAttempt; kolom tambahan MenuItem (slug, gambar, minimum porsi)
+  di Fase 5; batasan CHECK nominal tidak negatif.
+- Temuan npm audit: 9 kerentanan high. 5 pada rantai eslint-config-next (alat lint) dan 4 pada
+  dependensi CLI Prisma (deepmerge-ts, mysql2). Penilaian risiko praktis: rendah (tidak memakai MySQL),
+  belum diuji. Jangan menjalankan npm audit fix --force karena akan menurunkan Prisma ke 6.19.3. Cek
+  ulang sebelum rilis.
+
+*Fase 3 dan 3b selesai (migrasi diterapkan). Fase 4 menunggu keputusan versi Auth.js dan persetujuan
+eksplisit.*
