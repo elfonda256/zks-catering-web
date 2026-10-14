@@ -16,6 +16,7 @@ enum OrderStatus {
   DP_PAID
   FULLY_PAID
   IN_PREPARATION
+  IN_DELIVERY
   COMPLETED
   EXPIRED_UNCONFIRMED_BY_ADMIN
   EXPIRED_PAYMENT_TIMEOUT
@@ -82,28 +83,36 @@ model MenuItem {
 }
 
 model Order {
-  id              Int         @id @default(autoincrement())
-  orderCode       String      @unique
-  accessTokenHash String      @unique
-  customerName    String
-  customerPhone   String
-  customerAddress String
-  customerEmail   String?
-  eventDate       DateTime
-  notes           String?
-  subtotal        Int
-  shippingFee     Int?
-  totalAmount     Int?
-  dpAmount        Int?
-  status          OrderStatus @default(WAITING_ADMIN_CONFIRMATION)
-  confirmedAt     DateTime?
-  paymentDeadline DateTime?
-  isAnonymized    Boolean     @default(false)
-  anonymizedAt    DateTime?
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-  items           OrderItem[]
-  payments        Payment[]
+  id                  Int         @id @default(autoincrement())
+  orderCode           String      @unique
+  accessTokenHash     String      @unique
+  customerName        String
+  customerPhone       String
+  customerAddress     String
+  customerEmail       String?
+  // eventDate menyimpan tanggal dan jam acara; perhitungan hari kalender memakai zona Asia/Jakarta di kode aplikasi
+  eventDate           DateTime
+  notes               String?
+  totalPcs            Int
+  subtotal            Int
+  shippingFee         Int?
+  totalAmount         Int?
+  dpAmount            Int?
+  status              OrderStatus @default(WAITING_ADMIN_CONFIRMATION)
+  termsAcceptedAt     DateTime?
+  confirmedAt         DateTime?
+  initialPaymentDueAt DateTime?
+  cancelledAt         DateTime?
+  cancellationReason  String?
+  forfeitedAmount     Int?
+  refundAmount        Int?
+  refundedAt          DateTime?
+  isAnonymized        Boolean     @default(false)
+  anonymizedAt        DateTime?
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+  items               OrderItem[]
+  payments            Payment[]
 
   @@index([status])
   @@index([eventDate])
@@ -112,7 +121,7 @@ model Order {
 model OrderItem {
   id         Int      @id @default(autoincrement())
   orderId    Int
-  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Restrict)
   menuItemId Int
   menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
   quantity   Int
@@ -122,21 +131,25 @@ model OrderItem {
 }
 
 model Payment {
-  id             Int           @id @default(autoincrement())
-  orderId        Int
-  order          Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  paymentRef     String        @unique
-  paymentType    PaymentType
-  amount         Int
-  status         PaymentStatus @default(PENDING)
-  settledAt      DateTime?
-  gatewayName    String?
-  maskedResponse String?
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  id                    Int           @id @default(autoincrement())
+  orderId               Int
+  order                 Order         @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  paymentRef            String        @unique
+  paymentType           PaymentType
+  amount                Int
+  status                PaymentStatus @default(PENDING)
+  providerTransactionId String?
+  paymentUrl            String?
+  paymentChannel        String?
+  sessionExpiresAt      DateTime?
+  settledAt             DateTime?
+  gatewayName           String?
+  maskedResponse        String?
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
 
+  @@unique([gatewayName, providerTransactionId])
   @@index([orderId])
-  @@index([paymentRef])
 }
 
 model RateLimitAttempt {
