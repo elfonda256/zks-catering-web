@@ -1,0 +1,149 @@
+// Prisma Schema untuk Zahdan Kamal Sentosa (ZKS) Catering
+// Sesuai Spesifikasi Keputusan Arsitektur Fase 1 & Keputusan Final (docs/agent/decisions.md)
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum OrderStatus {
+  WAITING_ADMIN_CONFIRMATION
+  CONFIRMED_AWAITING_PAYMENT
+  DP_PAID
+  FULLY_PAID
+  IN_PREPARATION
+  COMPLETED
+  EXPIRED_UNCONFIRMED_BY_ADMIN
+  EXPIRED_PAYMENT_TIMEOUT
+  REJECTED_BY_ADMIN
+  CANCELLED_BY_ADMIN_REFUND_REQ
+  CANCELLED_BY_CUSTOMER
+  CANCELLED_DP_FORFEITED
+  CANCELLED_FULL_REFUND_PENDING
+  REFUNDED
+}
+
+enum PaymentType {
+  DP
+  SETTLEMENT
+  FULL
+}
+
+enum PaymentStatus {
+  PENDING
+  SETTLED
+  EXPIRED
+  FAILED
+  CANCELLED
+  REFUNDED
+}
+
+model Admin {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Setting {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique
+  value       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Category {
+  id        Int        @id @default(autoincrement())
+  name      String
+  slug      String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  menuItems MenuItem[]
+}
+
+model MenuItem {
+  id          Int         @id @default(autoincrement())
+  name        String
+  description String?
+  price       Int
+  categoryId  Int
+  category    Category    @relation(fields: [categoryId], references: [id])
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  orderItems  OrderItem[]
+}
+
+model Order {
+  id              Int         @id @default(autoincrement())
+  orderCode       String      @unique
+  accessTokenHash String      @unique
+  customerName    String
+  customerPhone   String
+  customerAddress String
+  customerEmail   String?
+  eventDate       DateTime
+  notes           String?
+  subtotal        Int
+  shippingFee     Int?
+  totalAmount     Int?
+  dpAmount        Int?
+  status          OrderStatus @default(WAITING_ADMIN_CONFIRMATION)
+  confirmedAt     DateTime?
+  paymentDeadline DateTime?
+  isAnonymized    Boolean     @default(false)
+  anonymizedAt    DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  items           OrderItem[]
+  payments        Payment[]
+
+  @@index([status])
+  @@index([eventDate])
+}
+
+model OrderItem {
+  id         Int      @id @default(autoincrement())
+  orderId    Int
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItemId Int
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+  quantity   Int
+  unitPrice  Int
+  subtotal   Int
+  notes      String?
+}
+
+model Payment {
+  id             Int           @id @default(autoincrement())
+  orderId        Int
+  order          Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  paymentRef     String        @unique
+  paymentType    PaymentType
+  amount         Int
+  status         PaymentStatus @default(PENDING)
+  settledAt      DateTime?
+  gatewayName    String?
+  maskedResponse String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([orderId])
+  @@index([paymentRef])
+}
+
+model RateLimitAttempt {
+  id        Int      @id @default(autoincrement())
+  ipHmac    String
+  action    String
+  createdAt DateTime @default(now())
+
+  @@index([ipHmac, createdAt])
+}
