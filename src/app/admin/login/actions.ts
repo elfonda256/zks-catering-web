@@ -51,7 +51,7 @@ export async function loginAction(
         case "CredentialsSignin":
           return { error: "Nama pengguna atau kata sandi salah." };
         default:
-          return { error: error.message || "Nama pengguna atau kata sandi salah." };
+          return { error: "Terjadi kesalahan saat masuk. Silakan coba lagi." };
       }
     }
 

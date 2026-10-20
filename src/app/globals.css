@@ -1,26 +1,618 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-display: var(--font-display), 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: var(--font-body), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --canvas-warm: #FAF9F5;
+  --canvas-surface: #F3F1E9;
+  --canvas-muted: #E8E5DA;
+  --charcoal-900: #141413;
+  --charcoal-800: #1F1F1D;
+  --charcoal-700: #2C2C28;
+  --charcoal-500: #626058;
+  --charcoal-400: #8E8B81;
+  --industrial-orange: #C85A17;
+  --industrial-amber: #D96B27;
+  --industrial-dark: #A4460E;
+  --hairline: rgba(20, 20, 19, 0.08);
+  --hairline-dark: rgba(255, 255, 255, 0.1);
+  --ease-natural: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--canvas-warm);
+  color: var(--charcoal-900);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.65;
 }
+
+h1, h2, h3, h4, h5, h6, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+}
+
+/* ==============================================================
+   SPRINT 06: VISUAL DEPTH, ATMOSPHERE & LIGHTING SYSTEM
+   - Subtle paper & industrial noise grain (opacity < 2%)
+   - Gentle ambient lighting (warm industrial orange & soft cream)
+   - Seamless editorial photography masks (3% to 7% opacity)
+   - Soft gradient hairline dividers
+   ============================================================== */
+
+/* Industrial Paper/Grain Texture: Opacity ~1.3% (Strictly below 2%) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 99;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
+  opacity: 0.65;
+  mix-blend-mode: multiply;
+}
+
+/* Soft Ambient Lighting Gradients (Natural, Never Neon) */
+.ambient-glow-warm {
+  background: radial-gradient(ellipse 65% 50% at 50% 0%, rgba(200, 90, 23, 0.045) 0%, rgba(250, 249, 245, 0) 70%);
+}
+
+.ambient-glow-cream {
+  background: radial-gradient(ellipse 70% 55% at 75% 25%, rgba(245, 241, 230, 0.9) 0%, rgba(250, 249, 245, 0) 75%);
+}
+
+.ambient-glow-white {
+  background: radial-gradient(ellipse 55% 45% at 20% 15%, rgba(255, 255, 255, 0.65) 0%, rgba(250, 249, 245, 0) 70%);
+}
+
+.ambient-dark-warmth {
+  background: radial-gradient(ellipse 75% 55% at 50% 0%, rgba(200, 90, 23, 0.085) 0%, rgba(20, 20, 19, 0) 75%);
+}
+
+/* Seamless Editorial Photography Mask Gradients (Fade naturally, No visible rectangles) */
+.photo-mask-corner {
+  mask-image: radial-gradient(ellipse 80% 80% at 90% 20%, black 15%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 90% 20%, black 15%, transparent 75%);
+}
+
+.photo-mask-center {
+  mask-image: radial-gradient(ellipse 75% 65% at 50% 45%, black 20%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 45%, black 20%, transparent 80%);
+}
+
+.photo-mask-left {
+  mask-image: radial-gradient(ellipse 85% 75% at 10% 40%, black 15%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 85% 75% at 10% 40%, black 15%, transparent 75%);
+}
+
+.photo-mask-diagonal {
+  mask-image: linear-gradient(135deg, black 0%, rgba(0,0,0,0.6) 35%, transparent 75%);
+  -webkit-mask-image: linear-gradient(135deg, black 0%, rgba(0,0,0,0.6) 35%, transparent 75%);
+}
+
+/* Editorial Gradient Masks */
+.mask-fade-bottom {
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%);
+}
+
+.mask-fade-right {
+  mask-image: linear-gradient(to right, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
+  -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
+}
+
+.mask-fade-left {
+  mask-image: linear-gradient(to left, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
+  -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
+}
+
+.mask-radial {
+  mask-image: radial-gradient(circle at center, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 90%);
+  -webkit-mask-image: radial-gradient(circle at center, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 90%);
+}
+
+/* Soft Gradient Hairline Dividers */
+.divider-hairline {
+  position: relative;
+}
+
+.divider-hairline::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(20, 20, 19, 0.05) 15%,
+    rgba(20, 20, 19, 0.08) 50%,
+    rgba(20, 20, 19, 0.05) 85%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.divider-hairline-dark::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(250, 249, 245, 0.07) 20%,
+    rgba(250, 249, 245, 0.12) 50%,
+    rgba(250, 249, 245, 0.07) 80%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* ==============================================================
+   SPRINT 04: MOTION DESIGN SYSTEM (Apple / Linear / Framer)
+   ============================================================== */
+
+/* ==============================================================
+   SPRINT 05: INTERACTIVE CTA & MICRO-INTERACTIONS
+   - Hover duration: 180ms
+   - Transition: ease-out
+   - Click feedback: scale(0.98), Release: scale(1), no bounce
+   - Button hover: background transition + 4px arrow move + soft shadow
+   - Secondary button: animated underline + text opacity + icon fade
+   ============================================================== */
+
+/* ==============================================================
+   SPRINT 07: ACCESSIBLE COMPONENT CONSISTENCY & FOCUS SYSTEM
+   - Standardized 44px minimum touch target size (WCAG 2.5.8)
+   - High-contrast focus visible rings (WCAG 2.4.11 / 2.4.13)
+   - Standardized 8px corner radius & seamless transitions
+   ============================================================== */
+
+/* Skip Link for Keyboard Accessibility */
+.skip-link {
+  position: absolute;
+  top: -9999px;
+  left: 1rem;
+  z-index: 9999;
+  padding: 0.75rem 1.25rem;
+  background-color: var(--charcoal-900);
+  color: #FAF9F5;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(20, 20, 19, 0.2);
+  transition: top 180ms ease-out;
+}
+
+.skip-link:focus {
+  top: 1rem;
+  outline: 2px solid var(--industrial-orange);
+  outline-offset: 2px;
+}
+
+/* Global Focus-Visible Styling */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--industrial-orange);
+  outline-offset: 2px;
+}
+
+.btn-primary,
+.btn-interactive-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  background-color: var(--charcoal-900);
+  color: #FAF9F5;
+  transition: background-color 180ms ease-out,
+              box-shadow 180ms ease-out,
+              transform 180ms ease-out;
+  will-change: transform, box-shadow;
+}
+
+.btn-primary:focus-visible,
+.btn-interactive-primary:focus-visible {
+  outline: 2px solid var(--industrial-orange);
+  outline-offset: 3px;
+}
+
+.btn-primary:hover,
+.btn-interactive-primary:hover {
+  background-color: var(--charcoal-800);
+  box-shadow: 0 4px 14px rgba(20, 20, 19, 0.14);
+}
+
+.btn-primary:active,
+.btn-interactive-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-accent,
+.btn-interactive-accent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  background-color: var(--industrial-orange);
+  color: #FFFFFF;
+  transition: background-color 180ms ease-out,
+              box-shadow 180ms ease-out,
+              transform 180ms ease-out;
+  will-change: transform, box-shadow;
+}
+
+.btn-accent:focus-visible,
+.btn-interactive-accent:focus-visible {
+  outline: 2px solid #FFFFFF;
+  outline-offset: 3px;
+}
+
+.btn-accent:hover,
+.btn-interactive-accent:hover {
+  background-color: var(--industrial-dark);
+  box-shadow: 0 6px 18px rgba(200, 90, 23, 0.28);
+}
+
+.btn-accent:active,
+.btn-interactive-accent:active {
+  transform: scale(0.98);
+}
+
+/* Secondary Button with Apple/Linear Underline Animation, Text Opacity & Icon Fade */
+.btn-ghost,
+.btn-interactive-secondary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  border: 1px solid var(--hairline);
+  color: var(--charcoal-900);
+  background: transparent;
+  transition: background-color 180ms ease-out,
+              border-color 180ms ease-out,
+              box-shadow 180ms ease-out,
+              transform 180ms ease-out;
+  will-change: transform;
+}
+
+.btn-ghost:focus-visible,
+.btn-interactive-secondary:focus-visible {
+  outline: 2px solid var(--industrial-orange);
+  outline-offset: 3px;
+}
+
+.btn-ghost:hover,
+.btn-interactive-secondary:hover {
+  background-color: rgba(20, 20, 19, 0.04);
+  border-color: rgba(20, 20, 19, 0.16);
+  box-shadow: 0 2px 8px rgba(20, 20, 19, 0.05);
+}
+
+.btn-ghost:active,
+.btn-interactive-secondary:active {
+  transform: scale(0.98);
+}
+
+/* Text Underline Micro-Animation */
+.btn-text-underline {
+  position: relative;
+  display: inline-block;
+  transition: opacity 180ms ease-out;
+}
+
+.btn-text-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  background-color: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 180ms ease-out;
+}
+
+.group:hover .btn-text-underline::after,
+a:hover .btn-text-underline::after,
+button:hover .btn-text-underline::after,
+.btn-interactive-secondary:hover .btn-text-underline::after {
+  transform: scaleX(1);
+}
+
+/* Secondary Icon Fade & Subtle Translation */
+.btn-secondary-icon {
+  display: inline-block;
+  opacity: 0.55;
+  transition: opacity 180ms ease-out,
+              transform 180ms ease-out;
+  will-change: transform, opacity;
+}
+
+.group:hover .btn-secondary-icon,
+a:hover .btn-secondary-icon,
+button:hover .btn-secondary-icon,
+.btn-interactive-secondary:hover .btn-secondary-icon {
+  opacity: 1;
+  transform: translate(4px, -2px);
+}
+
+/* Arrow Icon Hover: Exactly 4px smooth vector shift */
+.btn-arrow {
+  display: inline-block;
+  transition: transform 180ms ease-out;
+  will-change: transform;
+}
+
+.group:hover .btn-arrow,
+a:hover .btn-arrow,
+button:hover .btn-arrow {
+  transform: translate(4px, -2px);
+}
+
+/* Hero Entrance Animations */
+@keyframes heroFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(18px);
+    filter: blur(3px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes heroSoftBg {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0.06;
+  }
+}
+
+.hero-enter-bg {
+  animation: heroSoftBg 1400ms var(--ease-natural) forwards;
+}
+
+.hero-enter-badge {
+  opacity: 0;
+  animation: heroFadeUp 650ms var(--ease-natural) 50ms forwards;
+}
+
+.hero-enter-headline {
+  opacity: 0;
+  animation: heroFadeUp 700ms var(--ease-natural) 120ms forwards;
+}
+
+.hero-enter-sub {
+  opacity: 0;
+  animation: heroFadeUp 700ms var(--ease-natural) 240ms forwards;
+}
+
+.hero-enter-actions {
+  opacity: 0;
+  animation: heroFadeUp 650ms var(--ease-natural) 360ms forwards;
+}
+
+.hero-enter-assurances {
+  opacity: 0;
+  animation: heroFadeUp 650ms var(--ease-natural) 480ms forwards;
+}
+
+.hero-enter-photo {
+  opacity: 0;
+  animation: heroFadeUp 800ms var(--ease-natural) 220ms forwards;
+}
+
+/* Progressive Scroll Reveal (Fade, Translate Y, Opacity, Small Blur, 500-700ms) */
+.reveal-fade-up {
+  opacity: 0;
+  transform: translateY(18px);
+  filter: blur(2px);
+  transition: opacity 650ms var(--ease-natural),
+              transform 650ms var(--ease-natural),
+              filter 650ms var(--ease-natural);
+  will-change: opacity, transform, filter;
+}
+
+.reveal-fade {
+  opacity: 0;
+  transition: opacity 650ms var(--ease-natural);
+  will-change: opacity;
+}
+
+.reveal-title {
+  opacity: 0;
+  transform: translateY(16px);
+  filter: blur(2px);
+  transition: opacity 650ms var(--ease-natural),
+              transform 650ms var(--ease-natural),
+              filter 650ms var(--ease-natural);
+  will-change: opacity, transform, filter;
+}
+
+.reveal-paragraph {
+  opacity: 0;
+  transition: opacity 650ms var(--ease-natural);
+  transition-delay: 100ms; /* 100ms delay after title, fade only */
+  will-change: opacity;
+}
+
+/* Revealed State Triggered by IntersectionObserver */
+.is-revealed.reveal-fade-up,
+.is-revealed .reveal-fade-up,
+.reveal-fade-up.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+.is-revealed.reveal-fade,
+.is-revealed .reveal-fade,
+.reveal-fade.is-revealed {
+  opacity: 1;
+}
+
+.is-revealed.reveal-title,
+.is-revealed .reveal-title,
+.reveal-title.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+.is-revealed.reveal-paragraph,
+.is-revealed .reveal-paragraph,
+.reveal-paragraph.is-revealed {
+  opacity: 1;
+}
+
+/* Editorial Image Reveal: Slow natural mask/clip animation */
+.reveal-image {
+  opacity: 0;
+  clip-path: inset(0 0 6% 0);
+  transform: scale(0.985);
+  transition: opacity 750ms var(--ease-natural),
+              clip-path 850ms var(--ease-natural),
+              transform 850ms var(--ease-natural);
+  will-change: opacity, clip-path, transform;
+}
+
+.is-revealed.reveal-image,
+.is-revealed .reveal-image,
+.reveal-image.is-revealed {
+  opacity: 1;
+  clip-path: inset(0 0 0 0);
+  transform: scale(1);
+}
+
+/* Timeline Progressive Line Growth */
+.timeline-progress-line {
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 900ms var(--ease-natural);
+}
+
+.is-revealed.timeline-progress-line,
+.is-revealed .timeline-progress-line,
+.timeline-progress-line.is-revealed {
+  transform: scaleX(1);
+}
+
+/* Stagger Delays (50ms - 560ms) */
+.stagger-1 { transition-delay: 80ms; }
+.stagger-2 { transition-delay: 160ms; }
+.stagger-3 { transition-delay: 240ms; }
+.stagger-4 { transition-delay: 320ms; }
+.stagger-5 { transition-delay: 400ms; }
+.stagger-6 { transition-delay: 480ms; }
+.stagger-7 { transition-delay: 560ms; }
+
+/* Client Logo Slow Continuous Marquee Motion */
+@keyframes marqueeSlow {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.logo-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marqueeSlow 38s linear infinite;
+}
+
+.logo-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+.client-logo-item {
+  transition: opacity 200ms var(--ease-natural),
+              transform 200ms var(--ease-natural),
+              filter 200ms var(--ease-natural);
+}
+
+.client-logo-item:hover {
+  transform: scale(1.04);
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-marquee-track {
+    animation: none;
+  }
+}
+
+/* Museum Exhibition Fade & Scale Micro-Interaction (350ms ease-out) */
+@keyframes museumFadeScale {
+  0% {
+    opacity: 0;
+    transform: scale(1.015);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.museum-fade-enter {
+  animation: museumFadeScale 350ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Respect Reduced Motion Preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal-fade-up,
+  .reveal-fade,
+  .reveal-title,
+  .reveal-paragraph,
+  .reveal-image,
+  .hero-enter-bg,
+  .hero-enter-badge,
+  .hero-enter-headline,
+  .hero-enter-sub,
+  .hero-enter-actions,
+  .hero-enter-assurances,
+  .hero-enter-photo {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    clip-path: none !important;
+    animation: none !important;
+  }
+
+  .timeline-progress-line {
+    transform: scaleX(1) !important;
+  }
+}
+

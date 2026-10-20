@@ -117,3 +117,43 @@ export async function recordLoginFailure(clientIp: string, username: string): Pr
     ],
   });
 }
+
+/**
+ * Memeriksa pembatasan laju pengajuan pesanan tamu:
+ * - Maksimal 5 pengajuan pesanan per 15 menit per IP (action: "order_submission")
+ */
+export async function checkOrderRateLimit(clientIp: string): Promise<RateLimitResult> {
+  const windowStart = new Date(Date.now() - 15 * 60 * 1000);
+  const ipHmac = computeHmac(clientIp);
+
+  const attempts = await prisma.rateLimitAttempt.count({
+    where: {
+      ipHmac,
+      action: "order_submission",
+      createdAt: { gte: windowStart },
+    },
+  });
+
+  if (attempts >= 5) {
+    return {
+      allowed: false,
+      reason: "Terlalu banyak pengajuan pesanan dari jaringan Anda. Silakan coba lagi setelah 15 menit.",
+    };
+  }
+
+  return { allowed: true };
+}
+
+/**
+ * Mencatat percobaan pengajuan pesanan untuk membatasi laju spam.
+ */
+export async function recordOrderAttempt(clientIp: string): Promise<void> {
+  const ipHmac = computeHmac(clientIp);
+  await prisma.rateLimitAttempt.create({
+    data: {
+      ipHmac,
+      action: "order_submission",
+    },
+  });
+}
+
