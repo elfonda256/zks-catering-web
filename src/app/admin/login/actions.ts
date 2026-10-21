@@ -35,6 +35,7 @@ export async function loginAction(
     });
     return {};
   } catch (error) {
+    console.error("Login action error:", error);
     if (error instanceof AuthError) {
       const isRateLimited =
         error instanceof RateLimitError ||

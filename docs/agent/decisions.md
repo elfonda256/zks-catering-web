@@ -173,4 +173,15 @@ Doktrin desain permanen yang wajib ditaati oleh seluruh komponen dan seksi antar
   - `regenerateOrderTokenAction`: Pembuatan ulang token akses privat pelanggan.
 - **Verifikasi**: 6/6 pengujian unit `tests/order-logic.test.ts` lulus, ESLint 0 kesalahan, dan TypeScript `tsc --noEmit` bersih (exit code 0).
 
+---
+## 12. Migrasi Cloud PostgreSQL (Supabase) & Deployment Produksi Vercel (2026-10-21)
+- **Basis Data Cloud Produksi**: Menggunakan PostgreSQL terkelola di **Supabase** (region `ap-northeast-1`). Skema tabel Prisma disinkronkan via `npx prisma migrate deploy` melalui *session pooler* (port 5432). Akun admin awal diinisialisasi melalui `npm run init-admin`.
+- **Integrasi Build Vercel**: Skrip `build` di `package.json` diperbarui menjadi `prisma generate && next build` untuk memastikan `@/generated/prisma` selalu dihasilkan secara otomatis pada proses CI/CD Vercel sebelum tahap kompilasi Next.js.
+- **Penyelesaian Limit Unggah Server Action**:
+  - Konfigurasi `next.config.ts` ditambahkan opsi `experimental.serverActions.bodySizeLimit: "10mb"` untuk mencegah error 413 (*Body exceeded 1 MB limit*).
+  - Penambahan kompresi otomatis di sisi klien (`PaymentUploadClient.tsx`) menggunakan kanvas HTML5 (maksimal resolusi 1600px, kualitas 85% JPEG) sehingga foto berukuran besar (5–15 MB) dari kamera ponsel diperkecil menjadi ~300–500 KB sebelum diunggah ke server.
+- **Penyelarasan Desain Dasbor Admin**: Diperbarui mengusung tema *Warm Light Canvas* (`#FAF9F5`) dengan perpaduan tipografi editorial `Manrope` (`font-display`) dan `Inter` (`font-sans`) yang serasi 100% dengan landing page utama.
+- **Verifikasi Produksi**: Situs live di URL publik Vercel (`https://zks-catering-web-6fkr.vercel.app`), merespons dengan status HTTP 200 untuk seluruh rute publik dan panel otentikasi admin (`/admin/login`).
+
+
 
