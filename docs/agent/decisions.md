@@ -183,5 +183,29 @@ Doktrin desain permanen yang wajib ditaati oleh seluruh komponen dan seksi antar
 - **Penyelarasan Desain Dasbor Admin**: Diperbarui mengusung tema *Warm Light Canvas* (`#FAF9F5`) dengan perpaduan tipografi editorial `Manrope` (`font-display`) dan `Inter` (`font-sans`) yang serasi 100% dengan landing page utama.
 - **Verifikasi Produksi**: Situs live di URL publik Vercel (`https://zks-catering-web-6fkr.vercel.app`), merespons dengan status HTTP 200 untuk seluruh rute publik dan panel otentikasi admin (`/admin/login`).
 
+---
+## 13. Resolusi Penyimpanan Bukti Pembayaran di Vercel Serverless (2026-10-21)
+- **Eliminasi Ketergantungan Filesystem Lokal**:
+  - Di lingkungan serverless AWS Lambda / Vercel, filesystem bersifat *read-only* kecuali direktori `/tmp` yang bersifat ephemeral. Mencoba menulis ke `public/uploads/` menyebabkan galat `ENOENT: no such file or directory, mkdir '/var/task/public'`.
+  - Berkas bukti pembayaran dikompresi di sisi klien (`PaymentUploadClient.tsx`) hingga ukuran ~150–250 KB (maksimal 1200px, 80% JPEG).
+  - Server Action mengonversi buffer gambar langsung menjadi string Base64 Data URL (`data:image/jpeg;base64,...`) dan menyimpannya langsung pada kolom `Payment.paymentUrl` (tipe teks tak terbatas di PostgreSQL Supabase).
+  - Tampilan admin (`AdminDashboardClient.tsx`) mendukung pratinjau langsung, inspeksi modal resolusi penuh, dan pengunduhan berkas Data URL tanpa memerlukan storage bucket pihak ketiga terpisah.
+
+---
+## 14. Integrasi WhatsApp Gateway Otomatis Resmi via Fonnte API (2026-10-21)
+- **Arsitektur Gateway Transaksional (`src/lib/whatsapp.ts`)**:
+  - Menggunakan Fonnte REST API (`https://api.fonnte.com/send`) terhubung langsung ke nomor WhatsApp operasional ZKS (`0816997963`, perangkat `Molinar`).
+  - Token otentikasi dibaca secara aman dari environment variable `FONNTE_TOKEN` (tidak disimpan dalam repositori git).
+  - Sanitasi nomor telepon Indonesia otomatis (`08...`, `62...`, atau `+62...`).
+  - Pengiriman pesan bersifat *non-blocking* (`try...catch`) sehingga kendala jaringan pihak ketiga tidak menggagalkan transaksi pesanan atau mutasi basis data.
+- **Titik Notifikasi Otomatis pada Siklus Hidup Pesanan**:
+  1. *Pengajuan Pesanan Baru (`createOrderAction`)*: Mengirimkan rincian pesanan (kode, paket, porsi, subtotal, alamat) dan tautan pelacakan privat langsung ke pemesan.
+  2. *Penetapan Ongkos Kirim & Penguncian Total (`lockOrderTotalAction`)*: Mengirimkan rincian total tagihan resmi, opsi DP 20%, rekening transfer resmi BCA & Mandiri, dan instruksi bayar.
+  3. *Verifikasi Pembayaran Diterima (`approvePaymentAction`)*: Mengonfirmasi pembayaran telah valid dan mengunci jadwal dapur & armada.
+  4. *Penolakan Bukti Transfer (`rejectPaymentAction`)*: Memberitahukan alasan penolakan dan meminta unggah ulang bukti yang sesuai.
+  5. *Pembuatan Ulang Tautan Privat (`regenerateOrderTokenAction`)*: Mengirimkan URL pelacakan baru langsung ke WhatsApp pemesan.
+  6. *Pembaruan Status Operasional (`updateOrderStatusAction`)*: Mengabari pelanggan saat pesanan masuk dapur (`IN_PREPARATION`), armada jalan (`IN_DELIVERY`), dan telah diserahterimakan (`COMPLETED`).
+  7. *Penolakan Pesanan (`rejectOrderAction`)*: Memberitahukan alasan pembatalan/penolakan pesanan masuk.
+
 
 
