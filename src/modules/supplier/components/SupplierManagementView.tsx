@@ -73,59 +73,50 @@ export default function SupplierManagementView() {
   }
 
   return (
-    <div className="space-y-8 pb-16">
-      {/* PAGE HEADER */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#141413]/15 pb-6">
-        <div className="space-y-1">
-          <div className="text-[11px] font-mono uppercase tracking-wider text-[#626058]">
-            Enterprise SRM • PT. Zahdan Kamal Sentosa
-          </div>
-          <h1 className="text-2xl md:text-3xl font-bold text-[#141413] tracking-tight">
-            Supplier Management
-          </h1>
-          <p className="text-xs text-[#626058] font-mono">
-            Manage suppliers, evaluate performance, and maintain compliance.
-          </p>
+    <div className="space-y-6 pb-16">
+      {/* QUICK ACTIONS TOOLBAR */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-3.5 rounded-[12px] border border-slate-200 shadow-xs">
+        <div className="text-[14px] text-slate-600">
+          Kelola direktori mitra supplier, audit sertifikasi Halal &amp; ISO, serta histori transaksi PO.
         </div>
 
-        {/* Top Right Actions */}
         <div className="flex flex-wrap items-center gap-2">
           <Button
-            variant="outline"
+            variant="secondary"
             size="sm"
             onClick={() => setIsImportModalOpen(true)}
           >
-            Import Supplier
+            Import Excel
           </Button>
           <Button
-            variant="outline"
+            variant="secondary"
             size="sm"
             onClick={() => setIsExportModalOpen(true)}
           >
-            Export
+            Export Laporan
           </Button>
           <Button
             variant="primary"
             size="sm"
             onClick={() => setIsNewModalOpen(true)}
           >
-            + New Supplier
+            + Daftarkan Supplier Baru
           </Button>
         </div>
       </div>
 
       {/* SECTION 01: Executive Summary */}
-      <section className="space-y-2">
-        <div className="text-xs font-mono uppercase tracking-wider text-[#626058] font-bold">
-          01. Ringkasan Eksekutif Hubungan Pemasok (Executive Summary)
+      <section className="space-y-3">
+        <div className="text-[12px] font-semibold uppercase tracking-wider text-slate-500">
+          01. Ringkasan Kemitraan &amp; Pengadaan
         </div>
         <SupplierExecutiveCards metrics={executiveMetrics} />
       </section>
 
       {/* SECTION 02: Supplier Directory */}
       <section className="space-y-3">
-        <div className="text-xs font-mono uppercase tracking-wider text-[#626058] font-bold">
-          02. Direktori Rekanan &amp; Penilaian Kinerja (Supplier Directory)
+        <div className="text-[12px] font-semibold uppercase tracking-wider text-slate-500">
+          02. Direktori Rekanan &amp; Penilaian Kinerja
         </div>
         <SupplierDirectoryTable
           suppliers={filteredSuppliers}
@@ -139,12 +130,12 @@ export default function SupplierManagementView() {
 
       {/* SECTIONS 03 - 10: Selected Supplier Digital Dossier */}
       {selectedSupplier && (
-        <section className="space-y-3 pt-4 border-t border-[#141413]/15">
+        <section className="space-y-3 pt-6 border-t border-slate-200">
           <div className="flex items-center justify-between">
-            <div className="text-xs font-mono uppercase tracking-wider text-[#141413] font-bold">
-              03 - 10. Digital Supplier Passport &amp; Kepatuhan: {selectedSupplier.name} ({selectedSupplier.code})
+            <div className="text-[16px] font-semibold text-slate-900 tracking-tight">
+              Profil &amp; Digital Passport: {selectedSupplier.name} ({selectedSupplier.code})
             </div>
-            <span className="text-xs font-mono text-[#626058]">
+            <span className="text-[12px] text-slate-400 font-mono">
               Single Source of Truth SRM
             </span>
           </div>
@@ -161,7 +152,7 @@ export default function SupplierManagementView() {
         </section>
       )}
 
-      {/* Interactive Modals */}
+      {/* MODALS */}
       <NewSupplierModal
         isOpen={isNewModalOpen}
         onClose={() => setIsNewModalOpen(false)}
@@ -170,28 +161,28 @@ export default function SupplierManagementView() {
 
       <EditSupplierModal
         isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
         supplier={editingSupplier}
+        onClose={() => setIsEditModalOpen(false)}
         onSave={handleUpdateSupplier}
       />
 
       <DocumentPreviewModal
         isOpen={isPreviewDocOpen}
-        onClose={() => setIsPreviewDocOpen(false)}
         document={previewDoc}
         supplier={selectedSupplier}
+        onClose={() => setIsPreviewDocOpen(false)}
       />
 
       <CreatePOModal
         isOpen={isPOModalOpen}
-        onClose={() => setIsPOModalOpen(false)}
         supplier={poSupplier}
+        onClose={() => setIsPOModalOpen(false)}
       />
 
       <PrintProfileModal
         isOpen={isPrintModalOpen}
-        onClose={() => setIsPrintModalOpen(false)}
         supplier={printSupplier}
+        onClose={() => setIsPrintModalOpen(false)}
       />
 
       <ImportSupplierModal
@@ -201,8 +192,8 @@ export default function SupplierManagementView() {
 
       <ExportSupplierModal
         isOpen={isExportModalOpen}
-        onClose={() => setIsExportModalOpen(false)}
         totalCount={suppliers.length}
+        onClose={() => setIsExportModalOpen(false)}
       />
     </div>
   );

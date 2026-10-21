@@ -3,7 +3,7 @@
 import React, { forwardRef, ButtonHTMLAttributes } from "react";
 import { cn } from "@/shared/utils/cn";
 
-export type ButtonVariant = "primary" | "secondary" | "outline" | "ghost" | "danger";
+export type ButtonVariant = "primary" | "secondary" | "outline" | "ghost" | "danger" | "icon";
 export type ButtonSize = "sm" | "md" | "lg";
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -11,6 +11,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: ButtonSize;
   isLoading?: boolean;
   isMono?: boolean;
+  isIcon?: boolean;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -20,7 +21,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       variant = "primary",
       size = "md",
       isLoading = false,
-      isMono = true,
+      isMono = false,
+      isIcon = false,
       disabled,
       children,
       ...props
@@ -28,23 +30,24 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      "inline-flex items-center justify-center font-medium transition-all select-none disabled:opacity-50 disabled:pointer-events-none active:translate-y-px";
+      "inline-flex items-center justify-center font-medium rounded-[12px] transition-colors select-none disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 cursor-pointer";
 
     const variantStyles: Record<ButtonVariant, string> = {
-      primary: "bg-[#141413] hover:bg-[#2A2926] text-white shadow-2xs border border-transparent",
-      secondary: "bg-[#ECEBE4] hover:bg-[#E2E0D8] text-[#141413] border border-[#141413]/10",
-      outline: "bg-transparent hover:bg-[#141413]/5 text-[#141413] border border-[#141413]/20",
-      ghost: "bg-transparent hover:bg-[#141413]/5 text-[#626058] hover:text-[#141413] border border-transparent",
-      danger: "bg-[#DC2626] hover:bg-[#B91C1C] text-white shadow-2xs border border-transparent",
+      primary: "bg-blue-600 hover:bg-blue-700 text-white shadow-xs border border-transparent",
+      secondary: "bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-xs",
+      outline: "bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-xs",
+      ghost: "bg-transparent hover:bg-slate-100 text-slate-600 hover:text-slate-900 border border-transparent",
+      danger: "bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 shadow-xs",
+      icon: "bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200 shadow-xs",
     };
 
     const sizeStyles: Record<ButtonSize, string> = {
-      sm: "px-2.5 py-1 text-xs",
-      md: "px-4 py-2 text-xs",
-      lg: "px-6 py-3 text-sm",
+      sm: isIcon || variant === "icon" ? "w-8 h-8 p-0 text-xs" : "h-8 px-3 text-xs gap-1.5",
+      md: isIcon || variant === "icon" ? "w-9 h-9 p-0 text-sm" : "h-9 px-4 text-sm gap-2",
+      lg: isIcon || variant === "icon" ? "w-11 h-11 p-0 text-sm" : "h-11 px-5 text-sm gap-2.5",
     };
 
-    const fontStyles = isMono ? "font-mono uppercase tracking-wider" : "";
+    const fontStyles = isMono ? "font-mono" : "font-sans";
 
     return (
       <button
@@ -55,7 +58,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       >
         {isLoading && (
           <svg
-            className="animate-spin -ml-1 mr-2 h-3.5 w-3.5 text-current"
+            className="animate-spin -ml-0.5 mr-1.5 h-3.5 w-3.5 text-current"
             fill="none"
             viewBox="0 0 24 24"
           >

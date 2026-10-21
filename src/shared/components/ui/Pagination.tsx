@@ -26,34 +26,34 @@ export function Pagination({
   return (
     <div
       className={cn(
-        "flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3 px-4 bg-white border border-[#141413]/15 text-xs font-mono",
+        "flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3 px-4 bg-white border border-slate-200 rounded-[12px] text-[13px] shadow-xs",
         className
       )}
     >
-      <div className="text-[#626058]">
+      <div className="text-slate-600">
         {totalItems !== undefined && itemsPerPage !== undefined ? (
           <>
             Menampilkan{" "}
-            <strong className="text-[#141413]">
+            <span className="font-semibold text-slate-900">
               {Math.min((currentPage - 1) * itemsPerPage + 1, totalItems)}
-            </strong>
+            </span>
             -
-            <strong className="text-[#141413]">
+            <span className="font-semibold text-slate-900">
               {Math.min(currentPage * itemsPerPage, totalItems)}
-            </strong>{" "}
-            dari <strong className="text-[#141413]">{totalItems}</strong> baris
+            </span>{" "}
+            dari <span className="font-semibold text-slate-900">{totalItems}</span> total data
           </>
         ) : (
           <>
-            Halaman <strong className="text-[#141413]">{currentPage}</strong> dari{" "}
-            <strong className="text-[#141413]">{totalPages}</strong>
+            Halaman <span className="font-semibold text-slate-900">{currentPage}</span> dari{" "}
+            <span className="font-semibold text-slate-900">{totalPages}</span>
           </>
         )}
       </div>
 
       <div className="flex items-center gap-2">
         <Button
-          variant="outline"
+          variant="secondary"
           size="sm"
           disabled={currentPage <= 1}
           onClick={() => onPageChange(currentPage - 1)}
@@ -61,12 +61,12 @@ export function Pagination({
           ← Sebelumnya
         </Button>
 
-        <span className="px-3 py-1 bg-[#ECEBE4] border border-[#141413]/15 text-[#141413] font-bold">
+        <span className="px-3 py-1 bg-slate-50 border border-slate-200 text-slate-800 font-medium rounded-[8px] text-[12px]">
           {currentPage} / {Math.max(1, totalPages)}
         </span>
 
         <Button
-          variant="outline"
+          variant="secondary"
           size="sm"
           disabled={currentPage >= totalPages}
           onClick={() => onPageChange(currentPage + 1)}

@@ -1,5 +1,5 @@
 import React from "react";
-import { Card } from "@/shared/components/ui/Card";
+import { KpiCard } from "@/shared/components/ui/KpiCard";
 import { formatRupiah } from "@/shared/utils/formatters";
 import type { SupplierExecutiveMetrics } from "../services/supplier.service";
 
@@ -9,85 +9,57 @@ export interface SupplierExecutiveCardsProps {
 
 export function SupplierExecutiveCards({ metrics }: SupplierExecutiveCardsProps) {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4">
-      {/* Total Suppliers */}
-      <Card className="p-4 bg-white border border-[#141413]/15">
-        <div className="text-[11px] font-mono uppercase tracking-wider text-[#626058]">
-          Total Rekanan
-        </div>
-        <div className="text-2xl font-bold font-mono text-[#141413] mt-1">
-          {metrics.totalSuppliers}
-        </div>
-        <div className="text-[11px] text-[#626058] mt-1 font-mono">
-          Vendor terdaftar aktif
-        </div>
-      </Card>
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+      {/* Primary KPI: Nilai Pengadaan Bulan Ini (Takes 4 cols on desktop) */}
+      <div className="md:col-span-5 lg:col-span-4">
+        <KpiCard
+          isPrimary={true}
+          label="Nilai Pengadaan Bulan Ini"
+          value={formatRupiah(metrics.monthlyProcurementTotal)}
+          subtext="Total realisasi PO terbayar & terserap bulan berjalan"
+          trend={{
+            value: "+12.4%",
+            isPositive: true,
+            label: "vs bulan lalu",
+          }}
+        />
+      </div>
 
-      {/* Active Suppliers */}
-      <Card className="p-4 bg-white border border-[#141413]/15">
-        <div className="text-[11px] font-mono uppercase tracking-wider text-[#626058]">
-          Rekanan Aktif
-        </div>
-        <div className="text-2xl font-bold font-mono text-emerald-700 mt-1">
-          {metrics.activeSuppliers}
-        </div>
-        <div className="text-[11px] text-emerald-800 mt-1 font-mono">
-          Siap rilis purchase order
-        </div>
-      </Card>
+      {/* Secondary KPIs: 4 cards in a 4-col grid (Takes 7/8 cols on desktop) */}
+      <div className="md:col-span-7 lg:col-span-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <KpiCard
+          label="Total Vendor"
+          value={metrics.totalSuppliers}
+          subtext="Vendor terdaftar aktif"
+        />
 
-      {/* Preferred Suppliers */}
-      <Card className="p-4 bg-white border border-[#141413]/15">
-        <div className="text-[11px] font-mono uppercase tracking-wider text-[#626058]">
-          Preferred (Prioritas)
-        </div>
-        <div className="text-2xl font-bold font-mono text-amber-700 mt-1">
-          {metrics.preferredSuppliers}
-        </div>
-        <div className="text-[11px] text-[#626058] mt-1 font-mono">
-          Tier 1 Gold SLA terjamin
-        </div>
-      </Card>
+        <KpiCard
+          label="Vendor Aktif"
+          value={metrics.activeSuppliers}
+          subtext="Siap rilis PO"
+          trend={{
+            value: "96.5%",
+            isPositive: true,
+            label: "SLA delivery",
+          }}
+        />
 
-      {/* Suppliers Requiring Review */}
-      <Card className="p-4 bg-white border border-[#141413]/15">
-        <div className="text-[11px] font-mono uppercase tracking-wider text-[#626058]">
-          Perlu Evaluasi
-        </div>
-        <div className="text-2xl font-bold font-mono text-rose-700 mt-1">
-          {metrics.reviewRequiredCount}
-        </div>
-        <div className="text-[11px] text-rose-800 mt-1 font-mono">
-          Dokumen exp / delay
-        </div>
-      </Card>
+        <KpiCard
+          label="Tier-1 Gold"
+          value={metrics.preferredSuppliers}
+          subtext="Rekanan prioritas"
+        />
 
-      {/* Average Supplier Rating */}
-      <Card className="p-4 bg-white border border-[#141413]/15">
-        <div className="text-[11px] font-mono uppercase tracking-wider text-[#626058]">
-          Rata-rata Rating
-        </div>
-        <div className="text-2xl font-bold font-mono text-[#141413] mt-1">
-          {metrics.averageRating}
-          <span className="text-xs text-[#626058] font-normal"> / 100</span>
-        </div>
-        <div className="text-[11px] text-[#626058] mt-1 font-mono">
-          Weighted scorecard Q4
-        </div>
-      </Card>
-
-      {/* Monthly Procurement Value */}
-      <Card className="p-4 bg-white border border-[#141413]/15">
-        <div className="text-[11px] font-mono uppercase tracking-wider text-[#626058]">
-          Nilai Pengadaan Bln Ini
-        </div>
-        <div className="text-xl font-bold font-mono text-[#141413] mt-1 tracking-tight truncate">
-          {formatRupiah(metrics.monthlyProcurementTotal)}
-        </div>
-        <div className="text-[11px] text-emerald-800 mt-1 font-mono">
-          Realisasi PO terserap
-        </div>
-      </Card>
+        <KpiCard
+          label="Perlu Review"
+          value={metrics.reviewRequiredCount}
+          subtext="Dokumen exp / delay"
+          trend={{
+            value: metrics.reviewRequiredCount > 0 ? "Perlu Tindakan" : "Aman",
+            isPositive: metrics.reviewRequiredCount === 0,
+          }}
+        />
+      </div>
     </div>
   );
 }

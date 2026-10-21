@@ -19,6 +19,8 @@ This documentation suite defines the architecture, design doctrine, engineering 
 | **07** | [07_PRODUCTION.md](file:///Users/mymac/Developer/zks-catering-web/docs/MASTERBOOK/07_PRODUCTION.md) | Central Kitchen & Production specification (BOM, Batching, HACCP). |
 | **08** | [08_AI_ROADMAP.md](file:///Users/mymac/Developer/zks-catering-web/docs/MASTERBOOK/08_AI_ROADMAP.md) | AI Assistant roadmap, predictive stock forecasting, automated audits. |
 | **09** | [09_BUSINESS_FLOW_MASTERBOOK.md](file:///Users/mymac/Developer/zks-catering-web/docs/MASTERBOOK/09_BUSINESS_FLOW_MASTERBOOK.md) | Enterprise Business Architecture, User Roles, Permissions Matrix, E2E Flow, Approval Chains, Status Lifecycles, and 5W1H Traceability. |
+| **10** | [10_ENTERPRISE_DESIGN_SYSTEM.md](file:///Users/mymac/Developer/zks-catering-web/docs/MASTERBOOK/10_ENTERPRISE_DESIGN_SYSTEM.md) | Enterprise Design System (EDS) — Anti AI Slop Edition (Typography, 8pt Grid, 12px Radius, Color Tokens, and Enterprise Shell). |
+| **11** | [11_ERP_SHELL_NAVIGATION_FRAMEWORK.md](file:///Users/mymac/Developer/zks-catering-web/docs/MASTERBOOK/11_ERP_SHELL_NAVIGATION_FRAMEWORK.md) | ERP Shell & Navigation Framework (Persistent Sidebar, Header, Breadcrumbs, ⌘K Global Search, Notifications, Page Template). |
 
 ---
 

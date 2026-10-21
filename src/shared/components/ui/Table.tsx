@@ -8,8 +8,8 @@ import { cn } from "@/shared/utils/cn";
 
 export function Table({ className, children, ...props }: TableHTMLAttributes<HTMLTableElement>) {
   return (
-    <div className="w-full overflow-x-auto border border-[#141413]/15">
-      <table className={cn("w-full text-left text-xs border-collapse", className)} {...props}>
+    <div className="w-full overflow-x-auto rounded-[12px] border border-slate-200 bg-white shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+      <table className={cn("w-full text-left text-[14px] border-collapse", className)} {...props}>
         {children}
       </table>
     </div>
@@ -19,7 +19,10 @@ export function Table({ className, children, ...props }: TableHTMLAttributes<HTM
 export function TableHeader({ className, children, ...props }: HTMLAttributes<HTMLTableSectionElement>) {
   return (
     <thead
-      className={cn("bg-[#ECEBE4] border-b border-[#141413]/20 font-mono text-[11px] uppercase tracking-wider text-[#626058]", className)}
+      className={cn(
+        "bg-slate-50 border-b border-slate-200 text-[11px] font-semibold uppercase tracking-wider text-slate-500 sticky top-0 z-10 select-none",
+        className
+      )}
       {...props}
     >
       {children}
@@ -29,16 +32,25 @@ export function TableHeader({ className, children, ...props }: HTMLAttributes<HT
 
 export function TableBody({ className, children, ...props }: HTMLAttributes<HTMLTableSectionElement>) {
   return (
-    <tbody className={cn("divide-y divide-[#141413]/10 bg-white", className)} {...props}>
+    <tbody className={cn("divide-y divide-slate-100 bg-white", className)} {...props}>
       {children}
     </tbody>
   );
 }
 
-export function TableRow({ className, children, ...props }: HTMLAttributes<HTMLTableRowElement>) {
+export function TableRow({
+  className,
+  isSelected,
+  children,
+  ...props
+}: HTMLAttributes<HTMLTableRowElement> & { isSelected?: boolean }) {
   return (
     <tr
-      className={cn("hover:bg-[#FAF9F5] transition-colors group", className)}
+      className={cn(
+        "hover:bg-slate-50/80 transition-colors group",
+        isSelected && "bg-blue-50/40 hover:bg-blue-50/60",
+        className
+      )}
       {...props}
     >
       {children}
@@ -46,18 +58,145 @@ export function TableRow({ className, children, ...props }: HTMLAttributes<HTMLT
   );
 }
 
-export function TableHead({ className, children, ...props }: ThHTMLAttributes<HTMLTableCellElement>) {
+export interface TableHeadProps extends ThHTMLAttributes<HTMLTableCellElement> {
+  align?: "left" | "center" | "right";
+  sortable?: boolean;
+  sortDirection?: "asc" | "desc" | null;
+  onSort?: () => void;
+  isCheckbox?: boolean;
+}
+
+export function TableHead({
+  className,
+  align = "left",
+  sortable = false,
+  sortDirection,
+  onSort,
+  isCheckbox = false,
+  children,
+  ...props
+}: TableHeadProps) {
+  const alignClass = {
+    left: "text-left",
+    center: "text-center",
+    right: "text-right",
+  }[align];
+
+  if (sortable && onSort) {
+    return (
+      <th
+        className={cn(
+          "py-3 px-4 font-semibold text-slate-700 whitespace-nowrap cursor-pointer hover:bg-slate-100/70 transition-colors",
+          alignClass,
+          isCheckbox && "w-10 px-3",
+          className
+        )}
+        onClick={onSort}
+        {...props}
+      >
+        <div
+          className={cn(
+            "inline-flex items-center gap-1.5",
+            align === "right" && "flex-row-reverse"
+          )}
+        >
+          <span>{children}</span>
+          <span className="text-slate-400 text-xs">
+            {sortDirection === "asc" ? "▲" : sortDirection === "desc" ? "▼" : "⇅"}
+          </span>
+        </div>
+      </th>
+    );
+  }
+
   return (
-    <th className={cn("py-3 px-4 font-semibold text-[#141413]", className)} {...props}>
+    <th
+      className={cn(
+        "py-3 px-4 font-semibold text-slate-700 whitespace-nowrap",
+        alignClass,
+        isCheckbox && "w-10 px-3",
+        className
+      )}
+      {...props}
+    >
       {children}
     </th>
   );
 }
 
-export function TableCell({ className, children, ...props }: TdHTMLAttributes<HTMLTableCellElement>) {
+export interface TableCellProps extends TdHTMLAttributes<HTMLTableCellElement> {
+  align?: "left" | "center" | "right";
+  isNumeric?: boolean;
+  isCheckbox?: boolean;
+}
+
+export function TableCell({
+  className,
+  align = "left",
+  isNumeric = false,
+  isCheckbox = false,
+  children,
+  ...props
+}: TableCellProps) {
+  const alignClass = {
+    left: "text-left",
+    center: "text-center",
+    right: "text-right",
+  }[align];
+
   return (
-    <td className={cn("py-3 px-4 text-[#141413] align-middle", className)} {...props}>
+    <td
+      className={cn(
+        "py-3.5 px-4 text-slate-700 align-middle",
+        alignClass,
+        isNumeric && "font-mono tabular-nums text-slate-900",
+        isCheckbox && "w-10 px-3",
+        className
+      )}
+      {...props}
+    >
       {children}
     </td>
+  );
+}
+
+export function TableEmptyRow({
+  colSpan,
+  message = "Tidak ada data yang ditemukan",
+  subMessage = "Coba ubah filter atau kata kunci pencarian Anda.",
+}: {
+  colSpan: number;
+  message?: string;
+  subMessage?: string;
+}) {
+  return (
+    <tr>
+      <td colSpan={colSpan} className="py-12 px-4 text-center">
+        <div className="flex flex-col items-center justify-center space-y-1">
+          <p className="text-[14px] font-medium text-slate-700">{message}</p>
+          <p className="text-[12px] text-slate-400 max-w-sm">{subMessage}</p>
+        </div>
+      </td>
+    </tr>
+  );
+}
+
+export function TableLoadingRow({
+  colSpan,
+  rows = 4,
+}: {
+  colSpan: number;
+  rows?: number;
+}) {
+  return (
+    <>
+      {Array.from({ length: rows }).map((_, idx) => (
+        <tr key={idx} className="animate-pulse">
+          <td colSpan={colSpan} className="py-4 px-4">
+            <div className="h-4 bg-slate-100 rounded-[6px] w-full" />
+          </td>
+        </tr>
+      ))}
+    </>
   );
 }

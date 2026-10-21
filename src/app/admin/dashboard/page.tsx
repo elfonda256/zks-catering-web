@@ -5,6 +5,8 @@ import { connection } from "next/server";
 import { requireAdmin } from "@/lib/require-admin";
 import { signOut } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { EnterpriseShell, ErpPageTemplate } from "@/shared/components/layout";
+import { LoadingState } from "@/shared/components/ui/LoadingState";
 import AdminDashboardClient, {
   type AdminOrderData,
 } from "./AdminDashboardClient";
@@ -94,69 +96,50 @@ async function DashboardContent() {
   }));
 
   return (
-    <div className="max-w-7xl mx-auto space-y-10">
-      {/* 1. Header Bar: Editorial Light Theme matching Main Homepage */}
-      <header className="flex flex-col md:flex-row md:items-baseline justify-between gap-6 border-b border-[#141413]/10 pb-8">
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-2">
-            <span className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.18em] text-[#C85A17] font-semibold block">
-              PT. ZAHDAN KAMAL SENTOSA
-            </span>
-            <span className="text-[#8E8B81] text-xs">/</span>
-            <span className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.18em] text-[#141413] font-semibold block">
-              OPERATIONS &amp; DISPATCH CONSOLE
-            </span>
-          </div>
-          <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-[#141413] tracking-[-0.03em] leading-tight">
-            Panel Kendali &amp; Logistik Pesanan.
-          </h1>
-          <p className="font-sans text-xs sm:text-sm text-[#626058] max-w-2xl leading-relaxed">
-            Pusat verifikasi kapasitas dapur, penetapan rute armada Karawang, serta inspeksi pembayaran resmi katering industri.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3 shrink-0">
-          <span className="font-mono text-xs text-[#626058] hidden lg:inline">
-            Operator: <strong className="text-[#141413]">{admin.name}</strong>
-          </span>
-
+    <EnterpriseShell
+      user={{ name: admin.name, role: admin.role }}
+      onLogout={handleLogout}
+    >
+      <ErpPageTemplate
+        category="OPERATIONS & DISPATCH CONSOLE"
+        title="Panel Kendali & Logistik Pesanan"
+        description="Pusat verifikasi kapasitas dapur, penetapan rute armada Karawang, serta inspeksi pembayaran resmi katering industri."
+        actions={
           <Link
-            href="/"
-            target="_blank"
-            className="px-4 py-2 text-xs font-mono uppercase tracking-wider bg-white hover:bg-neutral-50 text-[#141413] border border-[#141413]/15 transition-all shadow-xs"
+            href="/admin/dashboard"
+            className="text-[12px] font-medium text-white bg-blue-600 hover:bg-blue-700 px-3.5 py-1.5 rounded-[8px] transition-colors shadow-2xs inline-flex items-center gap-1.5"
           >
-            Website Utama ↗
+            <span>↻ Segarkan Antrean</span>
           </Link>
-
-          <form action={handleLogout}>
-            <button
-              type="submit"
-              className="px-4 py-2 text-xs font-mono uppercase tracking-wider bg-transparent hover:bg-[#141413]/5 text-[#626058] hover:text-[#141413] border border-[#141413]/15 transition-all cursor-pointer"
-            >
-              Keluar
-            </button>
-          </form>
-        </div>
-      </header>
-
-      {/* 2. Komponen Klien Operasional Pesanan */}
-      <AdminDashboardClient orders={serializedOrders} />
-    </div>
+        }
+        secondaryActions={
+          <Link
+            href="/pesan"
+            target="_blank"
+            className="text-[12px] font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 px-3 py-1.5 rounded-[8px] transition-colors inline-flex items-center gap-1"
+          >
+            <span>Form Pemesanan</span>
+            <span className="text-slate-400">↗</span>
+          </Link>
+        }
+      >
+        {/* Komponen Klien Operasional Pesanan */}
+        <AdminDashboardClient orders={serializedOrders} />
+      </ErpPageTemplate>
+    </EnterpriseShell>
   );
 }
 
 export default function AdminDashboardPage() {
   return (
-    <main className="min-h-screen bg-[#FAF9F5] text-[#141413] p-6 sm:p-10 selection:bg-[#D96B27]/20 selection:text-[#141413]">
-      <Suspense
-        fallback={
-          <div className="max-w-7xl mx-auto py-24 text-center text-xs font-mono uppercase tracking-widest text-[#8E8B81]">
-            Memuat konsol kendali operasional ZKS...
-          </div>
-        }
-      >
-        <DashboardContent />
-      </Suspense>
-    </main>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-8">
+          <LoadingState label="Memuat konsol kendali operasional ZKS..." rows={6} />
+        </div>
+      }
+    >
+      <DashboardContent />
+    </Suspense>
   );
 }

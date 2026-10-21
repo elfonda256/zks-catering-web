@@ -1,19 +1,25 @@
 /**
  * Shared style tokens and theme definitions.
+ * Enterprise Design System (EDS) — ZKS Catering ERP
  */
 
+export * from "./eds-tokens";
+
 export const colors = {
-  canvas: "#FAF9F5",
-  industrialDark: "#141413",
-  secondaryBg: "#ECEBE4",
-  borderLight: "rgba(20, 20, 19, 0.15)",
-  textPrimary: "#141413",
-  textMuted: "#626058",
+  canvas: "#FFFFFF",
+  secondaryBg: "#F8FAFC",
+  industrialDark: "#0F172A",
+  borderLight: "#E2E8F0",
+  textPrimary: "#0F172A",
+  textMuted: "#64748B",
+  primaryBlue: "#2563EB",
 };
 
 export const spacing = {
-  sectionSm: "80px",
-  sectionMd: "120px",
-  sectionLg: "140px",
-  sectionXl: "160px",
+  xs: "8px",
+  sm: "16px",
+  md: "24px",
+  lg: "32px",
+  xl: "48px",
+  xxl: "64px",
 };

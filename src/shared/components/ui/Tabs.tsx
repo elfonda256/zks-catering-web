@@ -38,7 +38,7 @@ export function TabsList({ className, children }: { className?: string; children
   return (
     <div
       className={cn(
-        "flex flex-wrap items-center gap-1 border-b border-[#141413]/15 pb-px",
+        "flex flex-wrap items-center gap-1 border-b border-slate-200 pb-px bg-transparent",
         className
       )}
     >
@@ -66,10 +66,10 @@ export function TabsTrigger({
       type="button"
       onClick={() => ctx.setValue(value)}
       className={cn(
-        "px-4 py-2 text-xs font-mono uppercase tracking-wider transition-all select-none border-b-2 font-medium",
+        "px-4 py-2.5 text-[14px] font-medium transition-all select-none border-b-2 -mb-px rounded-t-[8px]",
         isActive
-          ? "border-[#141413] text-[#141413] font-bold bg-white"
-          : "border-transparent text-[#626058] hover:text-[#141413] hover:border-[#141413]/30",
+          ? "border-blue-600 text-blue-600 font-semibold bg-blue-50/30"
+          : "border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300",
         className
       )}
     >
@@ -92,5 +92,5 @@ export function TabsContent({
 
   if (ctx.value !== value) return null;
 
-  return <div className={cn("animate-in fade-in-50 duration-150", className)}>{children}</div>;
+  return <div className={cn("animate-in fade-in-50 duration-150 pt-2", className)}>{children}</div>;
 }

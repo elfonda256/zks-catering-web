@@ -51,7 +51,7 @@ export function Modal({
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#141413]/60 backdrop-blur-xs animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-150"
     >
       <div
         className="fixed inset-0"
@@ -61,24 +61,26 @@ export function Modal({
 
       <div
         className={cn(
-          "relative w-full bg-[#FAF9F5] border border-[#141413] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] z-10 animate-in zoom-in-95 duration-150",
+          "relative w-full bg-white border border-slate-200 rounded-[12px] shadow-xl overflow-hidden flex flex-col max-h-[90vh] z-10 animate-in zoom-in-95 duration-150",
           widthClasses[maxWidth]
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#141413]/20 px-6 py-4 bg-white shrink-0">
+        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 bg-white shrink-0">
           <div>
-            <h3 className="text-base font-bold text-[#141413] tracking-tight">{title}</h3>
+            <h3 className="text-[18px] font-semibold text-slate-900 tracking-tight">{title}</h3>
             {subtitle && (
-              <p className="text-xs text-[#626058] font-mono mt-0.5">{subtitle}</p>
+              <p className="text-[12px] text-slate-500 mt-0.5">{subtitle}</p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center text-[#626058] hover:text-[#141413] hover:bg-[#141413]/5 border border-transparent hover:border-[#141413]/20 transition-all font-mono text-xs"
+            className="w-8 h-8 rounded-[8px] flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
             aria-label="Tutup"
           >
-            ✕
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         </div>
 
@@ -87,7 +89,7 @@ export function Modal({
 
         {/* Footer */}
         {footer && (
-          <div className="border-t border-[#141413]/20 px-6 py-3.5 bg-[#ECEBE4]/50 flex items-center justify-end gap-3 shrink-0">
+          <div className="border-t border-slate-100 px-6 py-4 bg-slate-50 rounded-b-[12px] flex items-center justify-end gap-3 shrink-0">
             {footer}
           </div>
         )}
@@ -96,15 +98,14 @@ export function Modal({
   );
 }
 
-// Dialog semantic primitives
 export function DialogHeader({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
   return <div className={cn("space-y-1.5", className)} {...props}>{children}</div>;
 }
 
 export function DialogTitle({ className, children, ...props }: HTMLAttributes<HTMLHeadingElement>) {
-  return <h4 className={cn("text-base font-bold text-[#141413]", className)} {...props}>{children}</h4>;
+  return <h4 className={cn("text-[18px] font-semibold text-slate-900", className)} {...props}>{children}</h4>;
 }
 
 export function DialogDescription({ className, children, ...props }: HTMLAttributes<HTMLParagraphElement>) {
-  return <p className={cn("text-xs text-[#626058]", className)} {...props}>{children}</p>;
+  return <p className={cn("text-[14px] text-slate-600", className)} {...props}>{children}</p>;
 }

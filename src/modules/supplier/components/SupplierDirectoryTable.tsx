@@ -29,7 +29,7 @@ export function SupplierDirectoryTable({
   return (
     <div className="space-y-4">
       {/* Search and Filters Bar */}
-      <div className="bg-white border border-[#141413]/15 p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+      <div className="bg-white border border-slate-200 rounded-[12px] p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 shadow-xs">
         {/* Search Input */}
         <div className="flex-1 max-w-md">
           <Input
@@ -39,7 +39,7 @@ export function SupplierDirectoryTable({
               onFilterChange({ ...filter, searchQuery: e.target.value })
             }
             prefixNode={
-              <svg className="w-4 h-4 text-[#626058]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             }
@@ -117,7 +117,7 @@ export function SupplierDirectoryTable({
       </div>
 
       {/* Directory Table */}
-      <div className="bg-white border border-[#141413]/15 shadow-2xs">
+      <div className="bg-white rounded-[12px] overflow-hidden border border-slate-200 shadow-xs">
         <Table>
           <TableHeader>
             <TableRow>
@@ -133,7 +133,7 @@ export function SupplierDirectoryTable({
           <TableBody>
             {suppliers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-10 text-[#626058] font-mono">
+                <TableCell colSpan={7} className="text-center py-12 text-slate-500">
                   Tidak ditemukan rekanan dengan kriteria pencarian ini.
                 </TableCell>
               </TableRow>
@@ -149,21 +149,21 @@ export function SupplierDirectoryTable({
                     onClick={() => onSelectSupplier(supplier.id)}
                     className={`cursor-pointer transition-colors ${
                       isSelected
-                        ? "bg-[#141413]/5 border-l-4 border-l-[#141413]"
-                        : "hover:bg-[#FAF9F5]"
+                        ? "bg-blue-50/70 border-l-4 border-l-blue-600"
+                        : "hover:bg-slate-50/80"
                     }`}
                   >
                     {/* Supplier Code */}
-                    <TableCell className="font-mono font-bold text-xs text-[#141413]">
+                    <TableCell className="font-mono font-semibold text-[13px] text-slate-900">
                       {supplier.code}
                     </TableCell>
 
                     {/* Company Name & City */}
                     <TableCell>
-                      <div className="font-bold text-xs text-[#141413] tracking-tight">
+                      <div className="font-semibold text-[14px] text-slate-900 tracking-tight">
                         {supplier.name}
                       </div>
-                      <div className="text-[11px] font-mono text-[#626058] flex items-center gap-2 mt-0.5">
+                      <div className="text-[12px] text-slate-500 flex items-center gap-1.5 mt-0.5">
                         <span>{supplier.city}</span>
                         <span>•</span>
                         <span>NPWP: {supplier.npwp}</span>
@@ -171,30 +171,30 @@ export function SupplierDirectoryTable({
                     </TableCell>
 
                     {/* Category */}
-                    <TableCell className="text-xs text-[#141413]">
-                      <span className="px-2 py-0.5 bg-[#ECEBE4] border border-[#141413]/10 font-mono text-[11px]">
+                    <TableCell className="text-[13px] text-slate-700">
+                      <span className="px-2 py-0.5 bg-slate-100 text-slate-700 border border-slate-200 rounded-[6px] text-[11px] font-medium">
                         {supplier.category}
                       </span>
                     </TableCell>
 
                     {/* PIC & Phone */}
                     <TableCell>
-                      <div className="text-xs font-semibold text-[#141413]">
+                      <div className="text-[13px] font-medium text-slate-900">
                         {supplier.picName}
                       </div>
-                      <div className="text-[11px] font-mono text-[#626058] mt-0.5">
+                      <div className="text-[12px] text-slate-500 font-mono mt-0.5">
                         {supplier.phone}
                       </div>
                     </TableCell>
 
                     {/* Performance Score & Tier */}
                     <TableCell className="text-center">
-                      <div className="font-mono font-bold text-xs text-[#141413]">
+                      <div className="font-mono font-bold text-[13px] text-slate-900">
                         {supplier.scorecard.overallScore}{" "}
-                        <span className="text-[10px] text-[#626058] font-normal">/ 100</span>
+                        <span className="text-[11px] text-slate-400 font-normal">/ 100</span>
                       </div>
                       <div className="mt-1">
-                        <span className={`inline-block px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-wider border ${tierInfo.className}`}>
+                        <span className={`inline-block px-1.5 py-0.5 text-[10px] font-medium rounded-[4px] border ${tierInfo.className}`}>
                           {supplier.scorecard.tier}
                         </span>
                       </div>
@@ -210,7 +210,7 @@ export function SupplierDirectoryTable({
                     {/* Action */}
                     <TableCell className="text-right">
                       <Button
-                        variant={isSelected ? "primary" : "outline"}
+                        variant={isSelected ? "primary" : "secondary"}
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
@@ -228,11 +228,11 @@ export function SupplierDirectoryTable({
         </Table>
 
         {/* Directory Footer Info */}
-        <div className="p-3 bg-[#FAF9F5] border-t border-[#141413]/10 text-xs font-mono text-[#626058] flex items-center justify-between">
+        <div className="p-3 bg-slate-50 border-t border-slate-200 text-[12px] text-slate-500 flex items-center justify-between">
           <div>
-            Menampilkan <strong>{suppliers.length}</strong> rekanan aktif tersaring
+            Menampilkan <strong className="text-slate-900">{suppliers.length}</strong> rekanan aktif tersaring
           </div>
-          <div className="text-[11px]">
+          <div className="text-[11px] text-slate-400 hidden sm:block">
             Klik pada baris rekanan untuk membuka Digital Dossier lengkap di bawah
           </div>
         </div>

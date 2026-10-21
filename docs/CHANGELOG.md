@@ -2,6 +2,30 @@
 
 All notable changes to the Zahdan Kamal Sentosa Enterprise ERP project are documented in this file.
 
+## [Sprint 10.5] - 2026-10-22
+### ERP Shell & Navigation Framework (Enterprise Workspace Architecture)
+- **Permanent Application Shell**: Built `src/shared/components/layout/shell/ErpShell.tsx` and updated `EnterpriseShell.tsx` to provide a persistent, unified workspace across all modules without page reloads or layout jumping.
+- **Persistent Collapsible Sidebar**: Implemented `src/shared/components/layout/sidebar/ErpSidebar.tsx` with `localStorage` memory via React 19 `useSyncExternalStore` (`usePersistentBoolean` & `usePersistentRecord`), collapsible section accordions, active route highlighting, and role-based access filtering.
+- **Definitive Module Tree**: Authored `src/shared/components/layout/sidebar/sidebar-config.ts` mapping all 10 core sections (Dashboard, Inventory, Procurement, Production, Kitchen, Delivery, Finance, Reports, Administration, Settings).
+- **Minimal Enterprise Header**: Implemented `src/shared/components/layout/header/ErpHeader.tsx` featuring `CompanyBranchSwitch` (PT. Zahdan Kamal Sentosa · Karawang HQ / Satellites), `UserProfileMenu` (user initials, role, branch, session logout), `DarkModeToggle` (prepared), and `⌘K` global search trigger.
+- **Automatic Enterprise Breadcrumbs**: Implemented `src/shared/components/layout/breadcrumb/ErpBreadcrumb.tsx` automatically extracting and rendering route hierarchies (e.g. `Dashboard › Inventory › Receiving`).
+- **Standardized Page Template**: Implemented `src/shared/components/layout/template/ErpPageTemplate.tsx` enforcing EDS visual hierarchy (Breadcrumbs → Header → Actions → Filters → Primary KPI → Content/Table → Side Panel).
+- **Global Search ⌘K System**: Implemented `src/shared/components/layout/navigation/ErpGlobalSearch.tsx` modal with category filtering and keyboard arrow navigation across Master Items, Suppliers, POs, PRs, and Orders.
+- **Operational Notification Center**: Implemented `src/shared/components/layout/navigation/ErpNotificationCenter.tsx` popover showing real-time industrial catering alerts (PO Approved, Low Stock, QC Failed, Delivery Delayed, Recipe Updated, System Maintenance).
+- **Enterprise Status Bar**: Added `src/shared/components/layout/shell/ErpStatusBar.tsx` showing database health, branch connection, active role, and keyboard shortcut legends.
+- **All 11 Admin Pages Migrated**: Converted `/admin/dashboard`, `/admin/inventory`, `/admin/inventory/items`, `/admin/inventory/items/[id]`, `/admin/inventory/movements`, `/admin/inventory/opname`, `/admin/inventory/transfers`, `/admin/inventory/receiving`, `/admin/purchase-requests`, `/admin/purchase-orders`, and `/admin/supplier` to use `ErpPageTemplate`.
+- **Zero Breakage Guarantee**: 100% of routes, database schemas, actions, Supabase, and Fonnte integrations remain completely intact and unchanged.
+
+## [Sprint 10.4] - 2026-10-22
+### Enterprise Design System (EDS) — Anti AI Slop Edition
+- **Core Design System**: Authored Chapter 10 `10_ENTERPRISE_DESIGN_SYSTEM.md` and design tokens `src/shared/styles/eds-tokens.ts`.
+- **Permanent Enterprise Shell**: Created `@/shared/components/layout/EnterpriseShell.tsx` featuring permanent collapsible sidebar, grouped modules (Overview, Inventory, Procurement, Operations Roadmap, System), and minimal header with global quick search (`⌘K`), company switcher, and user session menu.
+- **Strict 8pt Grid & 12px Radius**: Enforced uniform 8, 16, 24, 32, 48, 64 spacing rhythm and single 12px border radius across all cards, modals, tables, and inputs.
+- **Anti AI Slop Foundation**: Removed generic identical card arrays in favor of hierarchical KPI cards (1 Primary KPI + 3-4 Secondary KPIs).
+- **Canonical UI Primitives Refactor**: Upgraded `Button`, `Card`, `Badge`, `Table`, `Input`, `Select`, `Pagination`, `Tabs`, `EmptyState`, `LoadingState` (with Skeletons), and `KpiCard` to EDS specifications.
+- **Admin Pages Refactored**: Refactored `/admin/dashboard`, `/admin/inventory`, `/admin/inventory/items`, `/admin/inventory/items/[id]`, `/admin/inventory/movements`, `/admin/inventory/opname`, `/admin/inventory/transfers`, `/admin/inventory/receiving`, `/admin/purchase-requests`, `/admin/purchase-orders`, and `/admin/supplier` to render seamlessly inside the new Enterprise Design System.
+- **Zero Breakage Guarantee**: Kept 100% of all database schemas, routes, actions, Supabase integration, and Fonnte integration completely unchanged.
+
 ## [Phase 00.5] - 2026-10-21
 ### Business Flow Masterbook (Enterprise ERP Business Architecture)
 - **SSOT Foundation**: Authored Chapter 09 `09_BUSINESS_FLOW_MASTERBOOK.md` as the definitive enterprise business architecture and operational Single Source of Truth for ZKS catering ERP.
