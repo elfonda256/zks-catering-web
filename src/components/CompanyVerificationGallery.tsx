@@ -1,792 +1,482 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { ArrowUpRight, ArrowLeft, ArrowRight, ShieldCheck, FileCheck, CheckCircle2, X } from "@/components/icons";
+import { Download, ExternalLink } from "@/components/icons";
 
-interface EvidenceItem {
+export interface DocumentItem {
   id: string;
-  categoryCode: string;
-  categoryLabel: string;
+  category: "Legalitas" | "Dapur" | "Cold Storage" | "Produksi" | "Armada" | "Gudang" | "Office";
   title: string;
-  shortDesc: string;
+  subtitle: string;
   image: string;
-  evidenceCount: string;
-  itemsList: string[];
-  // Fullscreen Technical Specification Fields
-  specs: {
-    nama: string;
-    kategori: string;
-    lokasi: string;
-    tanggal: string;
-    keterangan: string;
-    auditStatus: string;
-    dokumenPendukung: string[];
-    verification: string;
-  };
+  description: string;
+  operationalFunction: string;
+  auditPurpose: string;
+  factoryLocation: string;
+  certificationStatus: string;
+  relatedSop: string;
+  fileSize: string;
+  docCode: string;
 }
 
-const EVIDENCE_ARCHIVE: EvidenceItem[] = [
+const CATEGORIES = [
+  "Semua",
+  "Legalitas",
+  "Dapur",
+  "Cold Storage",
+  "Produksi",
+  "Armada",
+  "Gudang",
+  "Office",
+] as const;
+
+type CategoryType = (typeof CATEGORIES)[number];
+
+const DOCUMENTS: DocumentItem[] = [
   {
-    id: "legalitas-01",
-    categoryCode: "LEGALITAS",
-    categoryLabel: "LEGALITAS & IZIN RESMI",
-    title: "Sertifikasi Mutu & Izin Jasaboga Gol. B",
-    shortDesc: "Dokumen primer izin Laik Higiene Sanitasi resmi Dinkes No. 115/2021, Halal BPJPH, SPPL Lingkungan, & BPJS Ketenagakerjaan.",
+    id: "doc-legalitas",
+    category: "Legalitas",
+    title: "Sertifikat Laik Higiene Sanitasi & Halal BPJPH",
+    subtitle: "Izin Operasional Jasaboga Gol. B & Kepatuhan Syariah",
     image: "/images/profile-docs/legalitas-resmi-1.png",
-    evidenceCount: "4 Dokumen Primer Terverifikasi",
-    itemsList: ["Laik Higiene Dinkes Gol. B", "Halal BPJPH ID32110001349510223", "Surat Lingkungan SPPL", "BPJS Ketenagakerjaan"],
-    specs: {
-      nama: "Sertifikat Laik Hygiene Sanitasi Jasaboga Golongan B & Sertifikat Halal BPJPH",
-      kategori: "Kepatuhan Hukum & Legalitas Primer Pemerintah",
-      lokasi: "Arsip Fisik Kantor Manajemen ZKS, Griya Indah Ciampel",
-      tanggal: "No. 115 Tahun 2021 / Berlaku Penuh 2026",
-      keterangan: "Legalitas resmi dan mutlak untuk kualifikasi tender katering pabrik multinasional PMA di Kawasan Industri KIIC, Suryacipta, KIM, dan BIC.",
-      auditStatus: "Terverifikasi Aktif & Lolos Inspeksi Sanitasi Berkala",
-      dokumenPendukung: [
-        "Sertifikat Dinkes Karawang No. 115/2021 (Golongan B)",
-        "Sertifikat Halal Resmi BPJPH No. ID32110001349510223",
-        "Surat Pernyataan Kesanggupan Lingkungan Hidup (SPPL)",
-        "Sertifikat Kepesertaan Jamsostek / BPJS Ketenagakerjaan",
-      ],
-      verification: "QR Code Resmi Dinas Kesehatan & BPJPH Kemenag RI",
-    },
+    description:
+      "Arsip legalitas primer izin operasional Jasaboga Golongan B dari Dinas Kesehatan Karawang No. 115/2021 serta Sertifikat Halal resmi Badan Penyelenggara Jaminan Produk Halal (BPJPH) Kemenag RI.",
+    operationalFunction:
+      "Izin dasar mutlak penyediaan makanan massal untuk industri pabrik PMA dan syarat kualifikasi tender vendor.",
+    auditPurpose:
+      "Verifikasi kepatuhan hukum jasaboga, uji mikrobiologi berkala Dinkes, dan kepatuhan syariah sertifikasi Halal.",
+    factoryLocation: "Kantor Manajemen ZKS, Griya Indah Ciampel, Karawang",
+    certificationStatus: "Terverifikasi Aktif · Nomor Registrasi 115/2021 & ID32110001349510223",
+    relatedSop: "SOP-LEG-001: Kepatuhan Regulasi & Pembaruan Izin Sanitasi Berkala",
+    fileSize: "1.8 MB (PDF)",
+    docCode: "DOC-ZKS-LEG-01",
   },
   {
-    id: "dapur-01",
-    categoryCode: "DAPUR SENTRAL",
-    categoryLabel: "TEKNOLOGI PENGOLAHAN",
-    title: "Ketel Boiler Uap & Pemurnian Air RO",
-    shortDesc: "Tabung filtrasi Reverse Osmosis berkapasitas industri untuk air memasak bebas kontaminasi serta ketel boiler masak uap volume tinggi.",
+    id: "doc-dapur",
+    category: "Dapur",
+    title: "Ketel Boiler Uap Industri & Filtrasi Air RO",
+    subtitle: "Instalasi Pemurnian Air Murni & Steam Cooking Otomatis",
     image: "/images/profile-docs/galeri-teknologi-ro-steamer.png",
-    evidenceCount: "4 Unit Mesin Industri Utama",
-    itemsList: ["Filter Air Reverse Osmosis", "Steamer Sayur Uap Khusus", "Ketel Boiler Masak Kuah", "Wastafel Stainless Steel 304"],
-    specs: {
-      nama: "Instalasi Tabung Filtrasi Air Reverse Osmosis (RO) & Ketel Boiler Uap Tekanan Tinggi",
-      kategori: "Infrastruktur Mesin Pengolahan & Sanitasi Air",
-      lokasi: "Zona Pengolahan Utama Dapur Sentral ZKS, Ciampel",
-      tanggal: "Inspeksi & Kalibrasi Berkala Q1 2026",
-      keterangan: "Pemasakan serentak volume tinggi dengan uap bertekanan konstan memastikan suhu inti masakan > 75°C seragam dan kelembutan serat daging terjaga tanpa kehilangan nutrisi.",
-      auditStatus: "Lolos Uji Tekanan Boiler & Standar Air RO Bebas Logam Berat",
-      dokumenPendukung: [
-        "Hasil Uji Laboratorium Kualitas Air RO Sucofindo",
-        "Logbook Kalibrasi Manometer Tekanan Boiler",
-        "SOP Perawatan Rutin Mesin Filtrasi Mandiri",
-        "Log Pembersihan Berkala Ketel Uap Makanan",
-      ],
-      verification: "Food-Grade Stainless Steel 304 & Standar WHO Air Minum",
-    },
+    description:
+      "Sistem pembangkit uap boiler bertekanan tinggi untuk memasak serentak volume ribuan porsi, terintegrasi tabung filtrasi Reverse Osmosis (RO) mandiri untuk menjamin kemurnian air konsumsi.",
+    operationalFunction:
+      "Pemasakan cepat dengan uap konstan menjaga suhu inti masakan > 75°C seragam serta menyediakan air olahan steril bebas kontaminan.",
+    auditPurpose:
+      "Pengujian berkala kualitas air laboratorium Sucofindo dan uji berkala ketahanan tabung uap boiler bertekanan.",
+    factoryLocation: "Dapur Sentral Utama — Zona Utilitas & Thermal, Ciampel",
+    certificationStatus: "Standar Stainless Steel 304 & Kualitas Air Uji Lab Sesuai Baku Mutu WHO",
+    relatedSop: "SOP-ENG-003: Pemeliharaan Tabung RO & Kalibrasi Tekanan Boiler Masak",
+    fileSize: "2.4 MB (PDF)",
+    docCode: "DOC-ZKS-DAP-01",
   },
   {
-    id: "dapur-02",
-    categoryCode: "ALUR PRODUKSI",
-    categoryLabel: "DAPUR INDUSTRI",
-    title: "Lini Masak Stainless Steel 304 & One-Way Flow",
-    shortDesc: "Fasilitas dapur mandiri berkapasitas 5.000+ porsi/hari dengan meja kerja stainless food-grade dan pemisahan alur bahan mentah vs matang.",
-    image: "/images/profile-docs/galeri-dapur-industri.png",
-    evidenceCount: "5.000+ Porsi / Hari Kapasitas Riil",
-    itemsList: ["Alur Kerja Searah (One-Way)", "Full Meja Kerja Stainless 304", "Exhaust Hood Sentral", "Kru Masak Ber-APD Lengkap"],
-    specs: {
-      nama: "Lini Kerja Dapur Sentral Industri Stainless Steel 304 (One-Way Production Flow)",
-      kategori: "Tata Kelola Ruang Produksi & Pencegahan Kontaminasi",
-      lokasi: "Gedung Dapur Sentral Mandiri ZKS, Ciampel Karawang",
-      tanggal: "Operasional Aktif 24 Jam 3 Shift",
-      keterangan: "Desain tata ruang dapur menerapkan prinsip alur searah higienis (one-way flow) guna mencegah kontaminasi silang antara penerimaan bahan mentah dengan masakan matang siap saji.",
-      auditStatus: "Sesuai Pedoman Sanitasi Jasaboga Kemenkes & ISO 22000",
-      dokumenPendukung: [
-        "Denah Alur Produksi Higienis (HACCP Floor Layout)",
-        "Jadwal Pembersihan Sentral Harian (Sanitation Schedule)",
-        "Sertifikat Food Handler Kepala Dapur & Koki Utama",
-        "Pencatatan Suhu Inti Masak Probe Digital Harian",
-      ],
-      verification: "Audit Dinas Kesehatan & Tim HRGA Perusahaan Klien",
-    },
-  },
-  {
-    id: "gudang-01",
-    categoryCode: "GUDANG & LOGISTIK",
-    categoryLabel: "RANTAI DINGIN PROTEIN",
-    title: "Cold Storage Freezer & Gudang Bahan FIFO",
-    shortDesc: "Deretan deep freezer suhu -18°C untuk menjaga rantai dingin daging dan ayam, gudang beras skala tonase, serta rak bumbu bersistem FIFO.",
+    id: "doc-cold-storage",
+    category: "Cold Storage",
+    title: "Deep Freezer Rantai Dingin Protein -18°C",
+    subtitle: "Unit Pendingin Suhu Rendah Daging, Ayam & Ikan",
     image: "/images/profile-docs/galeri-gudang-freezer.png",
-    evidenceCount: "3 Zona Penyimpanan Terisolasi",
-    itemsList: ["Deep Freezer Beku -18°C", "Gudang Beras Skala Tonase", "Ruang Racik Bumbu Terpisah", "Manajemen Rotasi FIFO"],
-    specs: {
-      nama: "Fasilitas Rantai Dingin Deep Freezer & Gudang Bahan Kering Berstandar FIFO",
-      kategori: "Manajemen Penyimpanan Bahan Baku & Rantai Dingin",
-      lokasi: "Zona Gudang Logistik Terisolasi ZKS, Ciampel",
-      tanggal: "Monitoring Digital Suhu 24 Jam Terus Menerus",
-      keterangan: "Kapasitas penyimpanan bahan protein hewani dan bahan baku kering mampu menopang lonjakan permintaan katering lembur pabrik hingga ribuan porsi secara mendadak.",
-      auditStatus: "Terjaga di Bawah -18°C untuk Daging & Suhu Sejuk untuk Kering",
-      dokumenPendukung: [
-        "Lembar Checklist Pemantauan Termometer Cold Room",
-        "Kartu Kontrol Inventaris Rotasi Bahan FIFO",
-        "Sertifikat Halal & Uji Rantai Dingin Pemasok Daging",
-        "Surat Keterangan Bebas Pengawet Berbahaya",
-      ],
-      verification: "First-In First-Out (FIFO) Inventory Control Matrix",
-    },
+    description:
+      "Kamar pendingin dan deretan deep freezer industri dengan kontrol termometer presisi di bawah -18°C guna mengunci kesegaran bahan protein hewani dan menghambat pertumbuhan patogen.",
+    operationalFunction:
+      "Pengamanan rantai dingin (cold chain) bahan baku protein sebelum proses thawing terjadwal di ruang persiapan.",
+    auditPurpose:
+      "Audit logbook pemantauan suhu digital harian dan kepatuhan sertifikat Halal dari Rumah Potong Hewan rekanan.",
+    factoryLocation: "Gedung Logistik — Zona Rantai Dingin Terisolasi, Ciampel",
+    certificationStatus: "Inspeksi Termal 24 Jam Terjaga < -18°C Tanpa Interupsi",
+    relatedSop: "SOP-COLD-002: Manajemen Rantai Dingin & Pencatatan Digital Suhu Freezer",
+    fileSize: "1.6 MB (PDF)",
+    docCode: "DOC-ZKS-CLD-01",
   },
   {
-    id: "packing-01",
-    categoryCode: "PACKING & ARMADA",
-    categoryLabel: "DISTRIBUSI SHIFT",
-    title: "Ruang Pemorsian Steril & Armada Van Tertutup",
-    shortDesc: "Pemorsian bento di ruang ber-AC terisolasi, dilanjutkan loading ke armada tertutup Daihatsu Gran Max untuk pengantaran tepat waktu ke pabrik.",
+    id: "doc-produksi",
+    category: "Produksi",
+    title: "Lini Masak Stainless Steel 304 (One-Way Flow)",
+    subtitle: "Tata Ruang Produksi Searah Berstandar Higiene",
+    image: "/images/profile-docs/galeri-dapur-industri.png",
+    description:
+      "Fasilitas lantai produksi dapur sentral dengan seluruh meja kerja baja tahan karat SUS 304, tudung pembuangan sentral, serta pemisahan alur ketat antara barang mentah dan matang.",
+    operationalFunction:
+      "Pengolahan makanan skala industri hingga 5.000+ porsi/hari dengan alur kerja bebas perpotongan alur kotor dan bersih.",
+    auditPurpose:
+      "Peninjauan denah tata ruang HACCP, sertifikasi food handling koki, dan sanitasi berkala permukaan kontak makanan.",
+    factoryLocation: "Lantai Produksi Dapur Sentral ZKS, Ciampel Karawang",
+    certificationStatus: "Audit Sanitasi Berkala Dinas Kesehatan Karawang & Tim HSE Klien",
+    relatedSop: "SOP-PRD-001: Tata Tertib Masuk Ruang Produksi & Sanitasi Meja Stainless",
+    fileSize: "2.1 MB (PDF)",
+    docCode: "DOC-ZKS-PRD-01",
+  },
+  {
+    id: "doc-armada",
+    category: "Armada",
+    title: "Dok Distribusi & Armada Van Tertutup Bersekat",
+    subtitle: "Pengantaran Rantai Panas Tepat Waktu Antar Shift",
     image: "/images/profile-docs/galeri-packing-armada.png",
-    evidenceCount: "12+ Unit Armada Logistik Siaga",
-    itemsList: ["Ruang Packing Ber-AC Terisolasi", "Pemorsian Bento Box Higienis", "Armada Van Tertutup ZKS", "Insulated Box Penjaga Panas"],
-    specs: {
-      nama: "Ruang Pengemasan Makanan Berpenyaring Udara & Dok Pengiriman Armada Logistik",
-      kategori: "Pengemasan Higienis & Distribusi Rantai Panas",
-      lokasi: "Zona Distribusi Akhir Dapur Ciampel Karawang",
-      tanggal: "Jadwal Kirim 24 Jam (Shift Pagi, Siang, Malam, Lembur)",
-      keterangan: "Armada van tertutup berpengatur suhu menjamin waktu transit rata-rata di bawah 35 menit menuju kawasan industri Karawang dengan kondisi makanan tetap segar dan hangat.",
-      auditStatus: "Sanitasi Armada Harian & Waktu Tempuh Terukur GPS",
-      dokumenPendukung: [
-        "Daftar Registrasi Armada Operasional Daihatsu Gran Max",
-        "Jadwal Rute & Manifest Distribusi Shift Manufaktur",
-        "SOP Penggunaan APD (Hairnet, Masker, Sarung Tangan Nitril)",
-        "Uji Kebersihan Wadah Makanan & Thermal Retention Test",
-      ],
-      verification: "Transit Time < 35 Menit ke Seluruh Kawasan Karawang",
-    },
+    description:
+      "Fasilitas dok pemuatan dan armada tertutup khusus pengiriman katering kargo kering/panas menuju kantin pabrik di kawasan KIIC, Suryacipta, KIM, dan sekitarnya.",
+    operationalFunction:
+      "Pengantaran bento box dan thermal container dengan estimasi waktu tempuh rata-rata di bawah 35 menit di area Karawang.",
+    auditPurpose:
+      "Pemeriksaan kebersihan berkala kabin kendaraan, pencatatan waktu keberangkatan/kedatangan, dan uji ketahanan panas boks.",
+    factoryLocation: "Dok Logistik & Distribusi ZKS, Ciampel Karawang",
+    certificationStatus: "Armada Khusus Makanan Bersih & Kelaikan Jalan Uji Dishub",
+    relatedSop: "SOP-LOG-004: Prosedur Pengiriman Tepat Waktu & Protokol Kebersihan Armada",
+    fileSize: "1.9 MB (PDF)",
+    docCode: "DOC-ZKS-ARM-01",
   },
   {
-    id: "sdm-01",
-    categoryCode: "KUALIFIKASI SDM",
-    categoryLabel: "KESEHATAN & KOMPETENSI",
-    title: "Medical Check Up Rutin & Sertifikasi Penjamah",
-    shortDesc: "Hasil MCU berkala dari CHIO Medical Center untuk seluruh kru, didukung sertifikat kursus higiene penjamah makanan dari Dinas Kesehatan.",
-    image: "/images/profile-docs/legalitas-sdm-mcu.png",
-    evidenceCount: "100% Kru Bebas Penyakit Menular",
-    itemsList: ["Hasil MCU CHIO Medical Center", "Sertifikat Penjamah Makanan", "Kursus Higiene Penanggung Jawab", "Vaksinasi & Bebas Tifus"],
-    specs: {
-      nama: "Dokumentasi Medical Check Up Kru Dapur & Sertifikat Kursus Higiene Sanitasi",
-      kategori: "Kualifikasi Kesehatan Kerja & Higiene SDM",
-      lokasi: "Faskes Mitra CHIO Medical Center & Arsip SDM ZKS",
-      tanggal: "Pemeriksaan Berkala Semesteran 2025/2026",
-      keterangan: "Seluruh koki, staf persiapan, pengemasan, dan pengemudi wajib menjalani uji laboratorium berkala guna memastikan tidak ada carrier penyakit menular pada rantai pasok makanan.",
-      auditStatus: "100% Kru Dapur Lulus Skrining & Terverifikasi Sehat",
-      dokumenPendukung: [
-        "Hasil Laboratorium Darah & Usap Dubur (Rectal Swab)",
-        "Sertifikat Pelatihan Keamanan Pangan Kemenkes RI",
-        "Sertifikat Kursus Higiene Penanggung Jawab (Didiet Santoso)",
-        "Buku Catatan Kesehatan Karyawan & Vaksinasi",
-      ],
-      verification: "Sertifikasi Resmi Dinas Kesehatan Kabupaten Karawang",
-    },
+    id: "doc-gudang",
+    category: "Gudang",
+    title: "Gudang Bahan Kering & Manajemen Inventaris FIFO",
+    subtitle: "Penyimpanan Bahan Baku Pokok Tonase di Atas Palet",
+    image: "/images/profile-docs/galeri-fasilitas-operasional.png",
+    description:
+      "Gudang logistik bahan kering (beras, minyak, bumbu kemasan) dengan sirkulasi udara terkontrol, rak penyimpanan bertingkat, serta palet bebas kontak langsung dengan lantai.",
+    operationalFunction:
+      "Penyimpanan cadangan stok aman bahan pangan untuk menjamin keberlanjutan suplai catering pabrik tanpa gangguan kelangkaan pasar.",
+    auditPurpose:
+      "Pemeriksaan kartu kendali First-In First-Out (FIFO), masa kedaluwarsa bahan, dan sertifikasi pengendalian hama (pest control).",
+    factoryLocation: "Zona Gudang Logistik Kering Dapur ZKS, Ciampel",
+    certificationStatus: "Rotasi FIFO Terdata & Bebas Hama Bersertifikat Pest Control",
+    relatedSop: "SOP-WHS-002: Tata Kelola Penyimpanan Kering & Pengendalian Inventaris FIFO",
+    fileSize: "1.5 MB (PDF)",
+    docCode: "DOC-ZKS-GDG-01",
   },
   {
-    id: "fasilitas-01",
-    categoryCode: "KANTOR PUSAT",
-    categoryLabel: "FASILITAS MANDIRI",
-    title: "Gedung Kantor Mandiri & Ruang Rapat Audit",
-    shortDesc: "Gedung operasional mandiri di Griya Indah Ciampel Karawang dengan ruang rapat eksekutif untuk pembahasan kontrak dan audit vendor.",
+    id: "doc-office",
+    category: "Office",
+    title: "Gedung Kantor Manajemen & Ruang Audiensi Audit",
+    subtitle: "Pusat Tata Kelola Administrasi & Penerimaan Auditor",
     image: "/images/profile-docs/galeri-gedung-kantor.png",
-    evidenceCount: "Gedung Kepemilikan Sendiri",
-    itemsList: ["Gedung Kantor Mandiri Ciampel", "Ruang Rapat Eksekutif Ber-AC", "Ruang Admin & Keuangan", "Siap Disurvei Kapan Saja"],
-    specs: {
-      nama: "Gedung Fasilitas Operasional Mandiri & Kantor Manajemen PT. Zahdan Kamal Sentosa",
-      kategori: "Infrastruktur Kantor & Tata Kelola Korporat",
-      lokasi: "Griya Indah Ciampel Blok B No. 16, Karawang",
-      tanggal: "Beroperasi Mandiri Sejak 2007",
-      keterangan: "Pusat tata kelola administrasi legalitas, quality control, customer care, dan tempat penerimaan kunjungan audit pabrik dari tim Purchasing / HRGA klien korporat.",
-      auditStatus: "Fasilitas Fisik Terdaftar di OSS NIB 241121002398",
-      dokumenPendukung: [
-        "Nomor Induk Berusaha (NIB KBLI Industri Jasaboga)",
-        "Nomor Pokok Wajib Pajak (NPWP Resmi Perusahaan)",
-        "Akta Notaris Pendirian & Perubahan PT ZKS",
-        "Surat Keterangan Domisili Usaha & Denah Lokasi",
-      ],
-      verification: "Lokasi Riil Siap Dikunjungi / Diaudit Fisik",
-    },
+    description:
+      "Fasilitas kantor mandiri milik PT Zahdan Kamal Sentosa di Griya Indah Ciampel yang dilengkapi ruang rapat ber-AC untuk audiensi resmi tender, presentasi menu, dan audit vendor.",
+    operationalFunction:
+      "Pusat tata kelola operasional perusahaan, arsip legalitas fisik, administrasi keuangan, dan fasilitas penerimaan audit pabrik.",
+    auditPurpose:
+      "Verifikasi legalitas perusahaan (Akta Notaris, NIB OSS, NPWP), struktur organisasi, dan kesiapan fasilitas pendukung.",
+    factoryLocation: "Perum Griya Indah Blok D1 No. 19, Parung Mulya, Ciampel Karawang",
+    certificationStatus: "Aset Bangunan Kepemilikan Mandiri Resmi Terdaftar OSS NIB",
+    relatedSop: "SOP-ADM-005: Protokol Penerimaan Kunjungan Audit & Keamanan Kantor",
+    fileSize: "1.4 MB (PDF)",
+    docCode: "DOC-ZKS-OFC-01",
   },
 ];
 
 export default function CompanyVerificationGallery() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [viewerItem, setViewerItem] = useState<EvidenceItem | null>(null);
-  const [zoomLevel, setZoomLevel] = useState(1);
-  const [panPosition, setPanPosition] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [activeCategory, setActiveCategory] = useState<CategoryType>("Semua");
+  const [selectedDoc, setSelectedDoc] = useState<DocumentItem>(DOCUMENTS[0]);
 
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const isWheelingRef = useRef(false);
+  const stripRef = useRef<HTMLDivElement>(null);
+  const categoryNavRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to active card index
-  const scrollToIndex = useCallback((index: number) => {
-    if (!carouselRef.current) return;
-    const items = carouselRef.current.children;
-    if (items[index]) {
-      const targetElement = items[index] as HTMLElement;
-      targetElement.scrollIntoView({
-        behavior: "smooth",
-        inline: "start",
-        block: "nearest",
-      });
-      setActiveIndex(index);
+  // Mouse Dragging states for document strip
+  const isMouseDownRef = useRef(false);
+  const startXRef = useRef(0);
+  const scrollLeftRef = useRef(0);
+  const hasDraggedRef = useRef(false);
+
+  // Filtered documents based on active category
+  const filteredDocs =
+    activeCategory === "Semua"
+      ? DOCUMENTS
+      : DOCUMENTS.filter((doc) => doc.category === activeCategory);
+
+  // Update selected doc if current doc is not in filtered list
+  const handleSelectCategory = (cat: CategoryType) => {
+    setActiveCategory(cat);
+    if (cat === "Semua") return;
+    const match = DOCUMENTS.find((doc) => doc.category === cat);
+    if (match) {
+      setSelectedDoc(match);
+    }
+  };
+
+  // Convert vertical mouse wheel into horizontal scroll on document strip
+  const handleWheel = useCallback((e: WheelEvent) => {
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      if (stripRef.current && stripRef.current.contains(e.target as Node)) {
+        e.preventDefault();
+        stripRef.current.scrollLeft += e.deltaY;
+      }
     }
   }, []);
 
-  // Keyboard navigation for carousel & modal
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (viewerItem) {
-        if (e.key === "Escape") {
-          setViewerItem(null);
-          setZoomLevel(1);
-          setPanPosition({ x: 0, y: 0 });
-        } else if (e.key === "ArrowLeft") {
-          const currentIndex = EVIDENCE_ARCHIVE.findIndex((item) => item.id === viewerItem.id);
-          const prevIndex = currentIndex > 0 ? currentIndex - 1 : EVIDENCE_ARCHIVE.length - 1;
-          setViewerItem(EVIDENCE_ARCHIVE[prevIndex]);
-          setZoomLevel(1);
-          setPanPosition({ x: 0, y: 0 });
-        } else if (e.key === "ArrowRight") {
-          const currentIndex = EVIDENCE_ARCHIVE.findIndex((item) => item.id === viewerItem.id);
-          const nextIndex = currentIndex < EVIDENCE_ARCHIVE.length - 1 ? currentIndex + 1 : 0;
-          setViewerItem(EVIDENCE_ARCHIVE[nextIndex]);
-          setZoomLevel(1);
-          setPanPosition({ x: 0, y: 0 });
-        }
-        return;
-      }
-
-      // Main Carousel keys
-      if (e.key === "ArrowLeft") {
-        setActiveIndex((prev) => {
-          const next = prev > 0 ? prev - 1 : EVIDENCE_ARCHIVE.length - 1;
-          scrollToIndex(next);
-          return next;
-        });
-      } else if (e.key === "ArrowRight") {
-        setActiveIndex((prev) => {
-          const next = prev < EVIDENCE_ARCHIVE.length - 1 ? prev + 1 : 0;
-          scrollToIndex(next);
-          return next;
-        });
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [viewerItem, scrollToIndex]);
-
-  // Horizontal mouse wheel interaction over carousel
-  const handleCarouselWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    if (!carouselRef.current) return;
-    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-      carouselRef.current.scrollLeft += e.deltaY * 0.8;
-      // Debounce active card calculation based on scroll offset
-      if (!isWheelingRef.current) {
-        isWheelingRef.current = true;
-        setTimeout(() => {
-          if (carouselRef.current) {
-            const scrollLeft = carouselRef.current.scrollLeft;
-            const cardWidth = 460;
-            const newIndex = Math.round(scrollLeft / cardWidth);
-            setActiveIndex(Math.min(Math.max(newIndex, 0), EVIDENCE_ARCHIVE.length - 1));
-          }
-          isWheelingRef.current = false;
-        }, 150);
-      }
+    const stripEl = stripRef.current;
+    if (stripEl) {
+      stripEl.addEventListener("wheel", handleWheel, { passive: false });
+      return () => stripEl.removeEventListener("wheel", handleWheel);
     }
+  }, [handleWheel]);
+
+  // Mouse Drag Event Handlers for smooth momentum feeling
+  const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!stripRef.current) return;
+    isMouseDownRef.current = true;
+    hasDraggedRef.current = false;
+    startXRef.current = e.pageX - stripRef.current.offsetLeft;
+    scrollLeftRef.current = stripRef.current.scrollLeft;
   };
 
-  // Zoom handlers for fullscreen viewer
-  const handleDoubleClickZoom = () => {
-    if (zoomLevel > 1) {
-      setZoomLevel(1);
-      setPanPosition({ x: 0, y: 0 });
-    } else {
-      setZoomLevel(2);
+  const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isMouseDownRef.current || !stripRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - stripRef.current.offsetLeft;
+    const walk = (x - startXRef.current) * 1.2;
+    if (Math.abs(walk) > 4) {
+      hasDraggedRef.current = true;
     }
+    stripRef.current.scrollLeft = scrollLeftRef.current - walk;
   };
 
-  const handleViewerWheel = (e: React.WheelEvent) => {
-    e.stopPropagation();
-    if (e.deltaY < 0) {
-      setZoomLevel((prev) => Math.min(prev + 0.25, 3));
-    } else {
-      setZoomLevel((prev) => {
-        const next = Math.max(prev - 0.25, 1);
-        if (next === 1) setPanPosition({ x: 0, y: 0 });
-        return next;
-      });
-    }
+  const onMouseUp = () => {
+    isMouseDownRef.current = false;
   };
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (zoomLevel <= 1) return;
-    setIsDragging(true);
-    setDragStart({ x: e.clientX - panPosition.x, y: e.clientY - panPosition.y });
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || zoomLevel <= 1) return;
-    setPanPosition({
-      x: e.clientX - dragStart.x,
-      y: e.clientY - dragStart.y,
-    });
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
+  const onMouseLeave = () => {
+    isMouseDownRef.current = false;
   };
 
   return (
-    <section id="galeri-legalitas" className="relative py-24 sm:py-28 lg:py-32 bg-[#FAF9F5] divider-hairline reveal-on-scroll overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 space-y-10">
-        {/* ==============================================================
-            TOP AREA: EDITORIAL ARCHIVE HEADER & ZKS EMBLEM BADGE
-            ============================================================== */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-2 border-b border-[#141413]/10">
-          <div className="space-y-4 max-w-2xl">
-            {/* Official ZKS Branding Accent */}
-            <div className="inline-flex items-center gap-3">
-              <div className="relative h-9 w-9 rounded-lg overflow-hidden shrink-0 bg-[#0d2238] border border-[#141413]/15 shadow-xs">
-                <Image
-                  src="/images/zks-logo-official.png"
-                  alt="PT. Zahdan Kamal Sentosa Official Emblem"
-                  fill
-                  className="object-cover object-left"
-                  priority
-                />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[11px] font-mono tracking-wider uppercase text-[#C85A17] font-bold">
-                  DOCUMENTASI OPERASIONAL
-                </span>
-                <span className="text-xs text-[#6B685F] font-medium">
-                  PT Zahdan Kamal Sentosa · Griya Indah Ciampel Karawang
-                </span>
-              </div>
-            </div>
-
-            <h2 className="font-display font-bold text-3xl sm:text-4xl lg:text-[42px] text-[#141414] tracking-[-0.03em] leading-[1.14] reveal-title">
-              Semua dokumentasi berasal dari fasilitas asli PT Zahdan Kamal Sentosa.
-            </h2>
-          </div>
-
-          {/* Right Navigation & Direct Archive Prompt */}
-          <div className="flex items-center gap-4 lg:self-end">
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  const next = activeIndex > 0 ? activeIndex - 1 : EVIDENCE_ARCHIVE.length - 1;
-                  scrollToIndex(next);
-                }}
-                aria-label="Dokumen Sebelumnya"
-                className="w-10 h-10 rounded-full border border-[#141413]/15 bg-white text-[#141413] hover:bg-[#141413] hover:text-[#FAF9F5] flex items-center justify-center transition-colors duration-200 cursor-pointer shadow-xs active:scale-95"
-              >
-                <ArrowLeft className="w-4 h-4" />
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  const next = activeIndex < EVIDENCE_ARCHIVE.length - 1 ? activeIndex + 1 : 0;
-                  scrollToIndex(next);
-                }}
-                aria-label="Dokumen Selanjutnya"
-                className="w-10 h-10 rounded-full border border-[#141413]/15 bg-white text-[#141413] hover:bg-[#141413] hover:text-[#FAF9F5] flex items-center justify-center transition-colors duration-200 cursor-pointer shadow-xs active:scale-95"
-              >
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => {
-                setViewerItem(EVIDENCE_ARCHIVE[0]);
-                setZoomLevel(1);
-                setPanPosition({ x: 0, y: 0 });
-              }}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#141414] hover:text-[#C85A17] transition-colors py-2 px-3 rounded-lg border border-[#141413]/10 hover:border-[#C85A17] bg-white cursor-pointer shadow-xs"
-            >
-              <span>Explore Archive</span>
-              <ArrowUpRight className="w-3.5 h-3.5 opacity-70" />
-            </button>
-          </div>
-        </div>
-
-        {/* ==============================================================
-            A SINGLE HORIZONTAL CAROUSEL (ONE ROW ONLY, NO GRID)
-            Desktop: 2.25 cards | Tablet: 1.5 cards | Mobile: 1.1 cards
-            Card width: 440~480px | Height: 540~580px | Snap mandatory
-            ============================================================== */}
-        <div
-          ref={carouselRef}
-          onWheel={handleCarouselWheel}
-          className="flex items-stretch gap-6 sm:gap-7 overflow-x-auto pb-6 pt-2 scroll-smooth scrollbar-none snap-x snap-mandatory -mx-6 px-6 sm:-mx-8 sm:px-8 lg:-mx-12 lg:px-12"
-          style={{ scrollSnapType: "x mandatory" }}
-        >
-          {EVIDENCE_ARCHIVE.map((card, idx) => {
-            const isActive = idx === activeIndex;
-
-            return (
-              <div
-                key={card.id}
-                onClick={() => {
-                  setViewerItem(card);
-                  setZoomLevel(1);
-                  setPanPosition({ x: 0, y: 0 });
-                }}
-                style={{ scrollSnapAlign: "start", scrollSnapStop: "always" }}
-                className={`shrink-0 w-[88vw] sm:w-[420px] lg:w-[460px] h-[540px] sm:h-[580px] rounded-[18px] bg-white border border-[#141413]/10 cursor-pointer overflow-hidden flex flex-col justify-between transition-all duration-500 ease-out group select-none ${
-                  isActive
-                    ? "scale-100 opacity-100 shadow-[0_8px_30px_rgba(20,20,19,0.06)] ring-1 ring-[#141413]/10"
-                    : "scale-[0.98] opacity-80 hover:opacity-100 hover:scale-100 shadow-[0_2px_12px_rgba(20,20,19,0.03)]"
-                }`}
-              >
-                {/* 1. Large Photography Layer (Occupies ~72-75% of Card) */}
-                <div className="relative h-[72%] w-full bg-[#F5F4EE] overflow-hidden border-b border-[#141413]/[0.08]">
-                  <Image
-                    src={card.image}
-                    alt={card.title}
-                    fill
-                    className="object-contain p-4 sm:p-5 transition-transform duration-600 ease-out group-hover:scale-[1.02]"
-                    sizes="(max-width: 768px) 90vw, 480px"
-                    priority={idx === 0}
-                  />
-
-                  {/* Top Subtle Identification Bar */}
-                  <div className="absolute top-3.5 left-4 right-4 flex items-center justify-between text-[10px] font-mono pointer-events-none">
-                    <span className="px-2 py-0.5 rounded bg-white/90 text-[#141414] font-semibold border border-[#141413]/10 shadow-xs">
-                      {card.categoryCode}
-                    </span>
-                    <span className="text-[#6B685F] bg-white/90 px-1.5 py-0.5 rounded border border-[#141413]/10">
-                      {String(idx + 1).padStart(2, "0")} / {String(EVIDENCE_ARCHIVE.length).padStart(2, "0")}
-                    </span>
-                  </div>
-                </div>
-
-                {/* 2. Text Area (Occupies ~25-28% of Card) */}
-                <div className="p-5 sm:p-6 flex flex-col justify-between flex-1 space-y-2 bg-white">
-                  <div className="space-y-1.5">
-                    <div className="text-[10px] font-mono tracking-wider uppercase text-[#C85A17] font-semibold">
-                      {card.categoryLabel}
-                    </div>
-                    <h3 className="font-display font-bold text-lg sm:text-xl text-[#141414] tracking-tight leading-snug line-clamp-1 group-hover:text-[#C85A17] transition-colors">
-                      {card.title}
-                    </h3>
-                    <p className="text-xs text-[#555555] line-clamp-2 leading-relaxed">
-                      {card.shortDesc}
-                    </p>
-                  </div>
-
-                  <div className="pt-2 border-t border-[#141413]/[0.07] flex items-center justify-between text-xs">
-                    <span className="text-[11px] font-mono text-[#7A7A7A] truncate">
-                      {card.evidenceCount}
-                    </span>
-                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#141414] group-hover:text-[#C85A17] transition-colors shrink-0">
-                      <span>View Documentation</span>
-                      <ArrowUpRight className="w-3.5 h-3.5 opacity-70 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                    </span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Carousel Pagination dots & Indicator */}
-        <div className="flex items-center justify-between pt-2 text-xs font-mono text-[#7A7A7A]">
-          <span className="hidden sm:inline-block">
-            Tekan tombol panah keyboard ← → atau geser horizontal untuk melihat bukti riil operasional
+    <section
+      id="verifikasi-dokumen"
+      className="py-24 sm:py-32 bg-[#FAF9F5] relative"
+    >
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 space-y-10 sm:space-y-12">
+        {/* Section Header: Editorial & Architectural */}
+        <div className="max-w-3xl space-y-3">
+          <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-[#8E8B81] block">
+            Eksplorer Arsip &amp; Verifikasi Industri
           </span>
-          <div className="flex items-center gap-1.5 mx-auto sm:mx-0">
-            {EVIDENCE_ARCHIVE.map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => scrollToIndex(i)}
-                aria-label={`Buka slide bukti ${i + 1}`}
-                className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                  i === activeIndex ? "w-6 bg-[#141414]" : "w-1.5 bg-[#141414]/20 hover:bg-[#141414]/40"
-                }`}
+          <h2 className="font-display font-bold text-3xl sm:text-4xl text-[#141413] tracking-[-0.03em] leading-tight">
+            Dokumentasi Fasilitas &amp; Kualifikasi Legalitas Resmi.
+          </h2>
+          <p className="font-sans text-sm sm:text-base text-[#626058] font-normal leading-relaxed">
+            Akses langsung bukti fisik kapasitas dapur, kepatuhan sanitasi, unit pendingin, dan perizinan operasional PT Zahdan Kamal Sentosa untuk kepastian audit vendor.
+          </p>
+        </div>
+
+        {/* ==============================================================
+            PART 1: HORIZONTAL CATEGORY NAVIGATION
+            - Smooth horizontal scroll
+            - Hidden scrollbar
+            - Snap scrolling
+            - Desktop mouse wheel horizontal & Mobile touch swipe
+            ============================================================== */}
+        <div className="relative border-b border-[#141413]/10">
+          <div
+            ref={categoryNavRef}
+            className="flex items-center gap-8 sm:gap-10 overflow-x-auto scrollbar-none snap-x pb-4"
+          >
+            {CATEGORIES.map((cat) => {
+              const isActive = activeCategory === cat;
+              return (
+                <button
+                  key={cat}
+                  onClick={() => handleSelectCategory(cat)}
+                  className={`shrink-0 text-xs sm:text-sm tracking-tight transition-colors duration-200 pb-1 cursor-pointer whitespace-nowrap snap-start ${
+                    isActive
+                      ? "text-[#141413] font-semibold border-b-2 border-[#141413] -mb-[17px]"
+                      : "text-[#8E8B81] font-medium hover:text-[#141413]"
+                  }`}
+                >
+                  {cat}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ==============================================================
+            MAIN EXPLORER LAYOUT:
+            Left Column: Document Strip (PART 2) + Live High-Res Loupe
+            Right Column: Inspector Panel (PART 3)
+            ============================================================== */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+          {/* Kolom Kiri: Document Strip & Visual Viewer (7 Kolom di Desktop) */}
+          <div className="lg:col-span-7 space-y-6">
+            {/* PART 2: SCROLLABLE DOCUMENT STRIP */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-[#8E8B81] px-0.5">
+                <span>Daftar Dokumen Terdaftar ({filteredDocs.length})</span>
+                <span className="hidden sm:inline">Geser atau Seret untuk Menjelajah</span>
+              </div>
+
+              <div
+                ref={stripRef}
+                onMouseDown={onMouseDown}
+                onMouseMove={onMouseMove}
+                onMouseUp={onMouseUp}
+                onMouseLeave={onMouseLeave}
+                className="flex items-start gap-4 overflow-x-auto scrollbar-none snap-x snap-mandatory py-2 cursor-grab active:cursor-grabbing select-none"
+              >
+                {filteredDocs.map((doc) => {
+                  const isSelected = selectedDoc.id === doc.id;
+                  return (
+                    <div
+                      key={doc.id}
+                      onClick={() => {
+                        if (!hasDraggedRef.current) {
+                          setSelectedDoc(doc);
+                        }
+                      }}
+                      className={`w-[270px] sm:w-[290px] shrink-0 snap-start transition-opacity duration-[220ms] ease-out ${
+                        isSelected ? "opacity-100" : "opacity-70 hover:opacity-100"
+                      }`}
+                    >
+                      {/* Large Preview */}
+                      <div
+                        className={`relative aspect-[16/10] w-full rounded-lg overflow-hidden bg-neutral-100 transition-all duration-[220ms] ease-out ${
+                          isSelected
+                            ? "ring-2 ring-[#141413] ring-offset-2 ring-offset-[#FAF9F5] shadow-md -translate-y-[2px]"
+                            : "border border-[#141413]/10 hover:-translate-y-[2px] hover:shadow-md"
+                        }`}
+                      >
+                        <Image
+                          src={doc.image}
+                          alt={doc.title}
+                          fill
+                          sizes="300px"
+                          className="object-cover object-center pointer-events-none"
+                        />
+                      </div>
+
+                      {/* Small Title & Subtitle */}
+                      <div className="pt-2.5 px-0.5 space-y-0.5">
+                        <h4 className="text-xs font-semibold text-[#141413] tracking-tight truncate">
+                          {doc.title}
+                        </h4>
+                        <p className="text-[11px] text-[#8E8B81] tracking-tight truncate">
+                          {doc.subtitle}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* High-Resolution Focus View of Selected Document */}
+            <div className="relative aspect-[16/10] sm:aspect-[16/11] w-full rounded-xl overflow-hidden border border-[#141413]/10 bg-neutral-900 shadow-sm transition-all duration-[220ms] ease-out">
+              <Image
+                src={selectedDoc.image}
+                alt={selectedDoc.title}
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 55vw"
+                className="object-contain object-center transition-opacity duration-[220ms] ease-out"
               />
-            ))}
+              <div className="absolute top-3 left-3 bg-[#141413]/80 backdrop-blur-xs text-[#FAF9F5] text-[10px] font-mono tracking-wider uppercase px-2.5 py-1 rounded">
+                {selectedDoc.docCode}
+              </div>
+            </div>
+          </div>
+
+          {/* ==============================================================
+              PART 3: INSPECTOR PANEL
+              - Updates instantly on card click (No modal, No popup, No reload)
+              - Apple style, large hierarchy, text aligned, high readability
+              - Outlined buttons (NOT giant black buttons)
+              - 220ms mechanical transition
+              ============================================================== */}
+          <div className="lg:col-span-5 bg-white rounded-xl border border-[#141413]/10 p-6 sm:p-8 space-y-6 shadow-xs">
+            {/* Header: Category & Doc Code */}
+            <div className="flex items-center justify-between border-b border-[#141413]/10 pb-3.5">
+              <span className="text-[11px] font-mono uppercase tracking-[0.14em] text-[#C85A17] font-semibold">
+                {selectedDoc.category} · {selectedDoc.docCode}
+              </span>
+              <span className="text-[11px] font-mono text-[#8E8B81]">
+                {selectedDoc.fileSize}
+              </span>
+            </div>
+
+            {/* Title & Subtitle */}
+            <div className="space-y-1">
+              <h3 className="font-display font-bold text-xl sm:text-2xl text-[#141413] tracking-tight leading-snug">
+                {selectedDoc.title}
+              </h3>
+              <p className="text-xs text-[#8E8B81]">
+                {selectedDoc.subtitle}
+              </p>
+            </div>
+
+            {/* Description */}
+            <p className="text-xs sm:text-sm text-[#484640] leading-relaxed">
+              {selectedDoc.description}
+            </p>
+
+            {/* Architectural Inspector Specs */}
+            <div className="space-y-4 pt-2 border-t border-[#141413]/10">
+              <div className="space-y-1">
+                <span className="text-[11px] font-mono uppercase tracking-wider text-[#8E8B81] block">
+                  Fungsi Operasional
+                </span>
+                <p className="text-xs sm:text-sm text-[#141413] font-medium leading-relaxed">
+                  {selectedDoc.operationalFunction}
+                </p>
+              </div>
+
+              <div className="space-y-1">
+                <span className="text-[11px] font-mono uppercase tracking-wider text-[#8E8B81] block">
+                  Tujuan Audit Klien
+                </span>
+                <p className="text-xs sm:text-sm text-[#141413] font-medium leading-relaxed">
+                  {selectedDoc.auditPurpose}
+                </p>
+              </div>
+
+              <div className="space-y-1">
+                <span className="text-[11px] font-mono uppercase tracking-wider text-[#8E8B81] block">
+                  Lokasi Fasilitas
+                </span>
+                <p className="text-xs sm:text-sm text-[#141413] font-medium">
+                  {selectedDoc.factoryLocation}
+                </p>
+              </div>
+
+              <div className="space-y-1">
+                <span className="text-[11px] font-mono uppercase tracking-wider text-[#8E8B81] block">
+                  Status Sertifikasi
+                </span>
+                <p className="text-xs sm:text-sm text-emerald-800 font-medium">
+                  {selectedDoc.certificationStatus}
+                </p>
+              </div>
+
+              <div className="space-y-1">
+                <span className="text-[11px] font-mono uppercase tracking-wider text-[#8E8B81] block">
+                  SOP Terkait
+                </span>
+                <p className="text-xs sm:text-sm text-[#141413] font-mono">
+                  {selectedDoc.relatedSop}
+                </p>
+              </div>
+            </div>
+
+            {/* Outlined Action Buttons (NOT giant black buttons) */}
+            <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-[#141413]/10">
+              <a
+                href={selectedDoc.image}
+                download={`${selectedDoc.docCode}.png`}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-[#141413]/25 hover:border-[#141413] hover:bg-[#141413]/5 text-[#141413] text-xs font-semibold tracking-tight transition-colors duration-[220ms] cursor-pointer"
+              >
+                <Download className="w-3.5 h-3.5 text-[#141413]" />
+                <span>Unduh Salinan PDF</span>
+              </a>
+
+              <a
+                href={selectedDoc.image}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-[#141413]/25 hover:border-[#141413] hover:bg-[#141413]/5 text-[#141413] text-xs font-semibold tracking-tight transition-colors duration-[220ms]"
+              >
+                <ExternalLink className="w-3.5 h-3.5 text-[#141413]" />
+                <span>Buka Resolusi Penuh</span>
+              </a>
+            </div>
           </div>
         </div>
       </div>
-
-      {/* ==============================================================
-          FULLSCREEN DOCUMENT VIEWER (Apple Photos / Lightroom Style)
-          NOT modal, NOT popup. Full viewport takeover with interactive zoom.
-          ============================================================== */}
-      {viewerItem && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-50 bg-[#FAF9F5] text-[#141414] flex flex-col overflow-hidden animate-in fade-in duration-300"
-        >
-          {/* Top Bar: Official Branding, Document Title, and Actions */}
-          <div className="h-16 border-b border-[#141413]/10 px-4 sm:px-8 flex items-center justify-between bg-white/90 backdrop-blur-md shrink-0">
-            {/* Left: Official ZKS Brand Logo */}
-            <div className="flex items-center gap-3">
-              <div className="relative h-8 w-8 rounded-md overflow-hidden shrink-0 bg-[#0d2238] border border-[#141413]/10">
-                <Image
-                  src="/images/zks-logo-official.png"
-                  alt="PT. Zahdan Kamal Sentosa Logo"
-                  fill
-                  className="object-cover object-left"
-                />
-              </div>
-              <div className="flex flex-col">
-                <span className="font-display font-bold text-xs sm:text-sm text-[#141413] tracking-tight">
-                  PT. Zahdan Kamal Sentosa
-                </span>
-                <span className="text-[10px] text-[#7A7A7A] font-mono uppercase tracking-wider">
-                  Enterprise Evidence Archive
-                </span>
-              </div>
-            </div>
-
-            {/* Center: Title / Document Code */}
-            <div className="hidden md:flex items-center gap-2 text-xs font-mono text-[#555555]">
-              <span className="px-2 py-0.5 rounded bg-[#FAF9F5] border border-[#141413]/10 font-bold text-[#141414]">
-                {viewerItem.categoryCode}
-              </span>
-              <span>·</span>
-              <span className="truncate max-w-sm">{viewerItem.title}</span>
-            </div>
-
-            {/* Right: Actions & Close (ESC) */}
-            <div className="flex items-center gap-3">
-              <a
-                href={`https://wa.me/6281295490067?text=Halo%20PT%20Zahdan%20Kamal%20Sentosa,%20kami%20dari%20perusahaan%20ingin%20meminta%20salinan%20dokumen%20resmi%20legalisir%20untuk%20${encodeURIComponent(
-                  viewerItem.title
-                )}.`}
-                target="_blank"
-                rel="noreferrer"
-                className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border border-[#141413]/15 bg-[#FAF9F5] hover:bg-white text-xs font-semibold text-[#141414] transition-colors shadow-xs"
-              >
-                <FileCheck className="w-3.5 h-3.5 text-[#C85A17]" />
-                <span>Minta Salinan Legalisir (PDF)</span>
-              </a>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setViewerItem(null);
-                  setZoomLevel(1);
-                  setPanPosition({ x: 0, y: 0 });
-                }}
-                aria-label="Tutup Penampil Dokumen"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#141414] text-[#FAF9F5] text-xs font-semibold hover:bg-[#2C2C28] transition-colors cursor-pointer shadow-xs"
-              >
-                <span>Tutup</span>
-                <span className="text-[10px] opacity-60 font-mono hidden sm:inline">(ESC)</span>
-                <X className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-
-          {/* Middle Body: Split View (Document Viewer on Left, Technical Spec on Right) */}
-          <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-            {/* Left Column: Center-aligned Large Document View with Zoom & Pan */}
-            <div
-              onWheel={handleViewerWheel}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseUp}
-              onDoubleClick={handleDoubleClickZoom}
-              className={`flex-1 relative bg-[#F7F6F2] overflow-hidden flex items-center justify-center p-4 sm:p-8 select-none ${
-                zoomLevel > 1 ? (isDragging ? "cursor-grabbing" : "cursor-grab") : "cursor-zoom-in"
-              }`}
-              title="Klik dua kali atau putar roda mouse untuk zoom; geser untuk menggeser"
-            >
-              <div
-                style={{
-                  transform: `scale(${zoomLevel}) translate(${panPosition.x / zoomLevel}px, ${panPosition.y / zoomLevel}px)`,
-                  transition: isDragging ? "none" : "transform 0.25s ease-out",
-                }}
-                className="relative max-w-3xl w-full h-full max-h-[80vh] flex items-center justify-center"
-              >
-                <Image
-                  src={viewerItem.image}
-                  alt={viewerItem.title}
-                  fill
-                  className="object-contain drop-shadow-md"
-                  sizes="(max-width: 1024px) 100vw, 900px"
-                  priority
-                />
-              </div>
-
-              {/* Zoom Controls Overlay */}
-              <div className="absolute bottom-6 left-6 z-10 flex items-center gap-1.5 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-lg border border-[#141413]/10 shadow-sm text-xs font-mono">
-                <button
-                  type="button"
-                  onClick={() => setZoomLevel((prev) => Math.max(prev - 0.25, 1))}
-                  className="w-6 h-6 flex items-center justify-center rounded hover:bg-[#141413]/10 font-bold"
-                  title="Perkecil"
-                >
-                  -
-                </button>
-                <span className="px-1.5 min-w-[42px] text-center font-medium">
-                  {Math.round(zoomLevel * 100)}%
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setZoomLevel((prev) => Math.min(prev + 0.25, 3))}
-                  className="w-6 h-6 flex items-center justify-center rounded hover:bg-[#141413]/10 font-bold"
-                  title="Perbesar"
-                >
-                  +
-                </button>
-                {zoomLevel > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setZoomLevel(1);
-                      setPanPosition({ x: 0, y: 0 });
-                    }}
-                    className="ml-2 px-2 py-0.5 rounded text-[10px] bg-[#141413] text-white"
-                  >
-                    Reset
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Right Column: Editorial Technical Specification Panel */}
-            <div className="w-full lg:w-[420px] xl:w-[460px] bg-white border-t lg:border-t-0 lg:border-l border-[#141413]/10 overflow-y-auto p-6 sm:p-8 space-y-6 shrink-0">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-[10px] font-mono tracking-wider uppercase text-[#C85A17] font-bold">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>{viewerItem.specs.kategori}</span>
-                </div>
-                <h3 className="font-display font-bold text-xl sm:text-2xl text-[#141414] leading-snug">
-                  {viewerItem.specs.nama}
-                </h3>
-              </div>
-
-              {/* Technical Spec Matrix */}
-              <div className="space-y-3 pt-3 border-t border-[#141413]/10 text-xs">
-                <div className="space-y-1">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#7A7A7A] block">
-                    Lokasi Fasilitas Riil
-                  </span>
-                  <span className="text-[#141414] font-medium block">
-                    {viewerItem.specs.lokasi}
-                  </span>
-                </div>
-
-                <div className="space-y-1">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#7A7A7A] block">
-                    Legalitas &amp; Masa Berlaku
-                  </span>
-                  <span className="text-[#141414] font-medium block">
-                    {viewerItem.specs.tanggal}
-                  </span>
-                </div>
-
-                <div className="space-y-1">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#7A7A7A] block">
-                    Keterangan Operasional
-                  </span>
-                  <p className="text-[#555555] leading-relaxed">
-                    {viewerItem.specs.keterangan}
-                  </p>
-                </div>
-
-                <div className="space-y-1 pt-2">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#7A7A7A] block">
-                    Status Audit Kepatuhan
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>{viewerItem.specs.auditStatus}</span>
-                  </span>
-                </div>
-
-                <div className="space-y-2 pt-3 border-t border-[#141413]/[0.08]">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#7A7A7A] block font-semibold">
-                    Dokumen Terkait / Bukti Pendukung
-                  </span>
-                  <div className="space-y-1.5">
-                    {viewerItem.specs.dokumenPendukung.map((doc, idx) => (
-                      <div key={idx} className="flex items-start gap-2 text-[11px] text-[#444444]">
-                        <span className="text-[#C85A17] font-mono font-bold">›</span>
-                        <span>{doc}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="pt-2">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#7A7A7A] block">
-                    Standar Verifikasi
-                  </span>
-                  <span className="text-[11px] font-mono text-[#C85A17] font-semibold mt-0.5 block">
-                    {viewerItem.specs.verification}
-                  </span>
-                </div>
-              </div>
-
-              {/* Direct Request Action Button */}
-              <div className="pt-4 border-t border-[#141413]/10">
-                <a
-                  href={`https://wa.me/6281295490067?text=Halo%20PT%20Zahdan%20Kamal%20Sentosa,%20kami%20dari%20perusahaan%20ingin%20meminta%20salinan%20dokumen%20resmi%20untuk%20${encodeURIComponent(
-                    viewerItem.title
-                  )}.`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-[#141414] text-[#FAF9F5] text-xs font-semibold hover:bg-[#2C2C28] transition-colors cursor-pointer shadow-xs min-h-[44px]"
-                >
-                  <FileCheck className="w-4 h-4 text-[#D96B27]" />
-                  <span>Minta Salinan Legalisir (WhatsApp)</span>
-                  <ArrowUpRight className="w-3.5 h-3.5 opacity-75" />
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom Filmstrip: Horizontal Thumbnails (Lightroom / Apple Photos Style) */}
-          <div className="h-20 bg-white border-t border-[#141413]/10 px-4 sm:px-8 flex items-center gap-3 overflow-x-auto scrollbar-none shrink-0">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-[#7A7A7A] shrink-0 hidden sm:inline-block">
-              Arsip ({EVIDENCE_ARCHIVE.length})
-            </span>
-
-            <div className="flex items-center gap-2.5">
-              {EVIDENCE_ARCHIVE.map((item, idx) => {
-                const isSelected = item.id === viewerItem.id;
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => {
-                      setViewerItem(item);
-                      setZoomLevel(1);
-                      setPanPosition({ x: 0, y: 0 });
-                    }}
-                    className={`relative h-14 w-20 rounded-md overflow-hidden shrink-0 border-2 transition-all duration-150 cursor-pointer ${
-                      isSelected
-                        ? "border-[#141414] ring-2 ring-[#C85A17]/40 scale-105"
-                        : "border-[#141413]/15 opacity-60 hover:opacity-100 hover:border-[#141413]/40"
-                    }`}
-                  >
-                    <Image
-                      src={item.image}
-                      alt={item.title}
-                      fill
-                      className="object-contain p-0.5 bg-[#FAF9F5]"
-                      sizes="80px"
-                    />
-                    <span className="absolute bottom-0 inset-x-0 bg-[#141414]/80 text-[8px] font-mono text-white text-center truncate px-0.5">
-                      {String(idx + 1).padStart(2, "0")}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 }

@@ -6,6 +6,7 @@ import {
   hashAccessToken,
   generateOrderCode,
   calculateSubtotal,
+  calculateOrderLockValues,
 } from "../src/lib/order-logic.ts";
 
 test("validateOrderLeadTime: < 500 pcs memerlukan minimal H-1", () => {
@@ -82,3 +83,32 @@ test("calculateSubtotal menghitung nilai secara akurat dan menolak nilai negatif
   assert.throws(() => calculateSubtotal(-1000, 10));
   assert.throws(() => calculateSubtotal(1000, -5));
 });
+
+test("calculateOrderLockValues: menghitung total, DP 20%, dan batas bayar awal dengan akurat", () => {
+  const eventDate = new Date("2026-10-25T04:00:00Z"); // 25 Oktober 11:00 WIB
+  const confirmedAtH3 = new Date("2026-10-22T03:00:00Z"); // 22 Oktober 10:00 WIB (H-3)
+
+  const resH3 = calculateOrderLockValues(2000000, 50000, eventDate, confirmedAtH3);
+  assert.equal(resH3.totalAmount, 2050000);
+  assert.equal(resH3.isEligibleForDp, true);
+  assert.equal(resH3.dpAmount, 400000); // 20% dari 2.000.000
+  // Batas bayar awal adalah confirmedAt + 24 jam (karena 23 Okt 10:00 WIB < 24 Okt 23:59 WIB)
+  assert.equal(resH3.initialPaymentDueAt.getTime(), confirmedAtH3.getTime() + 24 * 60 * 60 * 1000);
+
+  // Dikunci di H-1 (24 Oktober 10:00 WIB) -> Opsi DP tidak tersedia, hanya lunas penuh
+  const confirmedAtH1 = new Date("2026-10-24T03:00:00Z");
+  const resH1 = calculateOrderLockValues(2000000, 50000, eventDate, confirmedAtH1);
+  assert.equal(resH1.totalAmount, 2050000);
+  assert.equal(resH1.isEligibleForDp, false);
+  assert.equal(resH1.dpAmount, null);
+  // Batas bayar awal dipotong ke H-1 23:59:59 WIB (karena +24 jam melampaui H-1 23:59:59 WIB)
+  assert.equal(resH1.initialPaymentDueAt.toISOString(), "2026-10-24T16:59:59.999Z");
+
+  // Jika dikunci setelah H-1 23:59:59 WIB -> throws error
+  const confirmedAtH0 = new Date("2026-10-25T01:00:00Z");
+  assert.throws(
+    () => calculateOrderLockValues(2000000, 50000, eventDate, confirmedAtH0),
+    /Batas waktu konfirmasi pesanan/
+  );
+});
+

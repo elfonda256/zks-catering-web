@@ -107,3 +107,70 @@ export function calculateSubtotal(unitPrice: number, quantity: number): number {
   }
   return Math.round(unitPrice * quantity);
 }
+
+/**
+ * Menghitung batas akhir H-1 pukul 23:59:59.999 WIB dari tanggal acara (eventDate).
+ */
+export function getHMinus1DeadlineWib(eventDate: Date): Date {
+  const eventWib = getWibCalendarDate(eventDate);
+  // H-1 pada pukul 23:59:59.999 WIB (16:59:59.999 UTC)
+  return new Date(Date.UTC(eventWib.year, eventWib.month, eventWib.day - 1, 16, 59, 59, 999));
+}
+
+export interface OrderLockCalculation {
+  totalAmount: number;
+  dpAmount: number | null;
+  initialPaymentDueAt: Date;
+  isEligibleForDp: boolean;
+  hoursUntilInitialDue: number;
+}
+
+/**
+ * Menghitung nilai penguncian total tagihan oleh admin sesuai Keputusan Arsitektur Fase 1:
+ * - Total = subtotal + shippingFee
+ * - DP 20% dari subtotal di luar ongkir, dibulatkan ke atas (Math.ceil)
+ * - DP hanya aktif jika dikonfirmasi paling lambat H-2. Jika dikonfirmasi pada H-1, hanya ada opsi lunas penuh.
+ * - Batas bayar awal = min(confirmedAt + 24 jam, H-1 23:59:59 WIB dari eventDate)
+ */
+export function calculateOrderLockValues(
+  subtotal: number,
+  shippingFee: number,
+  eventDate: Date,
+  confirmedAt: Date = new Date(),
+  dpPercentage: number = 0.20
+): OrderLockCalculation {
+  if (subtotal < 0 || shippingFee < 0) {
+    throw new Error("Subtotal dan ongkos kirim tidak boleh bernilai negatif.");
+  }
+
+  const hMinus1Deadline = getHMinus1DeadlineWib(eventDate);
+  if (confirmedAt.getTime() > hMinus1Deadline.getTime()) {
+    throw new Error("Batas waktu konfirmasi pesanan (H-1 pukul 23:59 WIB) telah terlewat.");
+  }
+
+  const totalAmount = subtotal + shippingFee;
+  const dayDiff = getCalendarDayDifferenceWib(eventDate, confirmedAt);
+
+  // Opsi DP hanya ada jika dikonfirmasi paling lambat H-2
+  const isEligibleForDp = dayDiff >= 2;
+  const dpAmount = isEligibleForDp ? Math.ceil(subtotal * dpPercentage) : null;
+
+  // Batas bayar awal: min(confirmedAt + 24 jam, H-1 23:59 WIB)
+  const initialDueMs = Math.min(
+    confirmedAt.getTime() + 24 * 60 * 60 * 1000,
+    hMinus1Deadline.getTime()
+  );
+  const initialPaymentDueAt = new Date(initialDueMs);
+  const hoursUntilInitialDue = Math.max(
+    0,
+    (initialPaymentDueAt.getTime() - confirmedAt.getTime()) / (60 * 60 * 1000)
+  );
+
+  return {
+    totalAmount,
+    dpAmount,
+    initialPaymentDueAt,
+    isEligibleForDp,
+    hoursUntilInitialDue,
+  };
+}

@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { hashAccessToken } from "@/lib/order-logic";
 import { COMPANY_PROFILE } from "@/data/catering-data";
 import { ArrowUpRight } from "@/components/icons";
+import PaymentUploadClient from "./PaymentUploadClient";
 
 export const metadata: Metadata = {
   title: "Detail & Status Pesanan Katering | PT. Zahdan Kamal Sentosa",
@@ -37,6 +38,11 @@ async function OrderDetailContent({ params }: OrderDetailPageProps) {
           menuItem: true,
         },
       },
+      payments: {
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
     },
   });
 
@@ -65,49 +71,49 @@ async function OrderDetailContent({ params }: OrderDetailPageProps) {
       case "WAITING_ADMIN_CONFIRMATION":
         return {
           label: "Menunggu Konfirmasi Admin",
-          bg: "bg-[#D96B27]/10 text-[#C85A17] border-[#D96B27]/30",
-          desc: "Admin dapur sedang memverifikasi ketersediaan slot kapasitas produksi dan rute pengantaran.",
+          color: "text-[#C85A17]",
+          desc: "Admin operasional dapur sedang memverifikasi ketersediaan slot boiler uap dan menetapkan logistik rute.",
         };
       case "CONFIRMED_AWAITING_PAYMENT":
         return {
-          label: "Total Tagihan Dikunci (Menunggu Pembayaran)",
-          bg: "bg-blue-50 text-blue-900 border-blue-200",
-          desc: "Admin telah menetapkan ongkos kirim. Silakan lakukan pembayaran DP 20% atau Pelunasan.",
+          label: "Total Tagihan Dikunci",
+          color: "text-blue-900",
+          desc: "Admin telah menetapkan ongkos kirim resmi. Silakan lakukan pembayaran DP 20% atau Pelunasan.",
         };
       case "DP_PAID":
         return {
           label: "Uang Muka (DP) Terbayar",
-          bg: "bg-emerald-50 text-emerald-800 border-emerald-200",
-          desc: "DP telah terverifikasi. Pelunasan sisa tagihan paling lambat H-1 pukul 23:59 WIB.",
+          color: "text-emerald-800",
+          desc: "Uang muka terverifikasi. Pelunasan sisa tagihan paling lambat H-1 pukul 23:59 WIB.",
         };
       case "PAID_IN_FULL":
         return {
           label: "Lunas Penuh",
-          bg: "bg-emerald-50 text-emerald-800 border-emerald-200",
-          desc: "Pembayaran lunas terverifikasi. Dapur siap memproduksi pesanan Anda.",
+          color: "text-emerald-800",
+          desc: "Pembayaran lunas terverifikasi. Dapur sentral siap memproduksi pesanan Anda.",
         };
       case "IN_DELIVERY":
         return {
-          label: "Dalam Pengantaran",
-          bg: "bg-purple-50 text-purple-800 border-purple-200",
-          desc: "Armada katering ZKS sedang menuju ke lokasi pengantaran Anda di Karawang.",
+          label: "Dalam Pengantaran Armada",
+          color: "text-purple-800",
+          desc: "Armada insulated box ZKS sedang menuju ke lokasi pengantaran pabrik Anda.",
         };
       case "COMPLETED":
         return {
-          label: "Pesanan Selesai",
-          bg: "bg-[#F3F1E9] text-[#141413] border-[#141413]/10",
-          desc: "Layanan katering telah selesai dilaksanakan dengan sukses.",
+          label: "Layanan Selesai",
+          color: "text-[#141413]",
+          desc: "Layanan katering industri telah selesai diserahkan di kantin pabrik.",
         };
       case "REJECTED_BY_ADMIN":
         return {
           label: "Ditolak oleh Admin",
-          bg: "bg-red-50 text-red-800 border-red-200",
-          desc: "Kapasitas dapur pada jadwal tersebut telah penuh atau di luar jangkauan layanan.",
+          color: "text-red-800",
+          desc: "Kapasitas produksi pada jadwal tersebut telah penuh atau di luar jangkauan armada.",
         };
       default:
         return {
           label: status,
-          bg: "bg-[#F3F1E9] text-[#626058] border-[#141413]/10",
+          color: "text-[#626058]",
           desc: "Status pesanan saat ini.",
         };
     }
@@ -121,109 +127,237 @@ async function OrderDetailContent({ params }: OrderDetailPageProps) {
   );
 
   return (
-    <div className="space-y-10">
-      {/* Header Status & Kode Pesanan */}
-      <div className="p-8 rounded-2xl bg-[#F3F1E9] border border-[#141413]/[0.08] space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#141413]/[0.08] pb-5">
-          <div>
-            <span className="text-[11px] font-mono text-[#8E8B81] uppercase tracking-wider block">
-              Kode Akses Pesanan Anda:
+    <div className="space-y-12">
+      {/* Header Status & Kode Pesanan (Architectural Ledger, No Floating Boxes) */}
+      <div className="space-y-4 pb-8 border-b border-[#141413]/10">
+        <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
+          <div className="space-y-1">
+            <span className="font-mono text-[11px] uppercase tracking-wider text-[#8E8B81] block">
+              DOKUMEN PESANAN RESMI
             </span>
-            <span className="font-display font-extrabold text-2xl sm:text-3xl text-[#141413] tracking-tight">
+            <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-[#141413] tracking-tight">
               {order.orderCode}
-            </span>
+            </h1>
           </div>
 
-          <div className="self-start sm:self-auto">
-            <span
-              className={`inline-block text-xs font-semibold px-3 py-1.5 rounded-full border ${statusInfo.bg}`}
-            >
-              {statusInfo.label}
-            </span>
+          <div className="font-mono text-xs font-bold tracking-wider uppercase">
+            <span className={statusInfo.color}>{statusInfo.label}</span>
           </div>
         </div>
 
-        <p className="text-xs sm:text-sm text-[#626058] leading-relaxed">
+        <p className="font-sans text-xs sm:text-sm text-[#626058] leading-relaxed max-w-2xl">
           {statusInfo.desc}
         </p>
 
-        {/* Quick WhatsApp Confirmation Button */}
         {order.status === "WAITING_ADMIN_CONFIRMATION" && (
           <div className="pt-2">
             <a
               href={`https://wa.me/${COMPANY_PROFILE.mainWhatsApp}?text=${waConfirmText}`}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-lg bg-[#141413] text-[#FAF9F5] font-semibold text-xs hover:bg-[#2C2C28] transition-all tracking-tight"
+              className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#141413] text-[#FAF9F5] text-xs font-semibold hover:bg-[#141413]/90 transition-all tracking-tight active:scale-[0.98]"
             >
-              <span>Hubungi Admin via WhatsApp untuk Konfirmasi Cepat</span>
+              <span>Konfirmasi Cepat via WhatsApp Manajemen</span>
               <ArrowUpRight className="w-3.5 h-3.5 opacity-70" />
             </a>
           </div>
         )}
+
+        {/* 1. Alur Pembayaran Langsung via Website: CONFIRMED_AWAITING_PAYMENT */}
+        {order.status === "CONFIRMED_AWAITING_PAYMENT" && (() => {
+          const pendingPayment = order.payments.find((p) => p.status === "PENDING");
+
+          if (pendingPayment) {
+            return (
+              <div className="p-6 bg-white border-2 border-[#141413] space-y-4 mt-6">
+                <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-b border-[#141413]/10 pb-3">
+                  <div>
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-[#C85A17] font-semibold block">
+                      BUKTI TRANSFER TERUNGGAH
+                    </span>
+                    <h3 className="text-base font-bold text-[#141413] tracking-tight mt-0.5">
+                      Menunggu Verifikasi &amp; Pencocokan Mutasi Rekening oleh Admin ZKS
+                    </h3>
+                  </div>
+                  <span className="font-mono text-[11px] bg-amber-100 text-amber-900 border border-amber-300 px-2.5 py-1 rounded font-semibold uppercase">
+                    Sedang Diverifikasi
+                  </span>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 text-xs text-[#626058] pt-1">
+                  {pendingPayment.paymentUrl && (
+                    <a
+                      href={pendingPayment.paymentUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="relative block border border-[#141413]/20 rounded overflow-hidden hover:opacity-90 transition-opacity bg-neutral-100 shrink-0"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={pendingPayment.paymentUrl}
+                        alt="Bukti Transfer"
+                        className="w-28 h-28 object-cover"
+                      />
+                      <span className="absolute bottom-0 inset-x-0 bg-black/70 text-white text-[9px] text-center font-mono py-0.5">
+                        Lihat Struk ↗
+                      </span>
+                    </a>
+                  )}
+
+                  <div className="space-y-1.5 flex-1">
+                    <p>
+                      <strong className="text-[#141413]">Jenis Pembayaran:</strong>{" "}
+                      <span className="font-mono font-semibold text-[#141413]">
+                        {pendingPayment.paymentType === "DP" ? "Uang Muka (DP 20%)" : "Lunas Penuh (100%)"}
+                      </span>
+                    </p>
+                    <p>
+                      <strong className="text-[#141413]">Nominal Ditransfer:</strong>{" "}
+                      <span className="font-mono font-bold text-[#C85A17]">
+                        Rp{pendingPayment.amount.toLocaleString("id-ID")}
+                      </span>
+                    </p>
+                    <p>
+                      <strong className="text-[#141413]">Bank Pengirim:</strong>{" "}
+                      <span className="font-mono">{pendingPayment.paymentChannel || "Transfer Bank"}</span>
+                    </p>
+                    <p className="text-[11px] text-[#8E8B81]">
+                      Diunggah pada:{" "}
+                      {new Intl.DateTimeFormat("id-ID", {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                        timeZone: "Asia/Jakarta",
+                      }).format(pendingPayment.createdAt)}{" "}
+                      WIB
+                    </p>
+                  </div>
+                </div>
+
+                <p className="text-[11px] text-[#626058] bg-[#FAF9F5] p-3 rounded border border-[#141413]/10 leading-relaxed">
+                  Berkas bukti transfer Anda telah tersimpan di sistem ZKS. Operator operasional dapur sedang mencocokkan mutasi bank. Begitu disetujui, status pesanan akan langsung terkunci ke tahap produksi.
+                </p>
+              </div>
+            );
+          }
+
+          return (
+            <PaymentUploadClient
+              rawToken={token}
+              orderCode={order.orderCode}
+              subtotal={order.subtotal}
+              totalAmount={order.totalAmount}
+              dpAmount={order.dpAmount}
+              initialPaymentDueAt={
+                order.initialPaymentDueAt
+                  ? order.initialPaymentDueAt.toISOString()
+                  : null
+              }
+            />
+          );
+        })()}
+
+        {/* 2. Banner Status: DP_PAID */}
+        {order.status === "DP_PAID" && (
+          <div className="p-5 bg-emerald-50/80 border border-emerald-300 text-xs space-y-2 mt-4">
+            <span className="font-mono font-bold text-emerald-900 uppercase block tracking-wider">
+              ✓ Uang Muka (DP 20%) Terverifikasi Admin
+            </span>
+            <p className="text-emerald-950 leading-relaxed">
+              Jadwal produksi dapur dan rute armada ZKS telah dikunci untuk pesanan Anda. Sisa pelunasan tagihan sebesar{" "}
+              <strong className="font-mono font-bold">
+                Rp{((order.totalAmount || 0) - (order.dpAmount || 0)).toLocaleString("id-ID")}
+              </strong>{" "}
+              dapat dibayarkan paling lambat H-1 pukul 23:59 WIB.
+            </p>
+          </div>
+        )}
+
+        {/* 3. Banner Status: FULLY_PAID */}
+        {order.status === "FULLY_PAID" && (
+          <div className="p-5 bg-emerald-50/80 border border-emerald-400 text-xs space-y-2 mt-4">
+            <span className="font-mono font-bold text-emerald-950 uppercase block tracking-wider">
+              ✓ Pembayaran Lunas 100% Terverifikasi
+            </span>
+            <p className="text-emerald-950 leading-relaxed">
+              Seluruh kewajiban pembayaran telah selesai. Dapur industri ZKS siap memproses pesanan dan armada insulated box akan mengantarkannya tepat waktu sesuai jadwal acara.
+            </p>
+          </div>
+        )}
       </div>
 
-      {/* Rincian Acara & Pengiriman */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="p-6 rounded-xl bg-[#F3F1E9] border border-[#141413]/[0.06] space-y-3">
-          <span className="text-xs font-semibold text-[#8E8B81] uppercase tracking-[0.1em] block">
-            Jadwal Acara & Waktu
+      {/* Rincian Acara & Data Pemesan (Two-Column Linear Ledger) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+        <div className="space-y-3 border-l border-[#141413]/10 pl-5">
+          <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[#C85A17] font-semibold block">
+            Jadwal Acara &amp; Kuantitas
           </span>
-          <div className="space-y-1.5 text-xs text-[#626058]">
-            <p>
-              <strong className="text-[#141413]">Hari & Tanggal:</strong> {formattedEventDate}
-            </p>
-            <p>
-              <strong className="text-[#141413]">Jam Pengantaran:</strong> {formattedEventTime} WIB
-            </p>
-            <p>
-              <strong className="text-[#141413]">Total Kuantitas:</strong> {order.totalPcs} porsi
-            </p>
+          <div className="space-y-2 text-xs text-[#626058]">
+            <div>
+              <span className="text-[#8E8B81] block font-mono text-[10px]">HARI &amp; TANGGAL</span>
+              <strong className="text-[#141413] font-sans text-sm">{formattedEventDate}</strong>
+            </div>
+            <div>
+              <span className="text-[#8E8B81] block font-mono text-[10px]">JAM PENGANTARAN</span>
+              <span className="text-[#141413] font-mono font-semibold">{formattedEventTime} WIB</span>
+            </div>
+            <div>
+              <span className="text-[#8E8B81] block font-mono text-[10px]">TOTAL VOLUME</span>
+              <span className="text-[#141413] font-mono font-semibold">{order.totalPcs} Porsi</span>
+            </div>
           </div>
         </div>
 
-        <div className="p-6 rounded-xl bg-[#F3F1E9] border border-[#141413]/[0.06] space-y-3">
-          <span className="text-xs font-semibold text-[#8E8B81] uppercase tracking-[0.1em] block">
-            Data Pemesan & Tujuan
+        <div className="space-y-3 border-l border-[#141413]/10 pl-5">
+          <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[#C85A17] font-semibold block">
+            Entitas Pemesan &amp; Tujuan
           </span>
-          <div className="space-y-1.5 text-xs text-[#626058]">
-            <p>
-              <strong className="text-[#141413]">Nama:</strong> {order.customerName}
-            </p>
-            <p>
-              <strong className="text-[#141413]">Nomor WhatsApp:</strong> {order.customerPhone}
-            </p>
-            <p className="leading-snug">
-              <strong className="text-[#141413]">Alamat Kirim:</strong> {order.customerAddress}
-            </p>
+          <div className="space-y-2 text-xs text-[#626058]">
+            <div>
+              <span className="text-[#8E8B81] block font-mono text-[10px]">NAMA PIC / PERUSAHAAN</span>
+              <strong className="text-[#141413] font-sans text-sm">{order.customerName}</strong>
+            </div>
+            <div>
+              <span className="text-[#8E8B81] block font-mono text-[10px]">WHATSAPP PIC</span>
+              <span className="text-[#141413] font-mono">{order.customerPhone}</span>
+            </div>
+            <div>
+              <span className="text-[#8E8B81] block font-mono text-[10px]">ALAMAT PABRIK</span>
+              <span className="text-[#141413] leading-snug">{order.customerAddress}</span>
+            </div>
             {order.customerEmail && (
-              <p>
-                <strong className="text-[#141413]">Email:</strong> {order.customerEmail}
-              </p>
+              <div>
+                <span className="text-[#8E8B81] block font-mono text-[10px]">EMAIL KANTOR</span>
+                <span className="text-[#141413] font-mono">{order.customerEmail}</span>
+              </div>
             )}
           </div>
         </div>
       </div>
 
-      {/* Tabel Rincian Menu & Tagihan */}
-      <div className="p-8 rounded-2xl bg-[#F3F1E9] border border-[#141413]/[0.08] space-y-6">
-        <h2 className="font-display font-bold text-lg text-[#141413]">
-          Rincian Spesifikasi Sajian & Tagihan
-        </h2>
+      {/* Tabel Rincian Menu & Rekapitulasi Tagihan (Clean Specification Ledger) */}
+      <div className="pt-8 border-t border-[#141413]/10 space-y-6">
+        <div className="flex items-baseline justify-between">
+          <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[#8E8B81] font-semibold block">
+            Rincian Spesifikasi Menu &amp; Tagihan
+          </span>
+          <span className="font-mono text-[11px] text-[#8E8B81]">
+            Mata Uang: IDR (Rupiah)
+          </span>
+        </div>
 
-        <div className="divide-y divide-[#141413]/[0.08] border-y border-[#141413]/[0.08]">
+        <div className="divide-y divide-[#141413]/10 border-y border-[#141413]/10">
           {order.items.map((item, idx) => (
-            <div key={idx} className="py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+            <div key={idx} className="py-4 flex flex-col sm:flex-row items-start sm:items-baseline justify-between gap-2">
               <div>
                 <p className="font-display font-bold text-[#141413] text-sm">{item.menuItem.name}</p>
-                <p className="text-xs text-[#8E8B81]">
+                <p className="font-mono text-xs text-[#8E8B81]">
                   {item.quantity} porsi &times; Rp{item.unitPrice.toLocaleString("id-ID")}
                 </p>
                 {item.notes && (
                   <p className="text-xs text-[#C85A17] italic mt-0.5">{item.notes}</p>
                 )}
               </div>
-              <div className="font-display font-bold text-[#141413] text-sm sm:text-right">
+              <div className="font-mono font-bold text-[#141413] text-sm sm:text-right">
                 Rp{item.subtotal.toLocaleString("id-ID")}
               </div>
             </div>
@@ -231,15 +365,15 @@ async function OrderDetailContent({ params }: OrderDetailPageProps) {
         </div>
 
         {/* Rekapitulasi Biaya */}
-        <div className="space-y-2.5 pt-2 text-xs text-[#626058]">
-          <div className="flex justify-between">
+        <div className="space-y-2.5 pt-2 text-xs text-[#626058] max-w-md ml-auto">
+          <div className="flex justify-between font-mono">
             <span>Subtotal Makanan:</span>
             <span className="font-semibold text-[#141413]">
               Rp{order.subtotal.toLocaleString("id-ID")}
             </span>
           </div>
 
-          <div className="flex justify-between">
+          <div className="flex justify-between font-mono">
             <span>Ongkos Kirim Armada:</span>
             <span className="text-[#8E8B81]">
               {order.shippingFee !== null && order.shippingFee !== undefined
@@ -248,7 +382,7 @@ async function OrderDetailContent({ params }: OrderDetailPageProps) {
             </span>
           </div>
 
-          <div className="flex justify-between text-sm font-display font-extrabold text-[#141413] pt-3 border-t border-[#141413]/[0.08]">
+          <div className="flex justify-between text-sm font-mono font-extrabold text-[#141413] pt-3 border-t border-[#141413]/10">
             <span>Total Tagihan Akhir:</span>
             <span className="text-[#C85A17]">
               {order.totalAmount !== null && order.totalAmount !== undefined
@@ -258,7 +392,7 @@ async function OrderDetailContent({ params }: OrderDetailPageProps) {
           </div>
 
           {order.dpAmount && (
-            <div className="flex justify-between text-[11px] text-[#8E8B81] pt-1">
+            <div className="flex justify-between text-[11px] font-mono text-[#8E8B81] pt-1">
               <span>Nominal Uang Muka (DP 20%):</span>
               <span className="font-semibold text-[#141413]">
                 Rp{order.dpAmount.toLocaleString("id-ID")}
@@ -268,16 +402,16 @@ async function OrderDetailContent({ params }: OrderDetailPageProps) {
         </div>
       </div>
 
-      {/* Petunjuk Privasi & Akses Token */}
-      <div className="p-6 rounded-xl bg-[#FAF9F5] border border-[#141413]/[0.08] text-xs text-[#626058] space-y-2">
-        <p className="font-display font-bold text-[#141413] text-xs">
-          Informasi Keamanan & Akses Tautan Privat
+      {/* Petunjuk Privasi & Akses Token (Clean Typographic Note) */}
+      <div className="pt-8 border-t border-[#141413]/10 text-xs text-[#8E8B81] space-y-2">
+        <p className="font-mono text-[11px] uppercase tracking-wider text-[#141413] font-semibold">
+          Informasi Keamanan &amp; Akses Token Privat
         </p>
         <p className="leading-relaxed">
-          Halaman ini dilindungi oleh token kriptografis 64 karakter privat tanpa memerlukan pembuatan kata sandi akun. Anda dapat menyimpan atau menyalin tautan ini (*bookmark*) untuk memantau pembaruan status dan ongkir pesanan Anda secara berkala.
+          Halaman ini dilindungi token kriptografis 64-karakter privat tanpa mengharuskan pembuatan kata sandi akun publik. Anda dapat menyimpan atau menyalin tautan ini (*bookmark*) untuk memantau pembaruan status dan ongkir pesanan Anda secara berkala.
         </p>
         <p className="leading-relaxed">
-          Jika terdapat penyesuaian jumlah porsi atau menu, hubungi layanan pelanggan resmi kami di nomor <strong>{COMPANY_PROFILE.contacts[0].phone}</strong> dengan menyebutkan kode pesanan <strong>{order.orderCode}</strong>.
+          Penyesuaian jumlah porsi atau menu dapat diajukan kepada layanan pelanggan kami di nomor <strong>{COMPANY_PROFILE.contacts[0].phone}</strong> dengan menyebutkan kode pesanan <strong>{order.orderCode}</strong>.
         </p>
       </div>
     </div>
@@ -293,7 +427,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
         <div className="max-w-4xl mx-auto px-6 sm:px-8">
           <Suspense
             fallback={
-              <div className="p-16 text-center text-[#8E8B81] text-xs font-mono animate-pulse">
+              <div className="p-16 text-center text-[#8E8B81] text-xs font-mono">
                 Memuat rincian dan status pesanan Anda...
               </div>
             }

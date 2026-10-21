@@ -30,35 +30,35 @@ export default function OrderPage() {
             </p>
           </div>
 
-          {/* Alur Transparansi Pemesanan (Editorial Timeline) */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-[#141413]/[0.08] border border-[#141413]/[0.08] rounded-xl overflow-hidden text-xs">
-            <div className="bg-[#FAF9F5] p-5 space-y-2">
-              <span className="font-mono text-[11px] font-bold text-[#C85A17] block">
-                LANGKAH 01
+          {/* Alur Transparansi Pemesanan (Editorial Linear Datum Line, No Box Container) */}
+          <div className="pt-8 border-t border-[#141413]/10 grid grid-cols-1 sm:grid-cols-3 gap-8 text-xs">
+            <div className="space-y-1.5 border-l border-[#141413]/10 pl-4">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-[#C85A17] font-semibold block">
+                FASE 01 / FORMULIR
               </span>
-              <p className="font-display font-bold text-sm text-[#141413]">Rincian & Jadwal</p>
-              <p className="text-[#626058] text-[11px] leading-relaxed">
-                Pilih paket menu, jumlah porsi, dan waktu pengantaran di Karawang.
+              <h3 className="font-display font-bold text-sm text-[#141413]">Rincian &amp; Jadwal</h3>
+              <p className="text-[#626058] text-xs leading-relaxed">
+                Tentukan paket menu, volume porsi harian, dan jam tiba di pabrik Karawang.
               </p>
             </div>
 
-            <div className="bg-[#FAF9F5] p-5 space-y-2">
-              <span className="font-mono text-[11px] font-bold text-[#8E8B81] block">
-                LANGKAH 02
+            <div className="space-y-1.5 border-l border-[#141413]/10 pl-4">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-[#8E8B81] font-semibold block">
+                FASE 02 / VERIFIKASI
               </span>
-              <p className="font-display font-bold text-sm text-[#141413]">Verifikasi Dapur & Ongkir</p>
-              <p className="text-[#626058] text-[11px] leading-relaxed">
-                Admin memeriksa slot kapasitas dapur dan menetapkan biaya pengantaran.
+              <h3 className="font-display font-bold text-sm text-[#141413]">Kapasitas &amp; Rute</h3>
+              <p className="text-[#626058] text-xs leading-relaxed">
+                Tim operasional dapur memverifikasi slot boiler uap dan menetapkan logistik rute.
               </p>
             </div>
 
-            <div className="bg-[#FAF9F5] p-5 space-y-2">
-              <span className="font-mono text-[11px] font-bold text-[#8E8B81] block">
-                LANGKAH 03
+            <div className="space-y-1.5 border-l border-[#141413]/10 pl-4">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-[#8E8B81] font-semibold block">
+                FASE 03 / KONTRAK
               </span>
-              <p className="font-display font-bold text-sm text-[#141413]">Pembayaran Terkunci</p>
-              <p className="text-[#626058] text-[11px] leading-relaxed">
-                Pelunasan penuh atau skema DP 20% sebelum batas waktu H-1 acara.
+              <h3 className="font-display font-bold text-sm text-[#141413]">Pembayaran Terkunci</h3>
+              <p className="text-[#626058] text-xs leading-relaxed">
+                Pelunasan penuh atau skema uang muka (DP 20%) sebelum batas waktu H-1 acara.
               </p>
             </div>
           </div>

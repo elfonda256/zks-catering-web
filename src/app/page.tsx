@@ -7,19 +7,7 @@ import CompanyVerificationGallery from "@/components/CompanyVerificationGallery"
 import StatCounter from "@/components/StatCounter";
 import ScrollObserver from "@/components/ScrollObserver";
 import { COMPANY_PROFILE } from "@/data/catering-data";
-import {
-  ArrowUpRight,
-  ShieldCheck,
-  Clock,
-  Factory,
-  Truck,
-  Package,
-  Flame,
-  Droplets,
-  Thermometer,
-  CheckCircle2,
-  Utensils,
-} from "@/components/icons";
+import { ArrowUpRight } from "@/components/icons";
 
 const PARTNER_CLIENTS = [
   {
@@ -69,120 +57,126 @@ export default function HomePage() {
         <ScrollObserver />
 
         {/* ==============================================================
-            SECTION 1: HERO (Sprint 06: Layered Background, Ambient Lighting, 6% Bg Photo)
+            SECTION 1: HERO (Sprint 09: Architectural Industrial Masterpiece)
             ============================================================== */}
-        <section className="relative min-h-[85vh] lg:min-h-[88vh] flex items-center overflow-hidden pt-28 pb-16 lg:pt-32 lg:pb-20 bg-[#FAF9F5] divider-hairline">
-          {/* Layer 2: Ambient Lighting (Warm Industrial Glow & Soft White Highlight) */}
-          <div className="absolute inset-0 z-0 pointer-events-none ambient-glow-warm" />
-          <div className="absolute inset-0 z-0 pointer-events-none ambient-glow-white opacity-70" />
-
-          {/* Layer 3: Editorial Background Photography (Opacity 6% with Soft Mask Fade) */}
-          <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.06] mask-fade-bottom hero-enter-bg">
-            <Image
-              src="/images/industrial-facility.jpg"
-              alt="Fasilitas operasional industri PT Zahdan Kamal Sentosa Karawang"
-              fill
-              priority
-              className="object-cover object-center"
-              sizes="100vw"
-            />
-          </div>
-
+        <section className="relative min-h-[85vh] lg:min-h-[88vh] flex items-center overflow-hidden pt-28 pb-16 lg:pt-32 lg:pb-24 bg-[#FAF9F5]">
           <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-              {/* Kolom Kiri: Typographic Headline & Narrative (7 Kolom) */}
+              {/* Kolom Kiri: Typographic Narrative & Architectural Credentials (7 Kolom) */}
               <div className="lg:col-span-7 space-y-8">
-                <div className="inline-flex items-center gap-2.5 text-xs font-semibold uppercase tracking-[0.14em] text-[#C85A17] hero-enter-badge">
+                <div className="inline-flex items-center gap-3 text-[11px] font-mono uppercase tracking-[0.18em] text-[#8E8B81] hero-enter-badge">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#C85A17]" />
-                  <span>Operasional Dapur Sentral Industri · Kawasan Manufaktur Karawang</span>
+                  <span>PT Zahdan Kamal Sentosa · Dapur Sentral Industri Karawang</span>
                 </div>
 
-                <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-[60px] text-[#141413] tracking-[-0.04em] leading-[1.06] hero-enter-headline">
-                  Penyedia Katering Industri Skala Besar untuk Manufaktur Karawang.
+                <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-[56px] xl:text-[60px] text-[#141413] tracking-[-0.035em] leading-[1.08] hero-enter-headline">
+                  Dapur Sentral &amp; Katering Industri untuk Manufaktur Karawang.
                 </h1>
 
                 <p className="font-sans text-base sm:text-lg text-[#626058] leading-relaxed max-w-xl font-normal hero-enter-sub">
-                  Mitra strategis operasional pabrik dalam pemenuhan nutrisi ribuan tenaga kerja lintas shift. Tersertifikasi standar internasional <strong>ISO 22000</strong> dan <strong>Halal Resmi</strong> dengan ketepatan distribusi waktu tanpa kompromi.
+                  Fasilitas produksi mandiri 5.000+ porsi per hari di Karawang. Menjamin presisi suplai nutrisi ribuan tenaga kerja pabrik multinasional lintas shift, tersertifikasi penuh ISO 22000 dan Halal resmi.
                 </p>
 
-                {/* Primary & Secondary Action CTAs (Sprint 05: 180ms ease-out, 4px arrow move, animated underline) */}
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-1 hero-enter-actions">
+                {/* Primary & Secondary Action CTAs */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2 hero-enter-actions">
                   <a
                     href={`https://wa.me/${COMPANY_PROFILE.mainWhatsApp}?text=Halo%20PT%20Zahdan%20Kamal%20Sentosa,%20kami%20dari%20perusahaan%20ingin%20mengajukan%20konsultasi%20pengadaan%20katering%20karyawan.`}
                     target="_blank"
                     rel="noreferrer"
-                    className="btn-interactive-primary gap-2 px-6 py-3.5 rounded-lg text-xs sm:text-sm font-semibold tracking-tight shadow-xs group"
+                    className="btn-interactive-primary gap-2.5 px-7 py-4 rounded-lg text-xs sm:text-sm font-semibold tracking-tight shadow-xs group"
                   >
-                    <span>Ajukan Proposal &amp; Uji Cita Rasa</span>
+                    <span>Konsultasi Pengadaan &amp; Uji Rasa</span>
                     <ArrowUpRight className="w-4 h-4 opacity-75 btn-arrow" />
                   </a>
 
                   <Link
                     href="/menu"
-                    className="btn-interactive-secondary gap-1.5 px-6 py-3.5 rounded-lg border border-[#141413]/15 text-[#141413] text-xs sm:text-sm font-medium tracking-tight group"
+                    className="btn-interactive-secondary gap-2 px-6 py-4 rounded-lg border border-[#141413]/15 text-[#141413] text-xs sm:text-sm font-medium tracking-tight group"
                   >
-                    <span className="btn-text-underline">Lihat Rotasi Menu Harian</span>
+                    <span className="btn-text-underline">Lihat Rotasi Menu Pabrik</span>
                     <ArrowUpRight className="w-3.5 h-3.5 btn-secondary-icon text-[#141413]" />
                   </Link>
                 </div>
 
-                {/* Key Assurance Indicators */}
-                <div className="pt-8 border-t border-[#141413]/[0.08] grid grid-cols-2 sm:grid-cols-4 gap-6 text-xs text-[#626058] hero-enter-assurances">
-                  <div>
-                    <StatCounter
-                      value={5000}
-                      suffix="+"
-                      separator="."
-                      duration={1500}
-                      className="font-display font-bold text-xl text-[#141413] block"
-                    />
-                    <span className="text-[11px] text-[#68655C]">Porsi Harian</span>
+                {/* Operational Credentials (Architectural Spec Ledger) */}
+                <div className="pt-10 border-t border-[#141413]/10 grid grid-cols-2 sm:grid-cols-4 gap-8 sm:gap-4 lg:gap-8 hero-enter-assurances">
+                  <div className="space-y-1.5">
+                    <div className="font-display font-extrabold text-2xl lg:text-[28px] text-[#141413] tracking-tight leading-none">
+                      5.000<span className="text-[#C85A17] font-semibold">+</span>
+                    </div>
+                    <div className="text-[11px] font-mono uppercase tracking-[0.12em] text-[#8E8B81]">
+                      Porsi / Hari
+                    </div>
                   </div>
-                  <div>
-                    <span className="font-display font-bold text-xl text-[#C85A17] block">ISO 22000</span>
-                    <span className="text-[11px] text-[#68655C]">Food Safety Reg.</span>
+
+                  <div className="space-y-1.5 sm:border-l sm:border-[#141413]/10 sm:pl-6 lg:pl-8">
+                    <div className="font-display font-extrabold text-2xl lg:text-[28px] text-[#141413] tracking-tight leading-none">
+                      ISO 22000
+                    </div>
+                    <div className="text-[11px] font-mono uppercase tracking-[0.12em] text-[#8E8B81]">
+                      Certified
+                    </div>
                   </div>
-                  <div>
-                    <span className="font-display font-bold text-xl text-emerald-700 block">100% Halal</span>
-                    <span className="text-[11px] text-[#68655C]">LPPOM MUI</span>
+
+                  <div className="space-y-1.5 sm:border-l sm:border-[#141413]/10 sm:pl-6 lg:pl-8">
+                    <div className="font-display font-extrabold text-2xl lg:text-[28px] text-[#141413] tracking-tight leading-none">
+                      Halal
+                    </div>
+                    <div className="text-[11px] font-mono uppercase tracking-[0.12em] text-[#8E8B81]">
+                      BPJPH
+                    </div>
                   </div>
-                  <div>
-                    <span className="font-display font-bold text-xl text-[#141413] block">24 Jam</span>
-                    <span className="text-[11px] text-[#68655C]">Armada Shift Pabrik</span>
+
+                  <div className="space-y-1.5 sm:border-l sm:border-[#141413]/10 sm:pl-6 lg:pl-8">
+                    <div className="font-display font-extrabold text-2xl lg:text-[28px] text-[#141413] tracking-tight leading-none">
+                      24 Jam
+                    </div>
+                    <div className="text-[11px] font-mono uppercase tracking-[0.12em] text-[#8E8B81]">
+                      Distribusi Shift
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Kolom Kanan: Photography Layer (5 Kolom, No White Floating Card) */}
+              {/* Kolom Kanan: Living Industrial Visual (Exclusive Masterpiece - Visual Only) */}
               <div className="lg:col-span-5 relative hero-enter-photo">
-                <div className="relative rounded-2xl overflow-hidden border border-[#141413]/10 bg-[#141413] shadow-lg group">
-                  {/* Real Editorial Culinary Photography Plate */}
-                  <div className="relative aspect-[4/5] w-full">
+                <div className="relative w-full rounded-2xl overflow-hidden border border-[#141413]/12 bg-[#141413] shadow-[0_24px_48px_-12px_rgba(20,20,19,0.14)] hero-visual-container group">
+                  <div className="relative aspect-[4/5] sm:aspect-[3/4] lg:aspect-[4/5] w-full overflow-hidden">
                     <Image
-                      src="/images/hero-culinary.jpg"
-                      alt="Head Chef PT Zahdan Kamal Sentosa mempersiapkan hidangan katering korporat"
+                      src="/images/hero-industrial-kitchen.jpg"
+                      alt="Fasilitas Dapur Sentral Industri PT Zahdan Kamal Sentosa Karawang - Skala 5.000+ Porsi Harian"
                       fill
                       priority
                       loading="eager"
-                      className="object-cover opacity-90 transition-transform duration-700 group-hover:scale-102"
-                      sizes="(max-width: 1024px) 100vw, 40vw"
+                      className="object-cover object-center transform scale-[1.01] transition-transform duration-[1400ms] ease-out group-hover:scale-[1.03]"
+                      sizes="(max-width: 1024px) 100vw, 42vw"
                     />
-                    {/* Apple-style Gradient Fade Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#141413] via-[#141413]/25 to-transparent" />
-                  </div>
 
-                  {/* Refined Photographic Caption Overlay (Integrated, not a floating card) */}
-                  <div className="absolute bottom-0 inset-x-0 p-6 sm:p-7 space-y-2">
-                    <div className="inline-flex items-center gap-2 text-[#FAF9F5] text-[11px] font-mono tracking-wider uppercase text-[#D96B27]">
-                      <ShieldCheck className="w-3.5 h-3.5" />
-                      <span>Fasilitas Dapur Sentral 5.000+ Porsi/Hari</span>
+                    {/* Edge shadow vignette */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#141413]/80 via-transparent to-black/15 pointer-events-none" />
+
+                    {/* Atmospheric Culinary Steam Layer (Micro-Motion) */}
+                    <div className="absolute inset-0 pointer-events-none overflow-hidden hero-steam-layer" aria-hidden="true">
+                      <div className="hero-steam-wisp hero-steam-1" />
+                      <div className="hero-steam-wisp hero-steam-2" />
+                      <div className="hero-steam-wisp hero-steam-3" />
                     </div>
-                    <p className="font-display font-bold text-base sm:text-lg text-white leading-snug">
-                      Presisi Higiene, Skala Produksi Nyata, &amp; Suplai Tepat Waktu.
-                    </p>
-                    <p className="text-xs text-[#FAF9F5]/70 leading-relaxed">
-                      Dapur terpusat ZKS di Griya Indah Ciampel Karawang beroperasi 24 jam mendukung stabilitas nutrisi ribuan pekerja manufaktur lintas shift.
-                    </p>
+
+                    {/* Stainless Steel Sheen Sweep (Micro-Motion) */}
+                    <div className="absolute inset-0 pointer-events-none overflow-hidden hero-steel-reflection" aria-hidden="true">
+                      <div className="hero-sheen-line" />
+                    </div>
+
+                    {/* Architectural Operational Tag (Crisp Baseline Monograph) */}
+                    <div className="absolute bottom-0 inset-x-0 p-5 sm:p-6 bg-gradient-to-t from-[#141413]/95 via-[#141413]/70 to-transparent">
+                      <div className="flex items-center justify-between text-[#FAF9F5] text-[11px] font-mono tracking-wider uppercase border-t border-white/15 pt-3">
+                        <div className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                          <span className="text-white/90">Dapur Sentral Ciampel</span>
+                        </div>
+                        <span className="text-white/60">Shift Operasional 24 Jam</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -191,38 +185,25 @@ export default function HomePage() {
         </section>
 
         {/* ==============================================================
-            SECTION 01: TRUSTED CLIENT (Sprint 06: Soft Cream Tone, Ambient Cream Glow & Subtle Fleet Photo)
+        {/* ==============================================================
+            SECTION 01: TRUSTED CLIENTS (Sprint 09: Quiet Monograph Rhythm)
             ============================================================== */}
-        <section id="klien-industri" className="py-24 sm:py-28 lg:py-32 bg-[#F8F6F0] divider-hairline relative reveal-on-scroll overflow-hidden">
-          {/* Layer 2: Ambient Lighting (Gentle Cream Glow) */}
-          <div className="absolute inset-0 z-0 pointer-events-none ambient-glow-cream" />
-
-          {/* Layer 3: Editorial Fleet Photography Layer (Opacity 4%, Mask Corner Fade) */}
-          <div className="absolute right-0 bottom-0 w-96 h-80 opacity-[0.04] photo-mask-corner pointer-events-none">
-            <Image
-              src="/images/armada-real.png"
-              alt="Armada distribusi industri ZKS"
-              fill
-              className="object-contain object-right-bottom"
-              sizes="384px"
-            />
-          </div>
-
+        <section id="klien-industri" className="py-16 sm:py-20 bg-[#FAF9F5] relative reveal-on-scroll overflow-hidden">
           <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-            <div className="text-center max-w-3xl mx-auto space-y-3">
-              <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[#C85A17] block">
+            <div className="text-center max-w-2xl mx-auto space-y-2">
+              <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-[#8E8B81] block">
                 Mitra Industri yang Telah Dilayani
               </span>
-              <h2 className="font-display font-bold text-2xl sm:text-3xl lg:text-4xl text-[#141413] tracking-[-0.03em] reveal-title">
+              <h2 className="font-display font-bold text-2xl sm:text-3xl text-[#141413] tracking-[-0.03em] reveal-title">
                 Dipercaya oleh Pemimpin Industri Manufaktur
               </h2>
-              <p className="font-sans text-sm sm:text-base text-[#626058] font-normal leading-relaxed reveal-paragraph">
+              <p className="font-sans text-xs sm:text-sm text-[#626058] font-normal leading-relaxed reveal-paragraph max-w-xl mx-auto">
                 Solusi katering industri terpercaya untuk ribuan pekerja pabrik manufaktur di koridor industri Karawang dan Jawa Barat.
               </p>
             </div>
 
             {/* Enterprise Logo Marquee (Slow Smooth Continuous Horizontal Motion) */}
-            <div className="overflow-hidden mt-12 sm:mt-16 [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
+            <div className="overflow-hidden mt-10 sm:mt-12 [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
               <style dangerouslySetInnerHTML={{ __html: `
                 @keyframes marqueeSlowContinuous {
                   0% { transform: translate3d(0, 0, 0); }
@@ -266,8 +247,8 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="mt-14 pt-8 border-t border-[#141413]/[0.06] text-center reveal-fade stagger-6">
-              <p className="text-xs text-[#68655C]">
+            <div className="mt-10 pt-6 border-t border-[#141413]/[0.06] text-center reveal-fade stagger-6">
+              <p className="text-xs text-[#8E8B81]">
                 Mendukung kesinambungan operasional harian ribuan pekerja di Kawasan Industri KIIC, Surya Cipta, KIM, dan BIC.
               </p>
             </div>
@@ -275,86 +256,72 @@ export default function HomePage() {
         </section>
 
         {/* ==============================================================
-            SECTION 02: COMPANY STATISTICS (Sprint 06: Warm White Tone, Ambient Warm Glow & Authentic Chef Cooking Layer)
+            SECTION 02: CAPACITY METRICS (Sprint 09: Data Driven Metric Ledger)
             ============================================================== */}
-        <section className="relative py-24 sm:py-28 lg:py-32 bg-[#FAF9F5] divider-hairline overflow-hidden reveal-on-scroll">
-          {/* Layer 2: Ambient Lighting (Gentle Warm Glow) */}
-          <div className="absolute inset-0 z-0 pointer-events-none ambient-glow-warm" />
-
-          {/* Layer 3: Editorial Chef Cooking Layer (Opacity 4.5%, Mask Center Fade) */}
-          <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.045] photo-mask-center">
-            <Image
-              src="/images/chef-real-cooking.png"
-              alt="Aktivitas dapur industri bervolume tinggi ZKS Karawang"
-              fill
-              className="object-cover object-center"
-              sizes="100vw"
-            />
-          </div>
-
+        <section className="pt-4 pb-20 sm:pb-28 bg-[#FAF9F5] overflow-hidden reveal-on-scroll">
           <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-            {/* Minimal Metrics Grid with Hairline Dividers (No Cards, Pure Whitespace, Smooth 1.5s StatCounter) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-0 lg:divide-x lg:divide-[#141413]/[0.08] border-y border-[#141413]/[0.08] py-12 sm:py-16">
+            {/* Minimal Metrics Grid (No Cards, Pure Whitespace, Architectural Type Hierarchy) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8 pt-10 border-t border-[#141413]/10">
               {/* Metric 1 */}
-              <div className="lg:px-8 first:lg:pl-0 space-y-2 reveal-fade-up stagger-1">
+              <div className="space-y-1.5 reveal-fade-up stagger-1">
                 <StatCounter
                   value={17}
                   suffix="+"
                   duration={1500}
-                  className="font-display font-black text-5xl sm:text-6xl lg:text-7xl text-[#141413] tracking-[-0.04em] leading-none block"
+                  className="font-display font-extrabold text-5xl sm:text-6xl text-[#141413] tracking-[-0.04em] leading-none block"
                 />
-                <span className="text-sm sm:text-base font-semibold text-[#141413] tracking-tight block">
+                <span className="text-xs font-mono uppercase tracking-[0.14em] text-[#C85A17] font-semibold block pt-1">
                   Years Experience
                 </span>
-                <p className="text-xs text-[#626058] leading-relaxed max-w-xs font-normal">
+                <p className="text-xs text-[#626058] leading-relaxed font-normal pt-1">
                   Berpengalaman sejak 2007 melayani katering skala pabrik manufaktur dan penanaman modal asing di Karawang.
                 </p>
               </div>
 
               {/* Metric 2 */}
-              <div className="lg:px-8 space-y-2 reveal-fade-up stagger-2">
+              <div className="space-y-1.5 sm:border-l sm:border-[#141413]/10 sm:pl-8 reveal-fade-up stagger-2">
                 <StatCounter
                   value={5000}
                   suffix="+"
                   duration={1500}
-                  className="font-display font-black text-5xl sm:text-6xl lg:text-7xl text-[#141413] tracking-[-0.04em] leading-none block"
+                  className="font-display font-extrabold text-5xl sm:text-6xl text-[#141413] tracking-[-0.04em] leading-none block"
                 />
-                <span className="text-sm sm:text-base font-semibold text-[#141413] tracking-tight block">
+                <span className="text-xs font-mono uppercase tracking-[0.14em] text-[#C85A17] font-semibold block pt-1">
                   Meals Per Day
                 </span>
-                <p className="text-xs text-[#626058] leading-relaxed max-w-xs font-normal">
+                <p className="text-xs text-[#626058] leading-relaxed font-normal pt-1">
                   Kapasitas produksi harian dapur terpadu dengan mesin steamer uap dan kontrol porsi higienis terstandarisasi.
                 </p>
               </div>
 
               {/* Metric 3 */}
-              <div className="lg:px-8 space-y-2 reveal-fade-up stagger-3">
+              <div className="space-y-1.5 lg:border-l lg:border-[#141413]/10 lg:pl-8 reveal-fade-up stagger-3">
                 <StatCounter
                   value={99}
                   suffix="%"
                   duration={1500}
-                  className="font-display font-black text-5xl sm:text-6xl lg:text-7xl text-[#141413] tracking-[-0.04em] leading-none block"
+                  className="font-display font-extrabold text-5xl sm:text-6xl text-[#141413] tracking-[-0.04em] leading-none block"
                 />
-                <span className="text-sm sm:text-base font-semibold text-[#141413] tracking-tight block">
+                <span className="text-xs font-mono uppercase tracking-[0.14em] text-[#C85A17] font-semibold block pt-1">
                   On-Time Delivery
                 </span>
-                <p className="text-xs text-[#626058] leading-relaxed max-w-xs font-normal">
+                <p className="text-xs text-[#626058] leading-relaxed font-normal pt-1">
                   Armada insulated box 24 jam menjamin suplai tiba tepat waktu untuk seluruh shift pagi, siang, dan malam pabrik.
                 </p>
               </div>
 
               {/* Metric 4 */}
-              <div className="lg:px-8 last:lg:pr-0 space-y-2 reveal-fade-up stagger-4">
+              <div className="space-y-1.5 sm:border-l sm:border-[#141413]/10 sm:pl-8 reveal-fade-up stagger-4">
                 <StatCounter
                   value={100}
                   suffix="%"
                   duration={1500}
-                  className="font-display font-black text-5xl sm:text-6xl lg:text-7xl text-[#141413] tracking-[-0.04em] leading-none block"
+                  className="font-display font-extrabold text-5xl sm:text-6xl text-[#141413] tracking-[-0.04em] leading-none block"
                 />
-                <span className="text-sm sm:text-base font-semibold text-[#141413] tracking-tight block">
+                <span className="text-xs font-mono uppercase tracking-[0.14em] text-emerald-800 font-semibold block pt-1">
                   Halal Commitment
                 </span>
-                <p className="text-xs text-[#626058] leading-relaxed max-w-xs font-normal">
+                <p className="text-xs text-[#626058] leading-relaxed font-normal pt-1">
                   Tersertifikasi resmi Halal LPPOM MUI dan sistem manajemen mutu ISO 22000 tanpa kompromi bahan baku.
                 </p>
               </div>
@@ -363,16 +330,12 @@ export default function HomePage() {
         </section>
 
         {/* ==============================================================
-            SECTION 03: ABOUT COMPANY (Sprint 06: Soft Cream Tone, Ambient Cream Lighting)
+            SECTION 03: ABOUT COMPANY (Sprint 09: Editorial Monograph)
             ============================================================== */}
-        <section id="tentang" className="py-24 sm:py-28 lg:py-32 bg-[#F6F4ED] divider-hairline relative overflow-hidden reveal-on-scroll">
-          {/* Layer 2: Ambient Lighting (Gentle Cream Glow & Soft White Highlight) */}
-          <div className="absolute inset-0 z-0 pointer-events-none ambient-glow-cream" />
-          <div className="absolute inset-0 z-0 pointer-events-none ambient-glow-white opacity-60" />
-
-          <div className="relative z-10 max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 space-y-10">
+        <section id="tentang" className="py-28 sm:py-36 bg-[#FAF9F5] relative overflow-hidden reveal-on-scroll">
+          <div className="relative z-10 max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 space-y-12">
             <div className="space-y-4 max-w-3xl">
-              <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[#C85A17] block">
+              <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-[#8E8B81] block">
                 Sejarah &amp; Dedikasi Operasional
               </span>
               <h2 className="font-display font-bold text-3xl sm:text-4xl lg:text-5xl text-[#141413] tracking-[-0.03em] leading-[1.12] reveal-title">
@@ -380,7 +343,7 @@ export default function HomePage() {
               </h2>
             </div>
 
-            <div className="space-y-4 text-sm sm:text-base text-[#626058] leading-relaxed font-normal reveal-paragraph max-w-4xl">
+            <div className="space-y-5 text-sm sm:text-base text-[#626058] leading-relaxed font-normal reveal-paragraph max-w-4xl">
               <p>
                 Didirikan pada tahun 2007 di Karawang, <strong>PT. Zahdan Kamal Sentosa (ZKS Catering)</strong> bertransformasi dari penyedia boga korporat menjadi mitra strategis utama bagi industri manufaktur berskala besar. Kami memahami bahwa makanan tenaga kerja pabrik bukan sekadar hidangan, melainkan energi utama yang menggerakkan produktivitas lini operasional.
               </p>
@@ -390,103 +353,103 @@ export default function HomePage() {
             </div>
 
             {/* Legal & Accreditation Credentials Strip */}
-            <div className="pt-6 border-t border-[#141413]/[0.08] grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs reveal-fade-up stagger-2">
+            <div className="pt-8 border-t border-[#141413]/10 grid grid-cols-2 sm:grid-cols-4 gap-6 text-xs reveal-fade-up stagger-2">
               <div>
                 <span className="font-mono text-[11px] font-bold text-[#141413] block">ISO 22000:2009</span>
-                <span className="text-[11px] text-[#68655C]">Reg. ZKS 221076 0001</span>
+                <span className="text-[11px] font-mono text-[#8E8B81]">Reg. ZKS 221076 0001</span>
               </div>
               <div>
                 <span className="font-mono text-[11px] font-bold text-emerald-800 block">Halal LPPOM MUI</span>
-                <span className="text-[11px] text-[#68655C]">ID32110006798080623</span>
+                <span className="text-[11px] font-mono text-[#8E8B81]">ID32110006798080623</span>
               </div>
               <div>
                 <span className="font-mono text-[11px] font-bold text-[#141413] block">NIB Resmi KBLI</span>
-                <span className="text-[11px] text-[#68655C]">241121002398</span>
+                <span className="text-[11px] font-mono text-[#8E8B81]">241121002398</span>
               </div>
               <div>
                 <span className="font-mono text-[11px] font-bold text-[#141413] block">Dinkes Karawang</span>
-                <span className="text-[11px] text-[#68655C]">Laik Higiene Gol. B</span>
+                <span className="text-[11px] font-mono text-[#8E8B81]">Laik Higiene Gol. B</span>
               </div>
             </div>
 
-            {/* Milestone Timeline Section Underneath (Sprint 05: Growing Line + Interactive Progressive Stepper) */}
-            <div className="pt-8 border-t border-[#141413]/[0.08] space-y-6">
+            {/* Milestone Timeline: Editorial Clean Linear Rhythm (No Card Hover Boxes) */}
+            <div className="pt-10 border-t border-[#141413]/10 space-y-6">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#68655C] block">
+                <span className="text-[11px] font-mono uppercase tracking-[0.14em] text-[#8E8B81] block">
                   Perjalanan &amp; Milestone Perusahaan
                 </span>
-                <span className="text-[11px] font-mono text-[#68655C] hidden sm:block">
+                <span className="text-[11px] font-mono text-[#8E8B81] hidden sm:block">
                   2007 — 2026
                 </span>
               </div>
 
               <div className="relative pt-2">
-                {/* Connecting Progress Line (grows on viewport enter) */}
-                <div className="absolute top-[21px] left-3 right-6 h-px bg-[#141413]/10 hidden sm:block overflow-hidden pointer-events-none">
+                {/* Connecting Progress Line */}
+                <div className="absolute top-[18px] left-2 right-4 h-px bg-[#141413]/10 hidden sm:block overflow-hidden pointer-events-none">
                   <div className="h-full bg-gradient-to-r from-[#141413] via-[#C85A17] to-emerald-600 timeline-progress-line" />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-4 gap-6 relative">
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-8 relative">
                   {/* Step 1: 2007 */}
-                  <div className="group/step relative p-3.5 -m-3.5 rounded-xl transition-all duration-[180ms] ease-out hover:bg-white/90 hover:shadow-xs border border-transparent hover:border-[#141413]/[0.08] cursor-pointer reveal-fade-up stagger-1 active:scale-[0.98]">
+                  <div className="space-y-1.5 reveal-fade-up stagger-1">
                     <div className="flex items-center gap-2">
-                      <span className="relative z-10 w-2.5 h-2.5 rounded-full bg-[#141413] transition-all duration-[180ms] ease-out group-hover/step:scale-125 group-hover/step:ring-4 group-hover/step:ring-[#141413]/15" />
-                      <span className="font-display font-extrabold text-sm sm:text-base text-[#141413] tracking-tight transition-colors duration-[180ms] group-hover/step:text-[#C85A17]">
+                      <span className="relative z-10 w-2 h-2 rounded-full bg-[#141413]" />
+                      <span className="font-display font-extrabold text-sm sm:text-base text-[#141413] tracking-tight">
                         2007
                       </span>
                     </div>
-                    <span className="text-xs font-semibold text-[#141413] block mt-1.5 transition-transform duration-[180ms] group-hover/step:translate-x-0.5">
+                    <span className="text-xs font-semibold text-[#141413] block pt-1">
                       Company Founded
                     </span>
-                    <p className="text-[11px] text-[#626058] group-hover/step:text-[#141413] leading-relaxed transition-colors duration-[180ms] mt-1">
+                    <p className="text-[11px] text-[#626058] leading-relaxed">
                       Awal berdirinya ZKS di Karawang melayani katering pabrik pertama.
                     </p>
                   </div>
 
                   {/* Step 2: 2012 */}
-                  <div className="group/step relative p-3.5 -m-3.5 rounded-xl transition-all duration-[180ms] ease-out hover:bg-white/90 hover:shadow-xs border border-transparent hover:border-[#141413]/[0.08] cursor-pointer reveal-fade-up stagger-2 active:scale-[0.98]">
+                  <div className="space-y-1.5 reveal-fade-up stagger-2">
                     <div className="flex items-center gap-2">
-                      <span className="relative z-10 w-2.5 h-2.5 rounded-full bg-[#141413] transition-all duration-[180ms] ease-out group-hover/step:scale-125 group-hover/step:ring-4 group-hover/step:ring-[#141413]/15" />
-                      <span className="font-display font-extrabold text-sm sm:text-base text-[#141413] tracking-tight transition-colors duration-[180ms] group-hover/step:text-[#C85A17]">
+                      <span className="relative z-10 w-2 h-2 rounded-full bg-[#141413]" />
+                      <span className="font-display font-extrabold text-sm sm:text-base text-[#141413] tracking-tight">
                         2012
                       </span>
                     </div>
-                    <span className="text-xs font-semibold text-[#141413] block mt-1.5 transition-transform duration-[180ms] group-hover/step:translate-x-0.5">
+                    <span className="text-xs font-semibold text-[#141413] block pt-1">
                       Expanded Production
                     </span>
-                    <p className="text-[11px] text-[#626058] group-hover/step:text-[#141413] leading-relaxed transition-colors duration-[180ms] mt-1">
+                    <p className="text-[11px] text-[#626058] leading-relaxed">
                       Modernisasi dapur sentral dengan instalasi boiler uap &amp; cold storage.
                     </p>
                   </div>
 
                   {/* Step 3: 2018 */}
-                  <div className="group/step relative p-3.5 -m-3.5 rounded-xl transition-all duration-[180ms] ease-out hover:bg-white/90 hover:shadow-xs border border-transparent hover:border-[#141413]/[0.08] cursor-pointer reveal-fade-up stagger-3 active:scale-[0.98]">
+                  <div className="space-y-1.5 reveal-fade-up stagger-3">
                     <div className="flex items-center gap-2">
-                      <span className="relative z-10 w-2.5 h-2.5 rounded-full bg-[#C85A17] transition-all duration-[180ms] ease-out group-hover/step:scale-125 group-hover/step:ring-4 group-hover/step:ring-[#C85A17]/25" />
-                      <span className="font-display font-extrabold text-sm sm:text-base text-[#C85A17] tracking-tight transition-colors duration-[180ms] group-hover/step:text-[#A4460E]">
+                      <span className="relative z-10 w-2 h-2 rounded-full bg-[#C85A17]" />
+                      <span className="font-display font-extrabold text-sm sm:text-base text-[#C85A17] tracking-tight">
                         2018
                       </span>
                     </div>
-                    <span className="text-xs font-semibold text-[#141413] block mt-1.5 transition-transform duration-[180ms] group-hover/step:translate-x-0.5">
+                    <span className="text-xs font-semibold text-[#141413] block pt-1">
                       Industrial Division
                     </span>
-                    <p className="text-[11px] text-[#626058] group-hover/step:text-[#141413] leading-relaxed transition-colors duration-[180ms] mt-1">
+                    <p className="text-[11px] text-[#626058] leading-relaxed">
                       Divisi katering industri skala 5.000+ porsi &amp; sertifikasi ISO 22000.
                     </p>
                   </div>
 
                   {/* Step 4: Today */}
-                  <div className="group/step relative p-3.5 -m-3.5 rounded-xl transition-all duration-[180ms] ease-out hover:bg-white/90 hover:shadow-xs border border-transparent hover:border-[#141413]/[0.08] cursor-pointer reveal-fade-up stagger-4 active:scale-[0.98]">
+                  <div className="space-y-1.5 reveal-fade-up stagger-4">
                     <div className="flex items-center gap-2">
-                      <span className="relative z-10 w-2.5 h-2.5 rounded-full bg-emerald-600 transition-all duration-[180ms] ease-out group-hover/step:scale-125 group-hover/step:ring-4 group-hover/step:ring-emerald-600/25" />
-                      <span className="font-display font-extrabold text-sm sm:text-base text-emerald-800 tracking-tight transition-colors duration-[180ms] group-hover/step:text-emerald-700">
+                      <span className="relative z-10 w-2 h-2 rounded-full bg-emerald-600" />
+                      <span className="font-display font-extrabold text-sm sm:text-base text-emerald-800 tracking-tight">
                         Today
                       </span>
                     </div>
-                    <span className="text-xs font-semibold text-[#141413] block mt-1.5 transition-transform duration-[180ms] group-hover/step:translate-x-0.5">
+                    <span className="text-xs font-semibold text-[#141413] block pt-1">
                       Trusted Partner
                     </span>
-                    <p className="text-[11px] text-[#626058] group-hover/step:text-[#141413] leading-relaxed transition-colors duration-[180ms] mt-1">
+                    <p className="text-[11px] text-[#626058] leading-relaxed">
                       Mitra katering tepercaya perusahaan multinasional di Jawa Barat.
                     </p>
                   </div>
@@ -497,61 +460,47 @@ export default function HomePage() {
         </section>
 
         {/* ==============================================================
-            SECTION 04: MICRO CTA (Sprint 06: Warm White Tone, Ambient Radial Warmth & Hairline Divider)
+            SECTION 04: EDITORIAL INTERLUDE (Sprint 09: Minimal Typographic Transition)
             ============================================================== */}
-        <section className="relative py-20 sm:py-24 lg:py-28 bg-[#FAF9F5] divider-hairline text-center reveal-on-scroll overflow-hidden">
-          {/* Layer 2: Ambient Lighting (Gentle Centered Warm Glow) */}
-          <div className="absolute inset-0 z-0 pointer-events-none ambient-glow-warm opacity-80" />
-
-          <div className="relative z-10 max-w-4xl mx-auto px-6 sm:px-8 lg:px-12 space-y-6">
-            <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[#C85A17] block">
-              Konsultasi Pengadaan Pabrik
-            </span>
-
-            <h3 className="font-display font-bold text-2xl sm:text-3xl lg:text-4xl text-[#141413] tracking-[-0.03em] leading-snug reveal-title">
-              Looking for a Reliable Catering Partner? Request a Free Consultation with Our Team.
+        <section className="py-14 sm:py-16 bg-[#FAF9F5] text-center reveal-on-scroll">
+          <div className="max-w-2xl mx-auto px-6 space-y-3.5">
+            <h3 className="font-display font-bold text-xl sm:text-2xl text-[#141413] tracking-[-0.02em] leading-snug">
+              Diskusikan Kebutuhan Konsumsi Multi-Shift Pabrik Anda.
             </h3>
-
-            <p className="font-sans text-sm sm:text-base text-[#626058] max-w-xl mx-auto font-normal leading-relaxed reveal-paragraph">
-              Diskusikan kebutuhan konsumsi multi-shift karyawan pabrik Anda, jadwalkan pengiriman sampel uji rasa gratis, atau survei audit langsung ke dapur produksi kami.
+            <p className="text-xs sm:text-sm text-[#626058] max-w-lg mx-auto leading-relaxed">
+              Konsultasi langsung bersama manajemen ZKS untuk pengadaan katering, uji sampel rasa, atau jadwal survei audit fasilitas dapur.
             </p>
-
-            {/* Minimal Action Buttons with Sprint 05 180ms hover, 4px arrow motion, and secondary underline animation */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 reveal-fade-up stagger-2">
+            <div className="pt-2 flex flex-wrap items-center justify-center gap-6 text-xs font-semibold">
               <Link
                 href="/pesan"
-                className="w-full sm:w-auto btn-interactive-primary gap-2 px-7 py-3.5 rounded-lg text-xs sm:text-sm font-semibold tracking-tight shadow-xs group"
+                className="inline-flex items-center gap-1.5 text-[#141413] hover:text-[#C85A17] transition-colors underline underline-offset-4 decoration-[#141413]/25 hover:decoration-[#C85A17]"
               >
-                <span>Request Quotation</span>
-                <ArrowUpRight className="w-3.5 h-3.5 opacity-75 btn-arrow" />
+                <span>Ajukan Permintaan Proposal</span>
+                <ArrowUpRight className="w-3.5 h-3.5" />
               </Link>
-
               <a
                 href={`https://wa.me/${COMPANY_PROFILE.mainWhatsApp}?text=Halo%20PT%20Zahdan%20Kamal%20Sentosa,%20kami%20ingin%20berkonsultasi%20mengenai%20katering%20industri%20pabrik.`}
                 target="_blank"
                 rel="noreferrer"
-                className="w-full sm:w-auto btn-interactive-secondary gap-1.5 px-7 py-3.5 rounded-lg border border-[#141413]/15 text-[#141413] text-xs sm:text-sm font-medium tracking-tight group"
+                className="inline-flex items-center gap-1.5 text-[#8E8B81] hover:text-[#141413] transition-colors"
               >
-                <span className="btn-text-underline">WhatsApp Sales</span>
-                <ArrowUpRight className="w-3.5 h-3.5 btn-secondary-icon text-[#141413]" />
+                <span>WhatsApp Manajemen</span>
+                <ArrowUpRight className="w-3 h-3 opacity-60" />
               </a>
             </div>
           </div>
         </section>
 
         {/* ==============================================================
-            SECTION 01 (Sprint 03 / Sprint 06): WHY CHOOSE US (Soft Neutral Tone, Ambient Lighting)
+            SECTION 05: STRATEGIC VALUE (Sprint 09: Editorial Value Ledger)
             ============================================================== */}
-        <section id="keunggulan" className="py-24 sm:py-28 lg:py-32 bg-[#F7F5EE] divider-hairline relative reveal-on-scroll overflow-hidden">
-          {/* Layer 2: Ambient Lighting (Gentle Warm Neutral Glow) */}
-          <div className="absolute inset-0 z-0 pointer-events-none ambient-glow-cream" />
-
+        <section id="keunggulan" className="py-28 sm:py-32 lg:py-36 bg-[#FAF9F5] relative reveal-on-scroll overflow-hidden">
           <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
               {/* Kolom Kiri: Narrative Value Proposition (5 Kolom) */}
-              <div className="lg:col-span-5 space-y-6">
+              <div className="lg:col-span-5 space-y-8">
                 <div className="space-y-3">
-                  <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[#C85A17] block">
+                  <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-[#C85A17] font-semibold block">
                     Strategic Value Proposition
                   </span>
                   <h2 className="font-display font-bold text-3xl sm:text-4xl lg:text-5xl text-[#141413] tracking-[-0.03em] leading-[1.12] reveal-title">
@@ -563,77 +512,76 @@ export default function HomePage() {
                   Di kawasan industri Karawang dengan ribuan tenaga kerja, keterlambatan konsumsi atau insiden mutu makanan adalah risiko fatal yang dapat melumpuhkan lini produksi pabrik. PT. Zahdan Kamal Sentosa hadir bukan sekadar sebagai katering biasa, melainkan sistem operasional boga industri yang dirancang khusus untuk stabilitas manufaktur Anda.
                 </p>
 
-                {/* Assurance Metrics Bar */}
-                <div className="p-6 rounded-xl bg-[#F3F1E9] border border-[#141413]/[0.08] space-y-3 reveal-fade-up stagger-2">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-[#141413]">
-                    <ShieldCheck className="w-4 h-4 text-[#C85A17]" />
-                    <span>Garansi Keandalan Kontrak Korporat</span>
-                  </div>
+                {/* Assurance Ledger (Clean Typography, No Nested Card Box) */}
+                <div className="pt-6 border-t border-[#141413]/10 space-y-2 reveal-fade-up stagger-2">
+                  <span className="text-[11px] font-mono uppercase tracking-[0.14em] text-[#C85A17] font-semibold block">
+                    Garansi Keandalan Kontrak Korporat
+                  </span>
                   <p className="text-xs text-[#626058] leading-relaxed">
                     Sistem operasional kami teruji menghadapi audit ketat perusahaan PMA Jepang, Korea, dan multinasional dengan kepatuhan SLA 99% tepat waktu.
                   </p>
                 </div>
               </div>
 
-              {/* Kolom Kanan: 4 Premium Value Blocks (7 Kolom, Hairline Separators, Staggered Reveals) */}
+              {/* Kolom Kanan: 4 Monograph Value Ledgers (7 Kolom, Pure Whitespace & Monospace Indices) */}
               <div className="lg:col-span-7">
-                <div className="divide-y divide-[#141413]/[0.08] border-y border-[#141413]/[0.08]">
+                <div className="divide-y divide-[#141413]/10 border-y border-[#141413]/10">
                   {/* Item 1: Operational Reliability */}
-                  <div className="py-7 sm:py-8 grid grid-cols-1 sm:grid-cols-12 gap-4 items-start group reveal-fade-up stagger-1">
-                    <div className="sm:col-span-4 flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-[#141413] text-[#FAF9F5] flex items-center justify-center shrink-0">
-                        <Clock className="w-4 h-4" />
-                      </div>
-                      <span className="font-display font-bold text-base sm:text-lg text-[#141413] tracking-tight">
-                        Operational Reliability
+                  <div className="py-7 sm:py-8 grid grid-cols-1 sm:grid-cols-12 gap-3 sm:gap-6 items-baseline group reveal-fade-up stagger-1">
+                    <div className="sm:col-span-5 flex items-baseline gap-3">
+                      <span className="font-mono text-xs font-semibold text-[#8E8B81] group-hover:text-[#141413] transition-colors">
+                        01
                       </span>
+                      <h3 className="font-display font-bold text-base sm:text-lg text-[#141413] tracking-tight">
+                        Operational Reliability
+                      </h3>
                     </div>
-                    <div className="sm:col-span-8 text-xs sm:text-sm text-[#626058] leading-relaxed">
+                    <div className="sm:col-span-7 text-xs sm:text-sm text-[#626058] leading-relaxed">
                       Sistem produksi dan pengiriman terstruktur 3 shift tanpa jeda sepanjang tahun, memastikan ribuan pekerja shift pagi, siang, lembur, dan malam menerima asupan nutrisi tepat waktu.
                     </div>
                   </div>
 
                   {/* Item 2: Food Safety Standard */}
-                  <div className="py-7 sm:py-8 grid grid-cols-1 sm:grid-cols-12 gap-4 items-start group reveal-fade-up stagger-2">
-                    <div className="sm:col-span-4 flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-[#C85A17] text-[#FAF9F5] flex items-center justify-center shrink-0">
-                        <ShieldCheck className="w-4 h-4" />
-                      </div>
-                      <span className="font-display font-bold text-base sm:text-lg text-[#141413] tracking-tight">
-                        Food Safety Standard
+                  <div className="py-7 sm:py-8 grid grid-cols-1 sm:grid-cols-12 gap-3 sm:gap-6 items-baseline group reveal-fade-up stagger-2">
+                    <div className="sm:col-span-5 flex items-baseline gap-3">
+                      <span className="font-mono text-xs font-semibold text-[#C85A17]">
+                        02
                       </span>
+                      <h3 className="font-display font-bold text-base sm:text-lg text-[#141413] tracking-tight">
+                        Food Safety Standard
+                      </h3>
                     </div>
-                    <div className="sm:col-span-8 text-xs sm:text-sm text-[#626058] leading-relaxed">
+                    <div className="sm:col-span-7 text-xs sm:text-sm text-[#626058] leading-relaxed">
                       Penerapan protokol HACCP menyeluruh dari inspeksi bahan baku, filtrasi air Reverse Osmosis, hingga retensi arsip sampel makanan H-0 selama 3x24 jam untuk pencegahan risiko kontaminasi secara mutlak.
                     </div>
                   </div>
 
                   {/* Item 3: Scalable Production */}
-                  <div className="py-7 sm:py-8 grid grid-cols-1 sm:grid-cols-12 gap-4 items-start group reveal-fade-up stagger-3">
-                    <div className="sm:col-span-4 flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-[#141413] text-[#FAF9F5] flex items-center justify-center shrink-0">
-                        <Factory className="w-4 h-4" />
-                      </div>
-                      <span className="font-display font-bold text-base sm:text-lg text-[#141413] tracking-tight">
-                        Scalable Production
+                  <div className="py-7 sm:py-8 grid grid-cols-1 sm:grid-cols-12 gap-3 sm:gap-6 items-baseline group reveal-fade-up stagger-3">
+                    <div className="sm:col-span-5 flex items-baseline gap-3">
+                      <span className="font-mono text-xs font-semibold text-[#8E8B81] group-hover:text-[#141413] transition-colors">
+                        03
                       </span>
+                      <h3 className="font-display font-bold text-base sm:text-lg text-[#141413] tracking-tight">
+                        Scalable Production
+                      </h3>
                     </div>
-                    <div className="sm:col-span-8 text-xs sm:text-sm text-[#626058] leading-relaxed">
+                    <div className="sm:col-span-7 text-xs sm:text-sm text-[#626058] leading-relaxed">
                       Dapur sentral industri berkapasitas 5.000+ porsi harian dengan mesin steamer uap boiler bertekanan tinggi yang siap meningkatkan kapasitas saat lonjakan lembur atau shift kerja mendadak.
                     </div>
                   </div>
 
                   {/* Item 4: On-Time Delivery */}
-                  <div className="py-7 sm:py-8 grid grid-cols-1 sm:grid-cols-12 gap-4 items-start group reveal-fade-up stagger-4">
-                    <div className="sm:col-span-4 flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-[#141413] text-[#FAF9F5] flex items-center justify-center shrink-0">
-                        <Truck className="w-4 h-4" />
-                      </div>
-                      <span className="font-display font-bold text-base sm:text-lg text-[#141413] tracking-tight">
-                        On-Time Delivery
+                  <div className="py-7 sm:py-8 grid grid-cols-1 sm:grid-cols-12 gap-3 sm:gap-6 items-baseline group reveal-fade-up stagger-4">
+                    <div className="sm:col-span-5 flex items-baseline gap-3">
+                      <span className="font-mono text-xs font-semibold text-[#8E8B81] group-hover:text-[#141413] transition-colors">
+                        04
                       </span>
+                      <h3 className="font-display font-bold text-base sm:text-lg text-[#141413] tracking-tight">
+                        On-Time Delivery
+                      </h3>
                     </div>
-                    <div className="sm:col-span-8 text-xs sm:text-sm text-[#626058] leading-relaxed">
+                    <div className="sm:col-span-7 text-xs sm:text-sm text-[#626058] leading-relaxed">
                       Armada insulated box berpengatur suhu tertutup dengan akses cepat gerbang tol Karawang menjamin waktu transit rata-rata di bawah 35 menit menuju KIIC, Surya Cipta, KIM, dan BIC.
                     </div>
                   </div>
@@ -644,15 +592,12 @@ export default function HomePage() {
         </section>
 
         {/* ==============================================================
-            SECTION 02 (Sprint 03 / Sprint 06): PRODUCTION CAPACITY (Ambient Dark Warmth & Steam Boiler Layer)
+            SECTION 06: PRODUCTION CAPACITY (Sprint 09: Pure Data-Driven Matrix)
             ============================================================== */}
-        <section id="operasional" className="py-24 sm:py-28 lg:py-32 bg-[#141413] text-[#FAF9F5] relative overflow-hidden divider-hairline-dark reveal-on-scroll">
-          {/* Layer 2: Ambient Lighting (Gentle Warm Industrial Glow in Charcoal Canvas) */}
-          <div className="absolute inset-0 z-0 pointer-events-none ambient-dark-warmth" />
-
+        <section id="operasional" className="py-32 sm:py-36 lg:py-40 bg-[#141413] text-[#FAF9F5] relative overflow-hidden reveal-on-scroll">
           <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 space-y-16">
             <div className="max-w-3xl space-y-4">
-              <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[#D96B27] block">
+              <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-[#D96B27] font-semibold block">
                 Skala Operasional Nyata
               </span>
               <h2 className="font-display font-bold text-3xl sm:text-4xl lg:text-5xl text-[#FAF9F5] tracking-[-0.03em] leading-tight reveal-title">
@@ -663,8 +608,8 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* Horizontal Desktop Metrics Layout with Smooth 1.5s StatCounters */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0 lg:divide-x lg:divide-[#FAF9F5]/[0.1] border-y border-[#FAF9F5]/[0.1] py-12 sm:py-16">
+            {/* Industrial Metrics Matrix (Architectural Monospace Ledger) */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0 lg:divide-x lg:divide-[#FAF9F5]/10 border-y border-[#FAF9F5]/10 py-12 sm:py-16">
               <div className="lg:px-8 first:lg:pl-0 space-y-2 reveal-fade-up stagger-1">
                 <StatCounter
                   value={5000}
@@ -673,10 +618,10 @@ export default function HomePage() {
                   duration={1500}
                   className="font-display font-black text-4xl sm:text-5xl lg:text-6xl text-[#FAF9F5] tracking-[-0.04em] leading-none block"
                 />
-                <span className="text-sm font-semibold text-[#D96B27] tracking-tight block">
+                <span className="text-xs font-mono uppercase tracking-[0.14em] text-[#D96B27] font-semibold block pt-1">
                   Meals Produced Daily
                 </span>
-                <p className="text-xs text-[#A8A69E] leading-relaxed">
+                <p className="text-xs text-[#8E8B81] leading-relaxed">
                   Porsi harian terdistribusi ke berbagai korporasi manufaktur lintas shift operasional.
                 </p>
               </div>
@@ -687,10 +632,10 @@ export default function HomePage() {
                   duration={1500}
                   className="font-display font-black text-4xl sm:text-5xl lg:text-6xl text-[#FAF9F5] tracking-[-0.04em] leading-none block"
                 />
-                <span className="text-sm font-semibold text-[#D96B27] tracking-tight block">
+                <span className="text-xs font-mono uppercase tracking-[0.14em] text-[#D96B27] font-semibold block pt-1">
                   Central Kitchen Facility
                 </span>
-                <p className="text-xs text-[#A8A69E] leading-relaxed">
+                <p className="text-xs text-[#8E8B81] leading-relaxed">
                   Dapur produksi terpadu mandiri di Ciampel dengan alur kerja satu arah (one-way flow) higienis.
                 </p>
               </div>
@@ -702,10 +647,10 @@ export default function HomePage() {
                   duration={1500}
                   className="font-display font-black text-4xl sm:text-5xl lg:text-6xl text-[#FAF9F5] tracking-[-0.04em] leading-none block"
                 />
-                <span className="text-sm font-semibold text-[#D96B27] tracking-tight block">
+                <span className="text-xs font-mono uppercase tracking-[0.14em] text-[#D96B27] font-semibold block pt-1">
                   Delivery Fleet Units
                 </span>
-                <p className="text-xs text-[#A8A69E] leading-relaxed">
+                <p className="text-xs text-[#8E8B81] leading-relaxed">
                   Armada operasional insulated box berpengatur suhu tertutup siap siaga 24 jam sehari.
                 </p>
               </div>
@@ -717,55 +662,55 @@ export default function HomePage() {
                   duration={1500}
                   className="font-display font-black text-4xl sm:text-5xl lg:text-6xl text-[#FAF9F5] tracking-[-0.04em] leading-none block"
                 />
-                <span className="text-sm font-semibold text-[#D96B27] tracking-tight block">
+                <span className="text-xs font-mono uppercase tracking-[0.14em] text-[#D96B27] font-semibold block pt-1">
                   Years Experience
                 </span>
-                <p className="text-xs text-[#A8A69E] leading-relaxed">
+                <p className="text-xs text-[#8E8B81] leading-relaxed">
                   Pengalaman operasional melayani penanaman modal asing (PMA) di Karawang sejak 2007.
                 </p>
               </div>
             </div>
 
-            {/* Industrial Corridor Coverage Badge */}
-            <div className="p-6 rounded-xl bg-[#FAF9F5]/[0.03] border border-[#FAF9F5]/[0.08] flex flex-col md:flex-row md:items-center justify-between gap-6 text-xs text-[#A8A69E] reveal-fade-up stagger-5">
-              <div className="space-y-1">
-                <span className="font-semibold text-[#FAF9F5] block">
-                  Akses Strategis Kawasan Industri Karawang &amp; Sekitarnya:
+            {/* Industrial Corridor Latency Ledger (Pure Data Matrix, No Card-in-Panel) */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-baseline text-xs text-[#8E8B81] reveal-fade-up stagger-5">
+              <div className="md:col-span-4 space-y-1">
+                <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[#D96B27] font-semibold block">
+                  Akses Koridor Kawasan Industri
                 </span>
-                <p>
-                  Terhubung cepat via gerbang tol Karawang Barat &amp; Timur menuju Kawasan Industri KIIC, Suryacipta City of Industry, Kawasan Industri Mitra (KIM), dan Bukit Indah City (BIC).
+                <p className="text-xs text-[#A8A69E]">
+                  Akses langsung via Gerbang Tol Karawang Barat &amp; Timur (Transit rata-rata &lt; 35 menit):
                 </p>
               </div>
-              <div className="shrink-0 font-mono text-[11px] text-[#D96B27] font-semibold">
-                Transit Time Rata-rata: &lt; 35 Menit
+              <div className="md:col-span-8 grid grid-cols-2 sm:grid-cols-4 gap-4 pt-1">
+                <div className="border-l border-[#FAF9F5]/10 pl-4 space-y-0.5">
+                  <span className="font-mono text-xs text-[#FAF9F5] font-semibold block">KIIC Karawang</span>
+                  <span className="font-mono text-[11px] text-[#D96B27]">~18 Menit</span>
+                </div>
+                <div className="border-l border-[#FAF9F5]/10 pl-4 space-y-0.5">
+                  <span className="font-mono text-xs text-[#FAF9F5] font-semibold block">Surya Cipta</span>
+                  <span className="font-mono text-[11px] text-[#D96B27]">~22 Menit</span>
+                </div>
+                <div className="border-l border-[#FAF9F5]/10 pl-4 space-y-0.5">
+                  <span className="font-mono text-xs text-[#FAF9F5] font-semibold block">KIM Karawang</span>
+                  <span className="font-mono text-[11px] text-[#D96B27]">~25 Menit</span>
+                </div>
+                <div className="border-l border-[#FAF9F5]/10 pl-4 space-y-0.5">
+                  <span className="font-mono text-xs text-[#FAF9F5] font-semibold block">BIC Purwakarta</span>
+                  <span className="font-mono text-[11px] text-[#D96B27]">~32 Menit</span>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
         {/* ==============================================================
-            SECTION 03 (Sprint 03 / Sprint 06): FOOD PRODUCTION WORKFLOW (Warm White Tone, Ambient Glow & Packaging Line Layer)
+            SECTION 07: FOOD PRODUCTION WORKFLOW (Sprint 09: Blueprint Schematic)
             ============================================================== */}
-        <section id="alur-produksi" className="py-24 sm:py-28 lg:py-32 bg-[#FAF9F5] divider-hairline relative reveal-on-scroll overflow-hidden">
-          {/* Layer 2: Ambient Lighting (Gentle Warm Glow & Soft White Highlight) */}
-          <div className="absolute inset-0 z-0 pointer-events-none ambient-glow-warm opacity-70" />
-          <div className="absolute inset-0 z-0 pointer-events-none ambient-glow-white opacity-60" />
-
-          {/* Layer 3: Editorial Packaging Line Photography (Opacity 4%, Mask Corner Fade) */}
-          <div className="absolute right-0 bottom-0 w-[450px] h-[350px] opacity-[0.04] photo-mask-corner pointer-events-none">
-            <Image
-              src="/images/profile-docs/galeri-packing-armada.png"
-              alt="Ruang pemorsian bento dan penyiapan armada higienis ZKS"
-              fill
-              className="object-cover object-right-bottom"
-              sizes="450px"
-            />
-          </div>
-
-          <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 space-y-16">
-            <div className="text-center max-w-3xl mx-auto space-y-4">
-              <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[#C85A17] block">
-                Alur Produksi Terstandarisasi
+        <section id="alur-produksi" className="py-20 sm:py-24 bg-[#FAF9F5] relative reveal-on-scroll overflow-hidden">
+          <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 space-y-14">
+            <div className="max-w-3xl space-y-3">
+              <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-[#C85A17] font-semibold block">
+                Alur Rekayasa Produksi Higienis
               </span>
               <h2 className="font-display font-bold text-3xl sm:text-4xl lg:text-5xl text-[#141413] tracking-[-0.03em] leading-tight reveal-title">
                 7 Tahapan Alur Kerja Dapur Skala Industri
@@ -775,151 +720,129 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* Premium Horizontal Timeline on Desktop with Progressive Line Growth & Sequential Stages */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6 lg:gap-4 relative pt-6">
-              {/* Stage 1: Ingredient Selection */}
-              <div className="group/stage relative p-3.5 -m-3.5 rounded-xl transition-all duration-[180ms] ease-out hover:bg-white hover:shadow-xs border border-transparent hover:border-[#141413]/[0.08] cursor-pointer space-y-3 reveal-fade-up stagger-1 active:scale-[0.98]">
-                <div className="flex items-center gap-2">
-                  <span className="w-7 h-7 rounded-lg bg-[#141413] text-[#FAF9F5] flex items-center justify-center font-display font-bold text-xs shrink-0 transition-all duration-[180ms] ease-out group-hover/stage:bg-[#C85A17] group-hover/stage:text-white group-hover/stage:scale-105 group-hover/stage:shadow-xs">
-                    01
-                  </span>
-                  <span className="h-px flex-1 bg-[#141413]/10 hidden lg:block timeline-progress-line" />
-                </div>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-[#C85A17] transition-transform duration-[180ms] ease-out group-hover/stage:scale-125" />
-                    <h3 className="font-display font-bold text-sm text-[#141413] transition-colors duration-[180ms] group-hover/stage:text-[#C85A17]">
-                      Ingredient Selection
-                    </h3>
-                  </div>
-                  <p className="text-[11px] text-[#626058] group-hover/stage:text-[#141413] leading-relaxed transition-colors duration-[180ms]">
-                    Inspeksi harian mutu sayur segar &amp; rantai dingin protein hewani dari vendor terverifikasi.
-                  </p>
-                </div>
-              </div>
+            {/* Blueprint Schematic Flow (Continuous Architectural Line, Monospace Spec Codes, Pure Typography) */}
+            <div className="relative pt-4">
+              {/* Continuous Engineering Datum Line */}
+              <div className="hidden lg:block absolute top-[13px] left-0 right-0 h-px bg-[#141413]/15 pointer-events-none" />
 
-              {/* Stage 2: Preparation */}
-              <div className="group/stage relative p-3.5 -m-3.5 rounded-xl transition-all duration-[180ms] ease-out hover:bg-white hover:shadow-xs border border-transparent hover:border-[#141413]/[0.08] cursor-pointer space-y-3 reveal-fade-up stagger-2 active:scale-[0.98]">
-                <div className="flex items-center gap-2">
-                  <span className="w-7 h-7 rounded-lg bg-[#141413] text-[#FAF9F5] flex items-center justify-center font-display font-bold text-xs shrink-0 transition-all duration-[180ms] ease-out group-hover/stage:bg-[#C85A17] group-hover/stage:text-white group-hover/stage:scale-105 group-hover/stage:shadow-xs">
-                    02
-                  </span>
-                  <span className="h-px flex-1 bg-[#141413]/10 hidden lg:block timeline-progress-line" />
-                </div>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-1.5">
-                    <Droplets className="w-3.5 h-3.5 text-[#C85A17] transition-transform duration-[180ms] ease-out group-hover/stage:scale-125" />
-                    <h3 className="font-display font-bold text-sm text-[#141413] transition-colors duration-[180ms] group-hover/stage:text-[#C85A17]">
-                      Water RO &amp; Prep
-                    </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-8 lg:gap-5">
+                {/* Stage 01 */}
+                <div className="space-y-3 relative reveal-fade-up stagger-1">
+                  <div className="flex items-center gap-2">
+                    <span className="relative z-10 font-mono text-[11px] font-bold tracking-wider px-2 py-0.5 bg-[#141413] text-[#FAF9F5]">
+                      STAGE 01
+                    </span>
                   </div>
-                  <p className="text-[11px] text-[#626058] group-hover/stage:text-[#141413] leading-relaxed transition-colors duration-[180ms]">
-                    Pencucian bahan dengan air terfiltrasi Reverse Osmosis di ruang persiapan steril.
-                  </p>
+                  <div className="space-y-1">
+                    <h3 className="font-display font-bold text-sm text-[#141413] tracking-tight">
+                      Raw Intake QC
+                    </h3>
+                    <p className="text-xs text-[#626058] leading-relaxed">
+                      Inspeksi organoleptik bahan segar &amp; verifikasi suhu rantai dingin daging beku dari pemasok teraudit.
+                    </p>
+                  </div>
                 </div>
-              </div>
 
-              {/* Stage 3: Cooking */}
-              <div className="group/stage relative p-3.5 -m-3.5 rounded-xl transition-all duration-[180ms] ease-out hover:bg-white hover:shadow-xs border border-transparent hover:border-[#141413]/[0.08] cursor-pointer space-y-3 reveal-fade-up stagger-3 active:scale-[0.98]">
-                <div className="flex items-center gap-2">
-                  <span className="w-7 h-7 rounded-lg bg-[#141413] text-[#FAF9F5] flex items-center justify-center font-display font-bold text-xs shrink-0 transition-all duration-[180ms] ease-out group-hover/stage:bg-[#C85A17] group-hover/stage:text-white group-hover/stage:scale-105 group-hover/stage:shadow-xs">
-                    03
-                  </span>
-                  <span className="h-px flex-1 bg-[#141413]/10 hidden lg:block timeline-progress-line" />
-                </div>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-1.5">
-                    <Flame className="w-3.5 h-3.5 text-[#C85A17] transition-transform duration-[180ms] ease-out group-hover/stage:scale-125" />
-                    <h3 className="font-display font-bold text-sm text-[#141413] transition-colors duration-[180ms] group-hover/stage:text-[#C85A17]">
-                      Controlled Cooking
-                    </h3>
+                {/* Stage 02 */}
+                <div className="space-y-3 relative reveal-fade-up stagger-2">
+                  <div className="flex items-center gap-2">
+                    <span className="relative z-10 font-mono text-[11px] font-bold tracking-wider px-2 py-0.5 bg-[#141413] text-[#FAF9F5]">
+                      STAGE 02
+                    </span>
                   </div>
-                  <p className="text-[11px] text-[#626058] group-hover/stage:text-[#141413] leading-relaxed transition-colors duration-[180ms]">
-                    Pemasakan volume tinggi dengan ketel uap; suhu inti hidangan dipastikan &gt; 75°C.
-                  </p>
+                  <div className="space-y-1">
+                    <h3 className="font-display font-bold text-sm text-[#141413] tracking-tight">
+                      RO Prep &amp; Wash
+                    </h3>
+                    <p className="text-xs text-[#626058] leading-relaxed">
+                      Pencucian bahan sayur dan beras menggunakan air murni filtrasi Reverse Osmosis di ruang persiapan steril.
+                    </p>
+                  </div>
                 </div>
-              </div>
 
-              {/* Stage 4: Quality Inspection */}
-              <div className="group/stage relative p-3.5 -m-3.5 rounded-xl transition-all duration-[180ms] ease-out hover:bg-white hover:shadow-xs border border-transparent hover:border-[#141413]/[0.08] cursor-pointer space-y-3 reveal-fade-up stagger-4 active:scale-[0.98]">
-                <div className="flex items-center gap-2">
-                  <span className="w-7 h-7 rounded-lg bg-[#C85A17] text-[#FAF9F5] flex items-center justify-center font-display font-bold text-xs shrink-0 transition-all duration-[180ms] ease-out group-hover/stage:bg-[#A4460E] group-hover/stage:text-white group-hover/stage:scale-105 group-hover/stage:shadow-xs">
-                    04
-                  </span>
-                  <span className="h-px flex-1 bg-[#141413]/10 hidden lg:block timeline-progress-line" />
-                </div>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-1.5">
-                    <Thermometer className="w-3.5 h-3.5 text-[#C85A17] transition-transform duration-[180ms] ease-out group-hover/stage:scale-125" />
-                    <h3 className="font-display font-bold text-sm text-[#141413] transition-colors duration-[180ms] group-hover/stage:text-[#C85A17]">
-                      Quality Inspection
-                    </h3>
+                {/* Stage 03 */}
+                <div className="space-y-3 relative reveal-fade-up stagger-3">
+                  <div className="flex items-center gap-2">
+                    <span className="relative z-10 font-mono text-[11px] font-bold tracking-wider px-2 py-0.5 bg-[#141413] text-[#FAF9F5]">
+                      STAGE 03
+                    </span>
                   </div>
-                  <p className="text-[11px] text-[#626058] group-hover/stage:text-[#141413] leading-relaxed transition-colors duration-[180ms]">
-                    Uji organoleptik rasa &amp; tekstur, serta pengarsipan retensi sampel makanan H-0 selama 3x24 jam.
-                  </p>
+                  <div className="space-y-1">
+                    <h3 className="font-display font-bold text-sm text-[#141413] tracking-tight">
+                      Steam Thermal
+                    </h3>
+                    <p className="text-xs text-[#626058] leading-relaxed">
+                      Pemasakan volume tinggi via ketel boiler uap bertekanan; verifikasi suhu inti hidangan konsisten &gt; 75°C.
+                    </p>
+                  </div>
                 </div>
-              </div>
 
-              {/* Stage 5: Packaging */}
-              <div className="group/stage relative p-3.5 -m-3.5 rounded-xl transition-all duration-[180ms] ease-out hover:bg-white hover:shadow-xs border border-transparent hover:border-[#141413]/[0.08] cursor-pointer space-y-3 reveal-fade-up stagger-5 active:scale-[0.98]">
-                <div className="flex items-center gap-2">
-                  <span className="w-7 h-7 rounded-lg bg-[#141413] text-[#FAF9F5] flex items-center justify-center font-display font-bold text-xs shrink-0 transition-all duration-[180ms] ease-out group-hover/stage:bg-[#C85A17] group-hover/stage:text-white group-hover/stage:scale-105 group-hover/stage:shadow-xs">
-                    05
-                  </span>
-                  <span className="h-px flex-1 bg-[#141413]/10 hidden lg:block timeline-progress-line" />
-                </div>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-1.5">
-                    <Package className="w-3.5 h-3.5 text-[#C85A17] transition-transform duration-[180ms] ease-out group-hover/stage:scale-125" />
-                    <h3 className="font-display font-bold text-sm text-[#141413] transition-colors duration-[180ms] group-hover/stage:text-[#C85A17]">
-                      Sterile Packaging
-                    </h3>
+                {/* Stage 04 */}
+                <div className="space-y-3 relative reveal-fade-up stagger-4">
+                  <div className="flex items-center gap-2">
+                    <span className="relative z-10 font-mono text-[11px] font-bold tracking-wider px-2 py-0.5 bg-[#C85A17] text-[#FAF9F5]">
+                      STAGE 04
+                    </span>
                   </div>
-                  <p className="text-[11px] text-[#626058] group-hover/stage:text-[#141413] leading-relaxed transition-colors duration-[180ms]">
-                    Pemorsian bento di ruangan steril ber-AC dengan staf menggunakan APD dan sarung tangan nitril.
-                  </p>
+                  <div className="space-y-1">
+                    <h3 className="font-display font-bold text-sm text-[#141413] tracking-tight">
+                      QC &amp; Archive
+                    </h3>
+                    <p className="text-xs text-[#626058] leading-relaxed">
+                      Uji organoleptik berkala, kalibrasi rasa, dan retensi arsip sampel makanan H-0 selama 3x24 jam.
+                    </p>
+                  </div>
                 </div>
-              </div>
 
-              {/* Stage 6: Delivery */}
-              <div className="group/stage relative p-3.5 -m-3.5 rounded-xl transition-all duration-[180ms] ease-out hover:bg-white hover:shadow-xs border border-transparent hover:border-[#141413]/[0.08] cursor-pointer space-y-3 reveal-fade-up stagger-6 active:scale-[0.98]">
-                <div className="flex items-center gap-2">
-                  <span className="w-7 h-7 rounded-lg bg-[#141413] text-[#FAF9F5] flex items-center justify-center font-display font-bold text-xs shrink-0 transition-all duration-[180ms] ease-out group-hover/stage:bg-[#C85A17] group-hover/stage:text-white group-hover/stage:scale-105 group-hover/stage:shadow-xs">
-                    06
-                  </span>
-                  <span className="h-px flex-1 bg-[#141413]/10 hidden lg:block timeline-progress-line" />
-                </div>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-1.5">
-                    <Truck className="w-3.5 h-3.5 text-[#C85A17] transition-transform duration-[180ms] ease-out group-hover/stage:scale-125" />
-                    <h3 className="font-display font-bold text-sm text-[#141413] transition-colors duration-[180ms] group-hover/stage:text-[#C85A17]">
-                      Thermal Dispatch
-                    </h3>
+                {/* Stage 05 */}
+                <div className="space-y-3 relative reveal-fade-up stagger-5">
+                  <div className="flex items-center gap-2">
+                    <span className="relative z-10 font-mono text-[11px] font-bold tracking-wider px-2 py-0.5 bg-[#141413] text-[#FAF9F5]">
+                      STAGE 05
+                    </span>
                   </div>
-                  <p className="text-[11px] text-[#626058] group-hover/stage:text-[#141413] leading-relaxed transition-colors duration-[180ms]">
-                    Distribusi armada insulated box tertutup dengan jadwal presisi pergantian shift kerja.
-                  </p>
+                  <div className="space-y-1">
+                    <h3 className="font-display font-bold text-sm text-[#141413] tracking-tight">
+                      Cleanroom Pack
+                    </h3>
+                    <p className="text-xs text-[#626058] leading-relaxed">
+                      Pemorsian bento di ruang bertekanan positif dengan personil berpakaian APD lengkap dan sarung tangan nitril.
+                    </p>
+                  </div>
                 </div>
-              </div>
 
-              {/* Stage 7: Serving */}
-              <div className="group/stage relative p-3.5 -m-3.5 rounded-xl transition-all duration-[180ms] ease-out hover:bg-white hover:shadow-xs border border-transparent hover:border-[#141413]/[0.08] cursor-pointer space-y-3 reveal-fade-up stagger-7 active:scale-[0.98]">
-                <div className="flex items-center gap-2">
-                  <span className="w-7 h-7 rounded-lg bg-emerald-700 text-[#FAF9F5] flex items-center justify-center font-display font-bold text-xs shrink-0 transition-all duration-[180ms] ease-out group-hover/stage:bg-emerald-800 group-hover/stage:scale-105 group-hover/stage:shadow-xs">
-                    07
-                  </span>
-                </div>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-1.5">
-                    <Utensils className="w-3.5 h-3.5 text-emerald-700 transition-transform duration-[180ms] ease-out group-hover/stage:scale-125" />
-                    <h3 className="font-display font-bold text-sm text-[#141413] transition-colors duration-[180ms] group-hover/stage:text-emerald-800">
-                      On-Site Serving
-                    </h3>
+                {/* Stage 06 */}
+                <div className="space-y-3 relative reveal-fade-up stagger-6">
+                  <div className="flex items-center gap-2">
+                    <span className="relative z-10 font-mono text-[11px] font-bold tracking-wider px-2 py-0.5 bg-[#141413] text-[#FAF9F5]">
+                      STAGE 06
+                    </span>
                   </div>
-                  <p className="text-[11px] text-[#626058] group-hover/stage:text-[#141413] leading-relaxed transition-colors duration-[180ms]">
-                    Serah terima tepat waktu di kantin pabrik, siap dikonsumsi hangat oleh seluruh pekerja.
-                  </p>
+                  <div className="space-y-1">
+                    <h3 className="font-display font-bold text-sm text-[#141413] tracking-tight">
+                      Insulated Transit
+                    </h3>
+                    <p className="text-xs text-[#626058] leading-relaxed">
+                      Distribusi tertutup dengan armada insulated box pengatur suhu terkalibrasi menuju seluruh gerbang pabrik mitra.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Stage 07 */}
+                <div className="space-y-3 relative reveal-fade-up stagger-7">
+                  <div className="flex items-center gap-2">
+                    <span className="relative z-10 font-mono text-[11px] font-bold tracking-wider px-2 py-0.5 bg-emerald-800 text-[#FAF9F5]">
+                      STAGE 07
+                    </span>
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="font-display font-bold text-sm text-[#141413] tracking-tight">
+                      On-Site Handover
+                    </h3>
+                    <p className="text-xs text-[#626058] leading-relaxed">
+                      Serah terima presisi bersama tim HRGA di kantin industri, siap disajikan hangat sesuai jadwal pergantian shift.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -927,30 +850,16 @@ export default function HomePage() {
         </section>
 
         {/* ==============================================================
-            SECTION 04 (Sprint 03 / Sprint 06): FOOD SAFETY & QA (Editorial Muted Beige, Ambient Cream Lighting & Lab QA Layer)
+            SECTION 08: FOOD SAFETY & QA (Sprint 09: Clinical Scientific Protocol)
             ============================================================== */}
-        <section id="keamanan-pangan" className="py-24 sm:py-28 lg:py-32 bg-[#F3F1E9] divider-hairline relative overflow-hidden reveal-on-scroll">
-          {/* Layer 2: Ambient Lighting (Gentle Cream Glow & Soft White Highlight) */}
-          <div className="absolute inset-0 z-0 pointer-events-none ambient-glow-cream" />
-
-          {/* Layer 3: Editorial QA & Lab Testing Photography Layer (Opacity 5%, Mask Corner Fade) */}
-          <div className="absolute right-0 top-0 w-1/2 h-full opacity-[0.05] photo-mask-corner pointer-events-none">
-            <Image
-              src="/images/food-safety-audit.jpg"
-              alt="Uji laboratorium mikrobiologi dan jaminan mutu pangan ZKS"
-              fill
-              className="object-cover"
-              sizes="50vw"
-            />
-          </div>
-
+        <section id="keamanan-pangan" className="py-32 sm:py-36 lg:py-40 bg-[#FAF9F5] relative overflow-hidden reveal-on-scroll">
           <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
               {/* Kolom Kiri: Operational Quality Protocols (7 Kolom) */}
               <div className="lg:col-span-7 space-y-8">
                 <div className="space-y-3">
-                  <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[#C85A17] block">
-                    Standarisasi &amp; Kepatuhan Audit
+                  <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-[#C85A17] font-semibold block">
+                    Kepatuhan Audit &amp; Keamanan Pangan
                   </span>
                   <h2 className="font-display font-bold text-3xl sm:text-4xl lg:text-5xl text-[#141413] tracking-[-0.03em] leading-tight reveal-title">
                     Protokol Keamanan Pangan Tanpa Kompromi untuk Ribuan Tenaga Kerja.
@@ -961,12 +870,12 @@ export default function HomePage() {
                   Bagi industri manufaktur modern dengan ribuan pekerja, insiden keracunan makanan dapat menghentikan lini perakitan pabrik dan menimbulkan kerugian operasional yang masif. PT. Zahdan Kamal Sentosa menerapkan sistem kendali mutu berbasis HACCP dan ISO 22000 yang siap diaudit kapan pun oleh tim safety &amp; HRGA perusahaan Anda.
                 </p>
 
-                {/* 6 Structured Operational Quality Protocols */}
-                <div className="divide-y divide-[#141413]/[0.08] border-y border-[#141413]/[0.08] text-xs">
+                {/* 6 Clinical HACCP / ISO Protocols Ledger (Pure Typography, Monospace QA Codes) */}
+                <div className="divide-y divide-[#141413]/10 border-y border-[#141413]/10 text-xs">
                   <div className="py-4 grid grid-cols-1 sm:grid-cols-12 gap-2 sm:gap-4 items-baseline reveal-fade-up stagger-1">
-                    <div className="sm:col-span-4 font-semibold text-[#141413] flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#C85A17]" />
-                      <span>Ingredient Inspection</span>
+                    <div className="sm:col-span-4 font-mono font-semibold text-[#141413] flex items-baseline gap-2">
+                      <span className="text-[10px] text-[#8E8B81]">QA-01</span>
+                      <span className="font-sans text-xs font-semibold text-[#141413]">Raw Material Intake</span>
                     </div>
                     <div className="sm:col-span-8 text-[#626058] leading-relaxed">
                       Pemeriksaan ketat kesegaran organoleptik dan verifikasi suhu rantai dingin daging beku saat serah terima dari supplier terverifikasi.
@@ -974,9 +883,9 @@ export default function HomePage() {
                   </div>
 
                   <div className="py-4 grid grid-cols-1 sm:grid-cols-12 gap-2 sm:gap-4 items-baseline reveal-fade-up stagger-2">
-                    <div className="sm:col-span-4 font-semibold text-[#141413] flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#C85A17]" />
-                      <span>Daily Hygiene Standard</span>
+                    <div className="sm:col-span-4 font-mono font-semibold text-[#141413] flex items-baseline gap-2">
+                      <span className="text-[10px] text-[#8E8B81]">QA-02</span>
+                      <span className="font-sans text-xs font-semibold text-[#141413]">Daily Hygiene Standard</span>
                     </div>
                     <div className="sm:col-span-8 text-[#626058] leading-relaxed">
                       Staf dapur wajib mengenakan APD lengkap (hairnet, masker medis, dan sarung tangan nitril *food-grade*) dengan sanitasi berkala.
@@ -984,9 +893,9 @@ export default function HomePage() {
                   </div>
 
                   <div className="py-4 grid grid-cols-1 sm:grid-cols-12 gap-2 sm:gap-4 items-baseline reveal-fade-up stagger-2">
-                    <div className="sm:col-span-4 font-semibold text-[#141413] flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#C85A17]" />
-                      <span>Temperature Monitoring</span>
+                    <div className="sm:col-span-4 font-mono font-semibold text-[#141413] flex items-baseline gap-2">
+                      <span className="text-[10px] text-[#C85A17]">QA-03</span>
+                      <span className="font-sans text-xs font-semibold text-[#141413]">Thermal Probe Log</span>
                     </div>
                     <div className="sm:col-span-8 text-[#626058] leading-relaxed">
                       Pengukuran berkala suhu inti masakan &gt; 75°C menggunakan termometer probe digital guna memastikan eliminasi patogen sempurna.
@@ -994,9 +903,9 @@ export default function HomePage() {
                   </div>
 
                   <div className="py-4 grid grid-cols-1 sm:grid-cols-12 gap-2 sm:gap-4 items-baseline reveal-fade-up stagger-3">
-                    <div className="sm:col-span-4 font-semibold text-[#141413] flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#C85A17]" />
-                      <span>Packaging Procedure</span>
+                    <div className="sm:col-span-4 font-mono font-semibold text-[#141413] flex items-baseline gap-2">
+                      <span className="text-[10px] text-[#8E8B81]">QA-04</span>
+                      <span className="font-sans text-xs font-semibold text-[#141413]">Cleanroom Packaging</span>
                     </div>
                     <div className="sm:col-span-8 text-[#626058] leading-relaxed">
                       Ruang pengemasan terisolasi dengan sirkulasi udara berpenyaring dan alur kerja satu arah guna mencegah kontaminasi silang.
@@ -1004,9 +913,9 @@ export default function HomePage() {
                   </div>
 
                   <div className="py-4 grid grid-cols-1 sm:grid-cols-12 gap-2 sm:gap-4 items-baseline reveal-fade-up stagger-3">
-                    <div className="sm:col-span-4 font-semibold text-[#141413] flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#C85A17]" />
-                      <span>Sanitation &amp; Water RO</span>
+                    <div className="sm:col-span-4 font-mono font-semibold text-[#141413] flex items-baseline gap-2">
+                      <span className="text-[10px] text-[#8E8B81]">QA-05</span>
+                      <span className="font-sans text-xs font-semibold text-[#141413]">Sanitation &amp; Water RO</span>
                     </div>
                     <div className="sm:col-span-8 text-[#626058] leading-relaxed">
                       Penggunaan air Reverse Osmosis (RO) untuk memasak dan pencucian bahan, serta disinfeksi rutin peralatan menggunakan deterjen ramah pangan.
@@ -1014,9 +923,9 @@ export default function HomePage() {
                   </div>
 
                   <div className="py-4 grid grid-cols-1 sm:grid-cols-12 gap-2 sm:gap-4 items-baseline reveal-fade-up stagger-4">
-                    <div className="sm:col-span-4 font-semibold text-[#141413] flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
-                      <span>Retensi Sampel H-0</span>
+                    <div className="sm:col-span-4 font-mono font-semibold text-emerald-800 flex items-baseline gap-2">
+                      <span className="text-[10px] text-emerald-700">QA-06</span>
+                      <span className="font-sans text-xs font-semibold text-[#141413]">Retention Archive H-0</span>
                     </div>
                     <div className="sm:col-span-8 text-[#626058] leading-relaxed">
                       Penyimpanan arsip sampel makanan setiap menu selama 3 x 24 jam dalam lemari pendingin tertutup untuk keperluan uji laboratorium independen.
@@ -1024,46 +933,45 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                {/* Elegantly Displayed Trust Indicators */}
-                <div className="pt-6 border-t border-[#141413]/[0.08] grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs reveal-fade-up stagger-4">
+                {/* Direct Accreditation Ledger */}
+                <div className="pt-6 border-t border-[#141413]/10 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs reveal-fade-up stagger-4">
                   <div>
                     <strong className="text-[#141413] block">ISO 22000:2009</strong>
-                    <span className="font-mono text-[11px] text-[#626058]">ZKS 221076 0001</span>
+                    <span className="font-mono text-[11px] text-[#8E8B81]">ZKS 221076 0001</span>
                   </div>
                   <div>
                     <strong className="text-emerald-800 block">Sertifikat Halal Resmi</strong>
-                    <span className="font-mono text-[11px] text-[#626058]">ID32110006798080623</span>
+                    <span className="font-mono text-[11px] text-[#8E8B81]">ID32110006798080623</span>
                   </div>
                   <div>
                     <strong className="text-[#141413] block">NIB Usaha KBLI</strong>
-                    <span className="font-mono text-[11px] text-[#626058]">241121002398</span>
+                    <span className="font-mono text-[11px] text-[#8E8B81]">241121002398</span>
                   </div>
                   <div>
                     <strong className="text-[#141413] block">Dinkes Karawang</strong>
-                    <span className="font-mono text-[11px] text-[#626058]">Laik Higiene Gol. B</span>
+                    <span className="font-mono text-[11px] text-[#8E8B81]">Laik Higiene Gol. B</span>
                   </div>
                 </div>
               </div>
 
-              {/* Kolom Kanan: Large Quality Inspection Photography (5 Kolom, Slow Mask Image Reveal) */}
+              {/* Kolom Kanan: Clean Clinical Photography (No Decorative Masks or Glows) */}
               <div className="lg:col-span-5 relative mt-8 lg:mt-0">
-                <div className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden [mask-image:radial-gradient(ellipse_at_center,black_70%,transparent_100%)] reveal-image">
+                <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#141413]/5 border border-[#141413]/10 reveal-image">
                   <Image
                     src="/images/food-safety-audit.jpg"
                     alt="Inspeksi kualitas makanan dan higienis dapur ZKS Karawang"
                     fill
-                    className="object-cover opacity-90 transition-transform duration-700 hover:scale-102"
+                    className="object-cover"
                     sizes="(max-width: 1024px) 100vw, 40vw"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#F3F1E9] via-transparent to-transparent opacity-80" />
                 </div>
 
-                <div className="mt-4 px-2 text-center lg:text-left space-y-1 reveal-fade stagger-3">
-                  <span className="text-[11px] font-mono uppercase tracking-wider text-[#C85A17] block">
-                    Laboratorium &amp; Quality Control
+                <div className="mt-4 space-y-1 reveal-fade stagger-3">
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-[#C85A17] font-semibold block">
+                    Laboratorium Pengujian Mutu
                   </span>
-                  <p className="text-xs text-[#68655C]">
-                    Pemeriksaan mikrobiologis berkala bekerja sama dengan laboratorium penguji terakreditasi di Karawang.
+                  <p className="text-xs text-[#8E8B81]">
+                    Pemeriksaan mikrobiologis dan kimia berkala bekerja sama dengan laboratorium independen terakreditasi di Karawang.
                   </p>
                 </div>
               </div>
@@ -1077,22 +985,18 @@ export default function HomePage() {
         <CompanyVerificationGallery />
 
         {/* ==============================================================
-            SECTION 6 (Sprint 06): INTERACTIVE MENU EXPERIENCE (Warm White Tone, Ambient Warmth & Culinary Layer)
+            SECTION 10: INTERACTIVE MENU CATALOG (Sprint 09: Nutritional Specification)
             ============================================================== */}
-        <section id="menu-katering" className="relative py-24 sm:py-28 lg:py-32 bg-[#FAF9F5] divider-hairline reveal-on-scroll overflow-hidden">
-          {/* Layer 2: Ambient Lighting (Gentle Warm Glow & Soft White Highlight) */}
-          <div className="absolute inset-0 z-0 pointer-events-none ambient-glow-warm opacity-80" />
-          <div className="absolute inset-0 z-0 pointer-events-none ambient-glow-white opacity-60" />
-
+        <section id="menu-katering" className="relative py-28 sm:py-32 lg:py-36 bg-[#FAF9F5] reveal-on-scroll overflow-hidden">
           <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 space-y-12">
             <div className="max-w-2xl space-y-3">
-              <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#C85A17]">
-                Katalog Menu Interaktif
+              <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-[#C85A17] font-semibold block">
+                Katalog Spesifikasi Menu
               </span>
               <h2 className="font-display font-bold text-3xl sm:text-4xl lg:text-5xl text-[#141413] tracking-[-0.03em] leading-tight reveal-title">
                 Variasi Menu Bergizi Seimbang dengan Rotasi Harian.
               </h2>
-              <p className="text-sm text-[#626058] leading-relaxed reveal-paragraph">
+              <p className="font-sans text-sm sm:text-base text-[#626058] leading-relaxed reveal-paragraph">
                 Karyawan tidak akan merasa jenuh berkat rotasi menu Senin s.d. Sabtu. Setiap paket dirancang dengan kalkulasi gramasi karbohidrat, protein hewani, dan serat yang proporsional.
               </p>
             </div>
@@ -1103,70 +1007,56 @@ export default function HomePage() {
         </section>
 
         {/* ==============================================================
-            SECTION 7 (Sprint 06): LARGE EDITORIAL CTA (Ambient Dark Warmth & Facility Layer)
+            SECTION 11: CORPORATE CTA (Sprint 09: Quiet Minimalist Confidence)
             ============================================================== */}
-        <section id="kontak-korporat" className="py-24 sm:py-28 lg:py-32 bg-[#141413] text-[#FAF9F5] relative overflow-hidden divider-hairline-dark reveal-on-scroll">
-          {/* Layer 2: Ambient Lighting (Natural Warm Amber Glow in Dark Canvas) */}
-          <div className="absolute inset-0 z-0 pointer-events-none ambient-dark-warmth" />
-
-          {/* Layer 3: Editorial Facility Headquarters Photography Layer (Opacity 6.5%, Center Mask) */}
-          <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.065] photo-mask-center">
-            <Image
-              src="/images/profile-docs/galeri-fasilitas-operasional.png"
-              alt="Fasilitas gedung dapur mandiri PT Zahdan Kamal Sentosa Ciampel Karawang"
-              fill
-              className="object-cover object-center"
-              sizes="100vw"
-            />
-          </div>
-
-          <div className="relative z-10 max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 text-center space-y-10">
+        <section id="kontak-korporat" className="py-32 sm:py-36 lg:py-40 bg-[#141413] text-[#FAF9F5] relative overflow-hidden reveal-on-scroll">
+          <div className="relative z-10 max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 text-center space-y-12">
             <div className="space-y-4 max-w-3xl mx-auto">
-              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-[#D96B27]">
-                Pengadaan Katering Korporat & Pabrik
+              <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-[#D96B27] font-semibold block">
+                Pengadaan Katering Korporat &amp; Pabrik
               </span>
               <h2 className="font-display font-bold text-3xl sm:text-4xl lg:text-5xl text-[#FAF9F5] tracking-[-0.03em] leading-tight reveal-title">
                 Mulai Pembahasan Kebutuhan Katering Karyawan Anda Hari Ini.
               </h2>
-              <p className="text-sm sm:text-base text-[#A8A69E] leading-relaxed reveal-paragraph">
+              <p className="font-sans text-sm sm:text-base text-[#A8A69E] leading-relaxed reveal-paragraph">
                 Hubungi manajemen PT. Zahdan Kamal Sentosa untuk menjadwalkan presentasi, survei kapasitas dapur bersama tim HRGA/Purchasing, atau pengiriman paket sampel rasa ke pabrik Anda.
               </p>
             </div>
 
-            {/* Action Buttons with Sprint 05 180ms hover, 4px arrow motion, and secondary underline animation */}
+            {/* Quiet, Confident Action Buttons (Supporting Content, Not Shouting) */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 reveal-fade-up stagger-2">
               <a
                 href={`https://wa.me/${COMPANY_PROFILE.mainWhatsApp}?text=Halo%20PT%20Zahdan%20Kamal%20Sentosa,%20kami%20dari%20perusahaan%20ingin%20meminta%20sampel%20makanan%20dan%20proposal%20katering.`}
                 target="_blank"
                 rel="noreferrer"
-                className="w-full sm:w-auto btn-interactive-accent gap-2 px-8 py-4 rounded-lg text-white text-xs sm:text-sm font-semibold tracking-tight shadow-md group"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-[#FAF9F5] text-[#141413] hover:bg-[#FAF9F5]/90 transition-all text-xs font-semibold tracking-tight active:scale-[0.98]"
               >
                 <span>WhatsApp Langsung Manajemen: {COMPANY_PROFILE.contacts[0].phone}</span>
-                <ArrowUpRight className="w-4 h-4 btn-arrow" />
+                <ArrowUpRight className="w-3.5 h-3.5" />
               </a>
 
               <Link
                 href="/pesan"
-                className="w-full sm:w-auto btn-interactive-secondary gap-1.5 px-8 py-4 rounded-lg border border-[#FAF9F5]/20 text-[#FAF9F5] text-xs sm:text-sm font-medium tracking-tight group hover:bg-[#FAF9F5]/[0.08]"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-8 py-3.5 border border-[#FAF9F5]/25 text-[#FAF9F5] hover:border-[#FAF9F5]/60 hover:bg-[#FAF9F5]/[0.05] transition-all text-xs font-medium tracking-tight active:scale-[0.98]"
               >
-                <span className="btn-text-underline">Formulir Pemesanan Tamu Online</span>
-                <ArrowUpRight className="w-4 h-4 btn-secondary-icon text-[#FAF9F5]" />
+                <span>Formulir Pemesanan Tamu Online</span>
+                <ArrowUpRight className="w-3.5 h-3.5 opacity-70" />
               </Link>
             </div>
 
-            {/* Direct Executive Contacts Footer */}
-            <div className="pt-12 border-t border-[#FAF9F5]/[0.08] grid grid-cols-1 sm:grid-cols-3 gap-6 text-xs text-[#A8A69E]">
-              <div>
-                <strong className="text-[#FAF9F5] block">Didiet Santoso</strong>
-                <span>Komisaris Perusahaan</span>
+            {/* Direct Executive Contacts Footer Ledger */}
+            <div className="pt-12 border-t border-[#FAF9F5]/10 grid grid-cols-1 sm:grid-cols-3 gap-6 text-xs text-[#8E8B81]">
+              <div className="space-y-0.5">
+                <strong className="text-[#FAF9F5] block font-sans">Didiet Santoso</strong>
+                <span className="font-mono text-[11px]">Komisaris Perusahaan</span>
               </div>
-              <div>
-                <strong className="text-[#FAF9F5] block">Nur Anisah</strong>
-                <span>Direktur Utama</span>
+              <div className="space-y-0.5">
+                <strong className="text-[#FAF9F5] block font-sans">Nur Anisah</strong>
+                <span className="font-mono text-[11px]">Direktur Utama</span>
               </div>
-              <div>
-                <strong className="text-[#FAF9F5] block">Angellia</strong>
-                <span>Layanan Pelanggan & Kemitraan</span>
+              <div className="space-y-0.5">
+                <strong className="text-[#FAF9F5] block font-sans">Angellia</strong>
+                <span className="font-mono text-[11px]">Layanan Pelanggan &amp; Kemitraan</span>
               </div>
             </div>
           </div>

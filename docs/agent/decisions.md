@@ -128,3 +128,49 @@ Keputusan teknologi berikut secara sengaja ditunda dan akan diputuskan bersama p
 
 *Fase 3 dan 3b selesai (migrasi diterapkan). Fase 4 menunggu keputusan versi Auth.js dan persetujuan
 eksplisit.*
+
+---
+## 10. ZKS Design Bible (Version 1.0) — Doktrin Desain Permanen (2026-10-21)
+Doktrin desain permanen yang wajib ditaati oleh seluruh komponen dan seksi antarmuka situs ZKS:
+1. **Rule 01 — One Focal Point**: Setiap seksi hanya boleh memiliki SATU titik fokus visual utama dalam satu *viewport*. Tidak boleh ada elemen yang saling berebut perhatian.
+   - Hero → Headline & foto bukti fasilitas industri utama.
+   - Gallery / Verification → Fotografi & penjelajah dokumen audit.
+   - Workflow → Alur sekuensial rekayasa proses dapur.
+   - Capacity → Metrik & angka data kapasitas terpasang.
+   - Food Safety → Protokol ilmiah HACCP/ISO & uji laboratorium.
+   - Menu → Matriks gramasi nutrisi & jadwal rotasi menu.
+2. **Rule 02 — No Repeated Components**: Dilarang menggunakan pola komposisi yang sama secara berulang (misal `Judul-Paragraf-Gambar` berulang). Setiap seksi wajib menghadirkan ritme visual yang berbeda.
+3. **Rule 03 — No Decorative UI**: Setiap elemen visual wajib memiliki fungsi dan tujuan operasional. Dilarang menambahkan ikon acak, pendaran (*glow*), bayangan (*shadow*) berlebih, atau bingkai dekoratif tanpa makna.
+4. **Rule 04 — Photography is Content**: Foto bukan hiasan melainkan bukti operasional (*evidence*). Setiap foto wajib menjawab bukti operasional apa yang disajikan. Dilarang menggunakan foto latar hantu atau hiasan samar 4-6%.
+5. **Rule 05 — Typography Before Cards**: Hirarki visual wajib diciptakan melalui ukuran, bobot, spasi, dan perataan tipografi, BUKAN melalui kontainer/kotak bertingkat (*card-inside-card*).
+6. **Rule 06 — One Background**: Menggunakan satu kanvas editorial museum berkelanjutan (`#FAF9F5`). Warna latar hanya berubah saat alur cerita bertransisi dramatis (misal ke kanvas arsitektural `#141413` pada skala industri berat dan kontak korporat).
+7. **Rule 07 — Motion**: Animasi hanya untuk menjelaskan fungsi (*explain*), bukan menghibur (*entertain*): *scroll reveal*, *sequencing*, *inspector feedback*. Segala hal lainnya tetap diam dan tenang.
+8. **Rule 08 — Scroll Storytelling**: Alur gulir dirancang seperti tur langsung pabrik manufaktur:
+   `Entrance (Hero)` → `Company (Tentang & Value)` → `Production (Operasional & Alur Dapur)` → `Quality (Keamanan Pangan & Lab)` → `Verification (Arsip Dokumen)` → `Menu Specification` → `Proposal (Kontak Manajemen)`.
+9. **Rule 09 — Visual Density**: Setiap *viewport* wajib memiliki ruang bernapas (*breathing room*) yang lapang dengan ritme vertikal terarah (80px, 120px, 140px, 160px).
+10. **Rule 10 — Why Does This Exist?**: Setiap komponen antarmuka harus memiliki alasan keberadaan yang jelas. Jika tidak ada jawaban, komponen tersebut wajib dihapus.
+*Tujuan Akhir: Situs tidak lagi terasa seperti website biasa, melainkan dokumenter industri korporat yang tenang, berwibawa, tak lekang waktu, dan dirancang oleh manusia.*
+
+---
+## 11. Implementasi Konsol Operasional Admin & Manajemen Pesanan (2026-10-21)
+- **Halaman Dasbor Operasional (`/admin/dashboard`)**:
+  - Dilindungi proteksi berlapis: `src/proxy.ts` (Next.js 16 proxy) dan `requireAdmin()` di tingkat Server Component (defense in depth).
+  - Menggunakan `await connection()` dari `next/server` sesuai standar Next.js 16.4 dengan opsi `cacheComponents: true` (menggantikan segmen `export const dynamic = "force-dynamic"` yang tidak kompatibel).
+  - Mengusung tema *Obsidian Industrial Command Center* (`#141413`) yang identik dan harmonis dengan seksi operasional pada halaman utama (*homepage*): tipografi `font-display`, matriks metrik 4 kolom bergaris tepi arsitektural (`#FAF9F5/10`), dan aksen tembaga industri (`#D96B27`).
+- **Alur Unggah Bukti Transfer Berbasis Web (`/pesanan/[token]`)**:
+  - Pelanggan dapat mengunggah bukti pembayaran langsung di situs web tanpa perantara WhatsApp melalui komponen `PaymentUploadClient.tsx` dan Server Action `submitPaymentProofAction`.
+  - Berkas bukti transfer divalidasi (JPG/PNG/WebP, batas 5MB) dan disimpan terisolasi di direktori server `public/uploads/payments/`.
+  - Status tersimpan ke tabel `Payment` (`status: "PENDING"`, jenis DP/FULL, nominal, bank pengirim, dan URL berkas bukti transfer).
+- **Inspektur Bukti Bayar & Persetujuan Admin (`AdminDashboardClient.tsx`)**:
+  - Tab khusus `● Bukti Bayar Masuk` dengan indikator berdenyut aktif jika terdapat bukti transfer yang menunggu verifikasi.
+  - Pratinjau *thumbnail* struk langsung di kartu pesanan, lengkap dengan modal inspektur foto resolusi penuh.
+  - Tombol aksi 1-klik `approvePaymentAction` (otomatis mengubah status `Payment` ke `SETTLED` dan `Order` ke `DP_PAID` atau `FULLY_PAID`) serta opsi `rejectPaymentAction` jika struk tidak valid.
+- **Server Actions Terproteksi (`src/app/admin/dashboard/actions.ts`)**:
+  - `lockOrderTotalAction`: Menetapkan ongkir Karawang dan mengunci total tagihan (`CONFIRMED_AWAITING_PAYMENT`).
+  - `approvePaymentAction` & `rejectPaymentAction`: Verifikasi dan persetujuan berkas bukti transfer.
+  - `rejectOrderAction`: Penolakan pesanan masuk karena kendala kapasitas dapur.
+  - `updateOrderStatusAction`: Pembaruan status alur produksi dapur dan pengantaran armada.
+  - `regenerateOrderTokenAction`: Pembuatan ulang token akses privat pelanggan.
+- **Verifikasi**: 6/6 pengujian unit `tests/order-logic.test.ts` lulus, ESLint 0 kesalahan, dan TypeScript `tsc --noEmit` bersih (exit code 0).
+
+
