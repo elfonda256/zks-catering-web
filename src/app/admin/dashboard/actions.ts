@@ -8,6 +8,7 @@ import {
   generateOrderAccessToken,
 } from "@/lib/order-logic";
 import type { OrderStatus } from "@/generated/prisma/enums";
+import { sendWhatsAppMessage, getAppBaseUrl } from "@/lib/whatsapp";
 
 export interface AdminActionResult {
   success?: boolean;
@@ -70,6 +71,39 @@ export async function lockOrderTotalAction(
       },
     });
 
+    // Kirim notifikasi WhatsApp otomatis ke pelanggan
+    try {
+      const dpSection =
+        lockValues.dpAmount !== null
+          ? `• Opsi Uang Muka (DP 20%) : Rp${lockValues.dpAmount.toLocaleString("id-ID")}\n`
+          : "";
+
+      const waText =
+        `*PT. ZAHDAN KAMAL SENTOSA*\n` +
+        `_Konfirmasi Total Tagihan Pesanan_\n\n` +
+        `Halo Bpk/Ibu *${order.customerName}*,\n` +
+        `Pesanan katering Anda (*${order.orderCode}*) telah kami tinjau dan total tagihan resmi telah ditetapkan.\n\n` +
+        `📋 *Rincian Pembayaran:*\n` +
+        `• Subtotal Makanan : Rp${order.subtotal.toLocaleString("id-ID")}\n` +
+        `• Ongkos Kirim : Rp${shippingFee.toLocaleString("id-ID")}\n` +
+        `• *Total Tagihan* : *Rp${lockValues.totalAmount.toLocaleString("id-ID")}*\n` +
+        `${dpSection}\n` +
+        `💳 *Rekening Pembayaran Resmi ZKS:*\n` +
+        `• Bank Mandiri : 173-00-1122334-5\n` +
+        `• Bank BCA : 109-8877-665\n` +
+        `• Atas Nama : PT. Zahdan Kamal Sentosa\n` +
+        `• Berita Transfer : *${order.orderCode}*\n\n` +
+        `Silakan buka kembali tautan pelacakan pesanan Anda di chat sebelumnya untuk mengunggah bukti transfer (DP 20% atau Pelunasan Penuh).\n\n` +
+        `_Batas pembayaran awal: ${lockValues.initialPaymentDueAt.toLocaleDateString("id-ID", { dateStyle: "full" })}_`;
+
+      await sendWhatsAppMessage({
+        targetPhone: order.customerPhone,
+        message: waText,
+      });
+    } catch (waErr) {
+      console.warn("Gagal mengirim WA lock total order:", waErr);
+    }
+
     revalidatePath("/admin/dashboard");
     return { success: true };
   } catch (err: unknown) {
@@ -123,6 +157,24 @@ export async function rejectOrderAction(
       },
     });
 
+    // Kirim notifikasi WhatsApp otomatis ke pelanggan
+    try {
+      const waText =
+        `*PT. ZAHDAN KAMAL SENTOSA*\n` +
+        `_Pemberitahuan Status Pesanan Katering_\n\n` +
+        `Halo Bpk/Ibu *${order.customerName}*,\n` +
+        `Mohon maaf, pengajuan pesanan katering Anda dengan kode *${order.orderCode}* belum dapat kami terima saat ini.\n\n` +
+        `📝 *Alasan:* ${cleanReason}\n\n` +
+        `Untuk informasi lebih lanjut atau penjadwalan alternatif, Anda dapat membalas pesan WhatsApp ini. Terima kasih atas pengertian Anda.`;
+
+      await sendWhatsAppMessage({
+        targetPhone: order.customerPhone,
+        message: waText,
+      });
+    } catch (waErr) {
+      console.warn("Gagal mengirim WA reject order:", waErr);
+    }
+
     revalidatePath("/admin/dashboard");
     return { success: true };
   } catch (err: unknown) {
@@ -166,6 +218,35 @@ export async function updateOrderStatusAction(
       },
     });
 
+    // Kirim notifikasi status operasional via WhatsApp jika relevan
+    try {
+      let statusDesc = "";
+      if (newStatus === "IN_PREPARATION") {
+        statusDesc = "🍳 Dapur katering kami telah memulai proses pengolahan dan pengemasan higienis untuk pesanan Anda.";
+      } else if (newStatus === "IN_DELIVERY") {
+        statusDesc = "🚚 Armada pengantaran katering ZKS sedang dalam perjalanan menuju alamat pabrik/lokasi Anda.";
+      } else if (newStatus === "COMPLETED") {
+        statusDesc = "✅ Pesanan katering Anda telah berhasil diserahterimakan di lokasi. Terima kasih atas kepercayaan Anda kepada PT. Zahdan Kamal Sentosa.";
+      }
+
+      if (statusDesc) {
+        const waText =
+          `*PT. ZAHDAN KAMAL SENTOSA*\n` +
+          `_Pembaruan Status Pesanan_\n\n` +
+          `Halo Bpk/Ibu *${order.customerName}*,\n` +
+          `Status pesanan katering Anda (*${order.orderCode}*) saat ini:\n\n` +
+          `${statusDesc}\n\n` +
+          `Tim operasional kami senantiasa memastikan standar kebersihan, higienitas, dan ketepatan waktu pengantaran terbaik untuk Anda.`;
+
+        await sendWhatsAppMessage({
+          targetPhone: order.customerPhone,
+          message: waText,
+        });
+      }
+    } catch (waErr) {
+      console.warn("Gagal mengirim WA update status order:", waErr);
+    }
+
     revalidatePath("/admin/dashboard");
     return { success: true };
   } catch (err: unknown) {
@@ -193,6 +274,11 @@ export async function regenerateOrderTokenAction(
       return { error: "ID pesanan tidak valid." };
     }
 
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      select: { customerPhone: true, customerName: true, orderCode: true },
+    });
+
     const { rawToken, accessTokenHash } = generateOrderAccessToken();
 
     await prisma.order.update({
@@ -201,6 +287,29 @@ export async function regenerateOrderTokenAction(
         accessTokenHash,
       },
     });
+
+    const fullTrackingUrl = `${getAppBaseUrl()}/pesanan/${rawToken}`;
+
+    // Otomatis kirim tautan baru langsung ke WhatsApp pelanggan
+    if (order) {
+      try {
+        const waText =
+          `*PT. ZAHDAN KAMAL SENTOSA*\n` +
+          `_Tautan Pelacakan Pesanan Katering_\n\n` +
+          `Halo Bpk/Ibu *${order.customerName}*,\n` +
+          `Berikut adalah tautan pelacakan resmi terbaru untuk memantau status dan melakukan pembayaran pesanan Anda (*${order.orderCode}*):\n\n` +
+          `🔗 *Tautan Akses:*\n` +
+          `${fullTrackingUrl}\n\n` +
+          `_Tautan ini bersifat privat. Simpan pesan ini untuk kemudahan akses Anda._`;
+
+        await sendWhatsAppMessage({
+          targetPhone: order.customerPhone,
+          message: waText,
+        });
+      } catch (waErr) {
+        console.warn("Gagal mengirim WA token baru:", waErr);
+      }
+    }
 
     revalidatePath("/admin/dashboard");
     return {
@@ -232,6 +341,15 @@ export async function approvePaymentAction(
 
     const payment = await prisma.payment.findUnique({
       where: { id: paymentId },
+      include: {
+        order: {
+          select: {
+            customerName: true,
+            customerPhone: true,
+            orderCode: true,
+          },
+        },
+      },
     });
 
     if (!payment || payment.orderId !== orderId) {
@@ -256,6 +374,32 @@ export async function approvePaymentAction(
         },
       });
     });
+
+    // Kirim notifikasi WhatsApp otomatis ke pelanggan bahwa pembayaran diterima
+    if (payment.order) {
+      try {
+        const paymentTypeLabel = payment.paymentType === "DP" ? "Uang Muka (DP 20%)" : "Pelunasan Penuh";
+        const statusLabel = newOrderStatus === "DP_PAID" ? "DP Terkonfirmasi (Jadwal Terkunci)" : "Lunas Terverifikasi";
+        const waText =
+          `*PT. ZAHDAN KAMAL SENTOSA*\n` +
+          `_Pembayaran Berhasil Diverifikasi_\n\n` +
+          `Halo Bpk/Ibu *${payment.order.customerName}*,\n` +
+          `Kabar baik! Bukti transfer pembayaran untuk pesanan katering *${payment.order.orderCode}* telah *DIVERIFIKASI & DITERIMA* oleh admin ZKS.\n\n` +
+          `📋 *Detail Pembayaran:*\n` +
+          `• Jenis Pembayaran : ${paymentTypeLabel}\n` +
+          `• Nominal Diterima : Rp${payment.amount.toLocaleString("id-ID")}\n` +
+          `• Status Pesanan : ${statusLabel}\n\n` +
+          `Jadwal produksi dapur katering higienis dan armada pengantaran untuk tanggal acara Anda telah resmi dikunci di sistem kami.\n\n` +
+          `Terima kasih telah mempercayakan konsumsi industri Anda kepada PT. Zahdan Kamal Sentosa.`;
+
+        await sendWhatsAppMessage({
+          targetPhone: payment.order.customerPhone,
+          message: waText,
+        });
+      } catch (waErr) {
+        console.warn("Gagal mengirim WA approve payment:", waErr);
+      }
+    }
 
     revalidatePath("/admin/dashboard");
     return { success: true };
@@ -283,6 +427,15 @@ export async function rejectPaymentAction(
 
     const payment = await prisma.payment.findUnique({
       where: { id: paymentId },
+      include: {
+        order: {
+          select: {
+            customerName: true,
+            customerPhone: true,
+            orderCode: true,
+          },
+        },
+      },
     });
 
     if (!payment || payment.orderId !== orderId) {
@@ -299,6 +452,26 @@ export async function rejectPaymentAction(
         }),
       },
     });
+
+    // Kirim notifikasi WhatsApp otomatis ke pelanggan tentang alasan penolakan
+    if (payment.order) {
+      try {
+        const waText =
+          `*PT. ZAHDAN KAMAL SENTOSA*\n` +
+          `_Pemberitahuan Verifikasi Pembayaran_\n\n` +
+          `Halo Bpk/Ibu *${payment.order.customerName}*,\n` +
+          `Bukti pembayaran yang Anda unggah untuk pesanan *${payment.order.orderCode}* belum dapat kami verifikasi.\n\n` +
+          `⚠️ *Catatan Admin:* ${reason.trim()}\n\n` +
+          `Mohon periksa kembali bukti transfer Anda dan unggah ulang bukti yang valid melalui tautan pelacakan pesanan Anda, atau hubungi admin kami jika ada kendala.`;
+
+        await sendWhatsAppMessage({
+          targetPhone: payment.order.customerPhone,
+          message: waText,
+        });
+      } catch (waErr) {
+        console.warn("Gagal mengirim WA reject payment:", waErr);
+      }
+    }
 
     revalidatePath("/admin/dashboard");
     return { success: true };

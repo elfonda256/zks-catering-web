@@ -10,6 +10,7 @@ import {
   calculateSubtotal,
 } from "@/lib/order-logic";
 import { MENU_PACKAGES } from "@/data/catering-data";
+import { sendWhatsAppMessage, getAppBaseUrl } from "@/lib/whatsapp";
 
 export interface CreateOrderState {
   error?: string;
@@ -185,6 +186,33 @@ export async function createOrderAction(
       await recordOrderAttempt(clientIp);
     } catch {
       // Non-blocking
+    }
+
+    // Kirim notifikasi WhatsApp otomatis ke pelanggan
+    try {
+      const trackingUrl = `${getAppBaseUrl()}/pesanan/${rawToken}`;
+      const waText =
+        `*PT. ZAHDAN KAMAL SENTOSA*\n` +
+        `_Konfirmasi Pengajuan Pesanan Katering_\n\n` +
+        `Halo Bpk/Ibu *${customerName}*,\n` +
+        `Terima kasih telah mengajukan pesanan katering industri di PT. Zahdan Kamal Sentosa.\n\n` +
+        `📋 *Detail Pengajuan Pesanan:*\n` +
+        `• Kode Pesanan : *${orderCode}*\n` +
+        `• Paket Menu : ${selectedPackage.name}\n` +
+        `• Jumlah Porsi : ${quantity} Porsi\n` +
+        `• Subtotal Makanan : Rp${subtotal.toLocaleString("id-ID")}\n` +
+        `• Alamat Pabrik : ${customerAddress}\n\n` +
+        `Tim operasional kami sedang meninjau pesanan Anda dan menghitung estimasi ongkos kirim resmi ke lokasi pabrik Anda.\n\n` +
+        `🔗 *Tautan Pelacakan & Pembayaran:*\n` +
+        `${trackingUrl}\n\n` +
+        `_Simpan pesan dan tautan ini untuk memantau status pesanan dan melakukan pembayaran._`;
+
+      await sendWhatsAppMessage({
+        targetPhone: customerPhone,
+        message: waText,
+      });
+    } catch (waErr) {
+      console.warn("Gagal mengirim WA notifikasi order baru:", waErr);
     }
 
     return {
