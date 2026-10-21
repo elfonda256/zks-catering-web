@@ -1,7 +1,7 @@
-# ZKS DESIGN BIBLE
-# VERSION 1.0
+# ZKS DESIGN MASTERBOOK
+# VERSION 2.0 (ENTERPRISE ERP EDITION)
 
-This document defines the permanent design language for the Zahdan Kamal Sentosa (ZKS) web application.
+This document defines the permanent design language and core doctrines for the Zahdan Kamal Sentosa (ZKS) enterprise platform.
 Every future component, page, section, and art direction pass must strictly obey these rules.
 
 ---
@@ -134,8 +134,7 @@ If it has no clear answer, **delete it**.
 ---
 
 ## FINAL OBJECTIVE
-This website should no longer feel like a website.
-It should feel like an industrial documentary.
+This platform should feel like an industrial documentary.
 Like reading a premium annual report.
 
 **Quiet. Confident. Timeless. Designed by humans. Never by AI.**

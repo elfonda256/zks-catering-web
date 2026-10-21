@@ -1,0 +1,4 @@
+export const KITCHEN_STANDARDS = {
+  MIN_COOKING_TEMP_POULTRY: 75, // Celcius
+  CHILL_DOWN_TIME_MAX_HOURS: 2,
+} as const;

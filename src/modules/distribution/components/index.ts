@@ -1,0 +1,1 @@
+export const DISTRIBUTION_COMPONENTS_READY = true;

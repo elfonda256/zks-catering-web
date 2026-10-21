@@ -38,7 +38,24 @@ Extends the Global Rules. May add stricter requirements, never weaken them.
 - Compute prices and order totals on the server. Never trust values sent from the browser.
 - Verify payment status via the provider's signed webhook or server API, not via the redirect.
 - Store secrets only in environment variables, never in the repository.
-- Strictly adhere to DESIGN_BIBLE.md: every component and section must follow the 10 permanent design doctrines (One focal point, no repeated compositions, no decorative UI, photography as verifiable evidence, typography before cards, one continuous canvas, explanatory motion only, industrial scroll storytelling, varied visual density, and purpose validation).
+- Strictly adhere to DESIGN_MASTERBOOK.md: every component and section must follow the 10 permanent design doctrines (One focal point, no repeated compositions, no decorative UI, photography as verifiable evidence, typography before cards, one continuous canvas, explanatory motion only, industrial scroll storytelling, varied visual density, and purpose validation).
+
+## Project Architecture Rules
+
+Before creating a new file:
+1. Search existing components.
+2. Search reusable hooks.
+3. Search reusable services.
+4. Avoid duplicate utilities.
+5. Follow module architecture.
+6. Keep business logic isolated.
+7. After every implementation report:
+   - Created files
+   - Modified files
+   - Moved files
+   - Deleted files
+   - Suggested refactor
+   - Technical debt
 
 ## Release rules
 - No commit, push, merge, or deploy without separate explicit approval (see Global Rules).
@@ -47,3 +64,4 @@ Extends the Global Rules. May add stricter requirements, never weaken them.
 - Context: @docs/agent/context.md
 - Create docs/agent/decisions.md when the first significant decision is made, and
   docs/agent/status.md when work spans multiple sessions. Ask before creating them.
+

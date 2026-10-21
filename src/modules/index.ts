@@ -1,0 +1,10 @@
+export * as DashboardModule from "./dashboard";
+export * as InventoryModule from "./inventory";
+export * as WarehouseModule from "./warehouse";
+export * as ProcurementModule from "./procurement";
+export * as SupplierModule from "./supplier";
+export * as ProductionModule from "./production";
+export * as KitchenModule from "./kitchen";
+export * as DistributionModule from "./distribution";
+export * as ReportsModule from "./reports";
+export * as SettingsModule from "./settings";
