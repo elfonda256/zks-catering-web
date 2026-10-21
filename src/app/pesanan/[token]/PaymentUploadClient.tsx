@@ -18,7 +18,7 @@ function compressImage(file: File): Promise<File> {
     const url = URL.createObjectURL(file);
     img.onload = () => {
       URL.revokeObjectURL(url);
-      const maxDim = 1600;
+      const maxDim = 1200;
       let width = img.width;
       let height = img.height;
       if (width > maxDim || height > maxDim) {
@@ -51,7 +51,7 @@ function compressImage(file: File): Promise<File> {
           resolve(compressed);
         },
         "image/jpeg",
-        0.85
+        0.8
       );
     };
     img.onerror = () => resolve(file);
@@ -83,7 +83,7 @@ export default function PaymentUploadClient({
     const file = e.target.files?.[0];
     if (file) {
       let fileToUpload = file;
-      if (file.type.startsWith("image/") && file.size > 800 * 1024) {
+      if (file.type.startsWith("image/")) {
         try {
           fileToUpload = await compressImage(file);
         } catch {

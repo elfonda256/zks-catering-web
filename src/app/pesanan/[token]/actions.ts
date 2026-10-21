@@ -65,20 +65,33 @@ export async function submitPaymentProofAction(
       return { error: "Format berkas tidak valid. Harap unggah gambar JPG, PNG, atau WebP." };
     }
 
-    // Tentukan ekstensi
-    let ext = "jpg";
-    if (file.type === "image/png") ext = "png";
-    if (file.type === "image/webp") ext = "webp";
-
-    const cleanOrderCode = order.orderCode.replace(/[^A-Za-z0-9-]/g, "");
-    const fileName = `proof-${cleanOrderCode}-${Date.now()}.${ext}`;
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "payments");
-
-    await mkdir(uploadDir, { recursive: true });
-    const targetFilePath = path.join(uploadDir, fileName);
-
     const arrayBuffer = await file.arrayBuffer();
-    await writeFile(targetFilePath, Buffer.from(arrayBuffer));
+    const buffer = Buffer.from(arrayBuffer);
+    const mimeType = file.type || "image/jpeg";
+    const base64DataUrl = `data:${mimeType};base64,${buffer.toString("base64")}`;
+
+    let paymentUrl = base64DataUrl;
+
+    // Di lingkungan lokal (non-produksi), coba simpan berkas cadangan jika direktori dapat ditulis
+    if (process.env.NODE_ENV !== "production") {
+      try {
+        let ext = "jpg";
+        if (file.type === "image/png") ext = "png";
+        if (file.type === "image/webp") ext = "webp";
+
+        const cleanOrderCode = order.orderCode.replace(/[^A-Za-z0-9-]/g, "");
+        const fileName = `proof-${cleanOrderCode}-${Date.now()}.${ext}`;
+        const uploadDir = path.join(process.cwd(), "public", "uploads", "payments");
+
+        await mkdir(uploadDir, { recursive: true });
+        const targetFilePath = path.join(uploadDir, fileName);
+        await writeFile(targetFilePath, buffer);
+        paymentUrl = `/uploads/payments/${fileName}`;
+      } catch {
+        // Jika sistem berkas read-only, tetap gunakan base64DataUrl
+        paymentUrl = base64DataUrl;
+      }
+    }
 
     const paymentType: PaymentType =
       paymentTypeInput === "DP" && order.dpAmount ? "DP" : "FULL";
@@ -97,7 +110,7 @@ export async function submitPaymentProofAction(
         amount: amount || order.subtotal,
         status: "PENDING",
         paymentChannel: senderBank,
-        paymentUrl: `/uploads/payments/${fileName}`,
+        paymentUrl,
         gatewayName: "MANUAL_BANK_TRANSFER",
         providerTransactionId: `manual-proof-${Date.now()}`,
         maskedResponse: JSON.stringify({

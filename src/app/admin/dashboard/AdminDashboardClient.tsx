@@ -998,11 +998,12 @@ export default function AdminDashboardClient({ orders }: AdminDashboardClientPro
             <div className="flex justify-between items-center pt-2">
               <a
                 href={receiptPreviewUrl.url}
+                download={`bukti-transfer-${receiptPreviewUrl.orderCode}.jpg`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs font-mono text-[#C85A17] hover:underline"
               >
-                Buka Berkas di Tab Baru ↗
+                Unduh / Buka Berkas Struk ↗
               </a>
               <button
                 type="button"
