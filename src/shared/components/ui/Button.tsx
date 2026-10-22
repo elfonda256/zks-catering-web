@@ -30,15 +30,15 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      "inline-flex items-center justify-center font-medium rounded-[12px] transition-colors select-none disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 cursor-pointer";
+      "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-150 ease-out active:scale-[0.98] select-none disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2 cursor-pointer";
 
     const variantStyles: Record<ButtonVariant, string> = {
-      primary: "bg-blue-600 hover:bg-blue-700 text-white shadow-xs border border-transparent",
-      secondary: "bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-xs",
-      outline: "bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-xs",
+      primary: "bg-slate-900 hover:bg-slate-800 text-white shadow-xs border border-transparent",
+      secondary: "bg-white hover:bg-slate-50 text-slate-700 border border-slate-200/90 shadow-xs",
+      outline: "bg-white hover:bg-slate-50 text-slate-700 border border-slate-200/90 shadow-xs",
       ghost: "bg-transparent hover:bg-slate-100 text-slate-600 hover:text-slate-900 border border-transparent",
-      danger: "bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 shadow-xs",
-      icon: "bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200 shadow-xs",
+      danger: "bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 shadow-xs",
+      icon: "bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200/90 shadow-xs",
     };
 
     const sizeStyles: Record<ButtonSize, string> = {

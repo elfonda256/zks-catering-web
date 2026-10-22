@@ -83,7 +83,7 @@ export function FilterBar({
               value={searchValue || ""}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder={searchPlaceholder}
-              className="w-full h-9 pl-8 pr-7 text-[13px] bg-slate-50 border border-slate-200 rounded-[10px] text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 transition-colors"
+              className="w-full h-9 pl-8 pr-7 text-[13px] bg-slate-50 border border-slate-200 rounded-[8px] text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900 transition-all duration-150 ease-out"
             />
             {searchValue && (
               <button
@@ -104,7 +104,7 @@ export function FilterBar({
               type="date"
               value={dateValue || ""}
               onChange={(e) => onDateChange(e.target.value)}
-              className="h-9 px-3 text-[13px] bg-white border border-slate-200 rounded-[10px] text-slate-700 hover:bg-slate-50 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 transition-colors cursor-pointer"
+              className="h-9 px-3 text-[13px] bg-white border border-slate-200 rounded-[8px] text-slate-700 hover:bg-slate-50 focus:border-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900 transition-all duration-150 ease-out cursor-pointer"
             />
           </div>
         )}
@@ -114,7 +114,7 @@ export function FilterBar({
           <select
             value={statusValue || "all"}
             onChange={(e) => onStatusChange(e.target.value)}
-            className="h-9 px-3 text-[13px] bg-white border border-slate-200 rounded-[10px] text-slate-700 hover:bg-slate-50 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 transition-colors cursor-pointer"
+            className="h-9 px-3 text-[13px] bg-white border border-slate-200 rounded-[8px] text-slate-700 hover:bg-slate-50 focus:border-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900 transition-all duration-150 ease-out cursor-pointer"
           >
             <option value="all">Semua Status</option>
             {statusOptions.map((opt) => (
@@ -130,7 +130,7 @@ export function FilterBar({
           <select
             value={categoryValue || "all"}
             onChange={(e) => onCategoryChange(e.target.value)}
-            className="h-9 px-3 text-[13px] bg-white border border-slate-200 rounded-[10px] text-slate-700 hover:bg-slate-50 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 transition-colors cursor-pointer"
+            className="h-9 px-3 text-[13px] bg-white border border-slate-200 rounded-[8px] text-slate-700 hover:bg-slate-50 focus:border-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900 transition-all duration-150 ease-out cursor-pointer"
           >
             <option value="all">Semua Kategori</option>
             {categoryOptions.map((opt) => (

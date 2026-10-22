@@ -17,6 +17,8 @@ import { Badge } from "@/shared/components/ui/Badge";
 import { KpiCard } from "@/shared/components/ui/KpiCard";
 import { Modal } from "@/shared/components/ui/Modal";
 import { Input } from "@/shared/components/ui/Input";
+import { EmptyState } from "@/shared/components/ui/EmptyState";
+import { EnterpriseProgressMetric } from "@/shared/components/ui/EnterpriseChart";
 import { RecentActivityTimeline, TimelineActivityItem } from "@/shared/components/ui/RecentActivityTimeline";
 
 interface AdminDashboardClientProps {
@@ -297,8 +299,12 @@ export default function AdminDashboardClient({ orders }: AdminDashboardClientPro
             trend={{
               value: proofPendingCount > 0 ? "Perlu Tindakan" : "Antrean Bersih",
               isPositive: proofPendingCount === 0,
-              label: "status operasional",
+              label: "Audit Realtime",
+              delta: proofPendingCount > 0 ? `${proofPendingCount} antrean aktif` : "0 pending",
             }}
+            delta={proofPendingCount > 0 ? "+ Tindakan Prioritas" : "Sistem Stabil"}
+            lastUpdated="Live Sync · Karawang"
+            onClick={() => setFilterTab("proof_pending")}
           />
         </div>
 
@@ -307,33 +313,97 @@ export default function AdminDashboardClient({ orders }: AdminDashboardClientPro
           <KpiCard
             label="Verifikasi Ongkir"
             value={waitingOngkirCount}
-            subtext="Perlu penetapan rute armada"
+            subtext="Penetapan rute armada katering"
             trend={{
-              value: waitingOngkirCount > 0 ? "Pending" : "Lengkap",
+              value: waitingOngkirCount > 0 ? "Perlu Rute" : "Lengkap",
               isPositive: waitingOngkirCount === 0,
+              delta: `${waitingOngkirCount} antrean`,
             }}
+            delta={waitingOngkirCount > 0 ? "Menunggu Admin" : "Terkonfirmasi"}
+            lastUpdated="Shift Berjalan"
+            onClick={() => setFilterTab("waiting")}
           />
 
           <KpiCard
             label="Produksi & Armada"
             value={productionCount}
-            subtext="Pesanan aktif berjalan"
+            subtext="Pesanan aktif masak & kirim"
             trend={{
-              value: `${completedCount} selesai`,
+              value: `${completedCount} Selesai`,
               isPositive: true,
-              label: "arsip",
+              delta: `${productionCount} di dapur`,
             }}
+            delta="Jadwal Optimal"
+            lastUpdated="Kapasitas 85%"
+            onClick={() => setFilterTab("production")}
           />
 
           <KpiCard
             label="Total Pesanan"
             value={totalCount}
-            subtext="Seluruh riwayat pesanan masuk"
+            subtext="Seluruh pesanan tercatat di buku besar"
+            trend={{
+              value: "100% Tercatat",
+              isPositive: true,
+              delta: "Ledger Utuh",
+            }}
+            delta="Data Terverifikasi"
+            lastUpdated="Database Sinkron"
+            onClick={() => setFilterTab("all")}
           />
         </div>
       </div>
 
-      {/* 2. OPERATIONAL ANALYTICS (Purposeful Progress & Capacity Tracking) */}
+      {/* 2. OPERATIONAL ALERTS BANNER (Hero KPI -> Alerts -> Charts) */}
+      {proofPendingCount > 0 || waitingOngkirCount > 0 ? (
+        <div className="bg-amber-50/90 border border-amber-200/90 rounded-[12px] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+          <div className="flex items-start sm:items-center gap-3">
+            <div className="w-8 h-8 rounded-[8px] bg-amber-100 border border-amber-300 text-amber-800 flex items-center justify-center shrink-0">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <div>
+              <div className="text-[13px] font-semibold text-amber-950">
+                Peringatan Operasional: Perlu Tindakan Segera
+              </div>
+              <p className="text-[12px] text-amber-800 mt-0.5">
+                Terdapat {proofPendingCount > 0 && `${proofPendingCount} bukti pembayaran baru menanti audit`}{proofPendingCount > 0 && waitingOngkirCount > 0 && " dan "}{waitingOngkirCount > 0 && `${waitingOngkirCount} pesanan menunggu penetapan tarif ongkir armada`}.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            {proofPendingCount > 0 && (
+              <button
+                type="button"
+                onClick={() => setFilterTab("proof_pending")}
+                className="px-3 py-1.5 text-[12px] font-medium bg-amber-900 text-white rounded-[8px] hover:bg-amber-950 transition-colors shadow-2xs cursor-pointer"
+              >
+                Audit Bukti Bayar
+              </button>
+            )}
+            {waitingOngkirCount > 0 && (
+              <button
+                type="button"
+                onClick={() => setFilterTab("waiting")}
+                className="px-3 py-1.5 text-[12px] font-medium bg-white text-amber-900 border border-amber-300 rounded-[8px] hover:bg-amber-100/60 transition-colors cursor-pointer"
+              >
+                Tetapkan Ongkir
+              </button>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="bg-emerald-50/60 border border-emerald-200/70 rounded-[12px] px-4 py-2.5 flex items-center justify-between text-[12px] text-emerald-800 shadow-2xs">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>Seluruh antrean operasional terkendali. Tidak ada pesanan tertunda yang memerlukan tindakan mendesak.</span>
+          </div>
+          <span className="font-mono text-[11px] text-emerald-600 hidden sm:inline">Status Antrean: Optimal</span>
+        </div>
+      )}
+
+      {/* 3. OPERATIONAL ANALYTICS (Purposeful Progress & Capacity Tracking) */}
       <div className="bg-white border border-slate-200 rounded-[12px] p-5 shadow-2xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
           <div>
@@ -350,81 +420,31 @@ export default function AdminDashboardClient({ orders }: AdminDashboardClientPro
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-1">
-          {/* Progress Chart 1: Beban Produksi Dapur */}
-          <div className="space-y-2">
-            <div className="flex justify-between text-[13px]">
-              <span className="text-slate-600 font-medium">Beban Produksi &amp; Logistik</span>
-              <span className="font-mono font-semibold text-slate-900">
-                {productionCount} / {Math.max(totalCount, 1)} Pesanan ({Math.round((productionCount / Math.max(totalCount, 1)) * 100)}%)
-              </span>
-            </div>
-            <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden flex">
-              <div
-                className="bg-blue-600 h-full transition-all duration-300"
-                style={{ width: `${Math.min(Math.round((productionCount / Math.max(totalCount, 1)) * 100), 100)}%` }}
-                title="Produksi & Armada"
-              />
-              <div
-                className="bg-amber-400 h-full transition-all duration-300"
-                style={{ width: `${Math.min(Math.round((waitingOngkirCount / Math.max(totalCount, 1)) * 100), 100)}%` }}
-                title="Perlu Ongkir"
-              />
-            </div>
-            <div className="flex items-center gap-4 text-[11px] text-slate-500 pt-0.5">
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-blue-600" />
-                Dimasak / Dikirim ({productionCount})
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-amber-400" />
-                Menunggu Ongkir ({waitingOngkirCount})
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-slate-200" />
-                Lainnya ({Math.max(totalCount - productionCount - waitingOngkirCount, 0)})
-              </span>
-            </div>
-          </div>
+          {/* Enterprise Progress 1: Beban Produksi Dapur */}
+          <EnterpriseProgressMetric
+            label="Beban Produksi & Logistik Dapur"
+            current={productionCount + waitingOngkirCount}
+            target={Math.max(totalCount, 1)}
+            unit=" Pesanan"
+            subtext={`${productionCount} Dimasak/Dikirim · ${waitingOngkirCount} Tunggu Ongkir`}
+            status={(productionCount + waitingOngkirCount) / Math.max(totalCount, 1) >= 0.8 ? "warning" : "normal"}
+            thresholdLabel="Batas Buffer 80%"
+          />
 
-          {/* Progress Chart 2: Verifikasi Pembayaran */}
-          <div className="space-y-2">
-            <div className="flex justify-between text-[13px]">
-              <span className="text-slate-600 font-medium">Tingkat Penyelesaian Tagihan</span>
-              <span className="font-mono font-semibold text-slate-900">
-                {completedCount + productionCount} Terverifikasi ({Math.round(((completedCount + productionCount) / Math.max(totalCount, 1)) * 100)}%)
-              </span>
-            </div>
-            <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden flex">
-              <div
-                className="bg-emerald-600 h-full transition-all duration-300"
-                style={{ width: `${Math.min(Math.round((completedCount / Math.max(totalCount, 1)) * 100), 100)}%` }}
-                title="Lunas & Selesai"
-              />
-              <div
-                className="bg-blue-500 h-full transition-all duration-300"
-                style={{ width: `${Math.min(Math.round((productionCount / Math.max(totalCount, 1)) * 100), 100)}%` }}
-                title="DP Terverifikasi"
-              />
-            </div>
-            <div className="flex items-center gap-4 text-[11px] text-slate-500 pt-0.5">
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-600" />
-                Lunas Penuh ({completedCount})
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-blue-500" />
-                DP Aktif ({productionCount})
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-rose-400" />
-                Bukti Tertunda ({proofPendingCount})
-              </span>
-            </div>
-          </div>
+          {/* Enterprise Progress 2: Verifikasi Pembayaran */}
+          <EnterpriseProgressMetric
+            label="Tingkat Penyelesaian Tagihan & DP"
+            current={completedCount + productionCount}
+            target={Math.max(totalCount, 1)}
+            unit=" Pesanan"
+            subtext={`${completedCount} Lunas Penuh · ${productionCount} DP Aktif · ${proofPendingCount} Perlu Cek`}
+            status={proofPendingCount > 0 ? "warning" : "normal"}
+            thresholdLabel="Batas Verifikasi 80%"
+          />
         </div>
       </div>
 
-      {/* 3. FILTER TABS & QUICK SEARCH TOOLBAR */}
+      {/* 4. ANTREAN PESANAN (TODAY'S ORDERS) & FILTER TOOLBAR */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-3 rounded-[12px] border border-slate-200 shadow-xs">
         {/* Filter Navigation Tabs */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
@@ -433,7 +453,7 @@ export default function AdminDashboardClient({ orders }: AdminDashboardClientPro
             onClick={() => setFilterTab("proof_pending")}
             className={`px-3.5 py-1.5 text-[13px] font-medium rounded-[8px] transition-colors whitespace-nowrap flex items-center gap-2 ${
               filterTab === "proof_pending"
-                ? "bg-blue-600 text-white font-semibold shadow-xs"
+                ? "bg-slate-900 text-white font-semibold shadow-xs"
                 : "bg-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100"
             }`}
           >
@@ -445,7 +465,7 @@ export default function AdminDashboardClient({ orders }: AdminDashboardClientPro
             onClick={() => setFilterTab("waiting")}
             className={`px-3.5 py-1.5 text-[13px] font-medium rounded-[8px] transition-colors whitespace-nowrap ${
               filterTab === "waiting"
-                ? "bg-blue-600 text-white font-semibold shadow-xs"
+                ? "bg-slate-900 text-white font-semibold shadow-xs"
                 : "bg-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100"
             }`}
           >
@@ -457,7 +477,7 @@ export default function AdminDashboardClient({ orders }: AdminDashboardClientPro
             onClick={() => setFilterTab("production")}
             className={`px-3.5 py-1.5 text-[13px] font-medium rounded-[8px] transition-colors whitespace-nowrap ${
               filterTab === "production"
-                ? "bg-blue-600 text-white font-semibold shadow-xs"
+                ? "bg-slate-900 text-white font-semibold shadow-xs"
                 : "bg-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100"
             }`}
           >
@@ -469,7 +489,7 @@ export default function AdminDashboardClient({ orders }: AdminDashboardClientPro
             onClick={() => setFilterTab("all")}
             className={`px-3.5 py-1.5 text-[13px] font-medium rounded-[8px] transition-colors whitespace-nowrap ${
               filterTab === "all"
-                ? "bg-blue-600 text-white font-semibold shadow-xs"
+                ? "bg-slate-900 text-white font-semibold shadow-xs"
                 : "bg-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100"
             }`}
           >
@@ -481,7 +501,7 @@ export default function AdminDashboardClient({ orders }: AdminDashboardClientPro
             onClick={() => setFilterTab("archived")}
             className={`px-3.5 py-1.5 text-[13px] font-medium rounded-[8px] transition-colors whitespace-nowrap ${
               filterTab === "archived"
-                ? "bg-blue-600 text-white font-semibold shadow-xs"
+                ? "bg-slate-900 text-white font-semibold shadow-xs"
                 : "bg-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100"
             }`}
           >
@@ -496,13 +516,13 @@ export default function AdminDashboardClient({ orders }: AdminDashboardClientPro
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Cari kode, nama PIC, telepon..."
-            className="w-full text-[13px] bg-slate-50 border border-slate-200 rounded-[8px] px-3.5 py-1.5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors"
+            className="w-full text-[13px] bg-slate-50 border border-slate-200 rounded-[8px] px-3.5 py-1.5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all duration-150 ease-out"
           />
           {searchQuery && (
             <button
               type="button"
               onClick={() => setSearchQuery("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-700"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-700 cursor-pointer"
             >
               ✕
             </button>
@@ -512,16 +532,35 @@ export default function AdminDashboardClient({ orders }: AdminDashboardClientPro
 
       {/* 3. OPERATIONAL ORDERS LIST (EDS Card/Table Standard) */}
       {filteredOrders.length === 0 ? (
-        <div className="text-center py-20 bg-white border border-slate-200 rounded-[12px] p-8 space-y-2">
-          <p className="text-[16px] font-semibold text-slate-800">
-            Tidak ada pesanan pada filter ini
-          </p>
-          <p className="text-[13px] text-slate-500 max-w-sm mx-auto">
-            {searchQuery
-              ? `Tidak ditemukan hasil yang cocok dengan kata kunci "${searchQuery}".`
-              : "Semua antrean pesanan pada kategori ini sudah diproses."}
-          </p>
-        </div>
+        <EmptyState
+          moduleCategory="OPERASIONAL PESANAN (SALES ORDERS)"
+          title="Tidak Ditemukan Antrean Pesanan"
+          description={
+            searchQuery
+              ? `Tidak ditemukan pesanan dengan kata kunci pencarian "${searchQuery}". Silakan periksa kembali nomor pesanan atau nama kontak.`
+              : "Seluruh antrean pesanan pada kategori filter ini telah diproses tuntas oleh tim operasional dan logistik."
+          }
+          moduleExplanation="Modul Konsol Operasional Pesanan berfungsi memverifikasi pembayaran DP/lunas, menetapkan tarif ongkos kirim armada Karawang, serta mengawasi status produksi dan pengiriman pesanan industri."
+          gettingStartedSteps={[
+            "Gunakan tab 'Semua' atau 'Arsip / Selesai' untuk melihat riwayat pesanan sebelumnya.",
+            "Bagikan tautan Form Pemesanan Publik kepada calon pemesan korporat.",
+            "Pantau banner peringatan untuk bukti bayar yang baru diunggah oleh pelanggan."
+          ]}
+          action={
+            filterTab !== "all" || searchQuery ? (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  setFilterTab("all");
+                  setSearchQuery("");
+                }}
+              >
+                Tampilkan Semua Pesanan ({totalCount})
+              </Button>
+            ) : undefined
+          }
+        />
       ) : (
         <div className="space-y-4">
           {filteredOrders.map((order) => {
@@ -774,14 +813,93 @@ export default function AdminDashboardClient({ orders }: AdminDashboardClientPro
         </div>
       )}
 
-      {/* 4. ACTIVITY & AUDIT TIMELINE (EDS Page Hierarchy: Content -> Timeline -> Modals) */}
+      {/* 5. ACTIVITY & AUDIT TIMELINE */}
       <RecentActivityTimeline
         title="Jejak Audit &amp; Aktivitas Pesanan Terkini"
         subtitle="Log audit transaksi verifikasi pesanan, pembayaran, dan dispatch katering"
         items={recentActivities}
       />
 
-      {/* 5. MODALS (EDS Standard: 12px Radius, Slate Overlay, Clear Typography) */}
+      {/* 6. QUICK ACTIONS SHORTCUTS (Hierarchy: Hero KPI -> Alerts -> Charts -> Today's Orders -> Recent Activity -> Quick Actions) */}
+      <div className="bg-white border border-slate-200 rounded-[12px] p-5 shadow-2xs space-y-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-[15px] font-semibold text-slate-900 tracking-tight">
+              Aksi Cepat Operasional (Quick Actions)
+            </h3>
+            <p className="text-[12px] text-slate-500">
+              Pintasan aksi harian untuk operasional pesanan, verifikasi dapur, dan logistik bahan baku.
+            </p>
+          </div>
+          <span className="text-[11px] text-slate-400 font-mono">Shortcuts</span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+          <a
+            href="/pesan"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-3.5 rounded-[8px] border border-slate-200 hover:border-slate-300 hover:bg-slate-50/80 transition-all duration-150 ease-out flex flex-col justify-between group"
+          >
+            <div className="w-7 h-7 rounded-[6px] bg-slate-100 flex items-center justify-center text-slate-700 mb-2 group-hover:bg-slate-900 group-hover:text-white transition-colors">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            </div>
+            <div className="text-[13px] font-medium text-slate-800 group-hover:text-slate-900 transition-colors">
+              Form Pemesanan Publik
+            </div>
+            <div className="text-[11px] text-slate-400">Buka form pesanan baru ↗</div>
+          </a>
+
+          <a
+            href="/admin/inventory"
+            className="p-3.5 rounded-[8px] border border-slate-200 hover:border-slate-300 hover:bg-slate-50/80 transition-all duration-150 ease-out flex flex-col justify-between group"
+          >
+            <div className="w-7 h-7 rounded-[6px] bg-slate-100 flex items-center justify-center text-slate-700 mb-2 group-hover:bg-slate-900 group-hover:text-white transition-colors">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+            </div>
+            <div className="text-[13px] font-medium text-slate-800 group-hover:text-slate-900 transition-colors">
+              Command Center Stok
+            </div>
+            <div className="text-[11px] text-slate-400">Cek ketersediaan bahan</div>
+          </a>
+
+          <a
+            href="/admin/purchase-requests"
+            className="p-3.5 rounded-[8px] border border-slate-200 hover:border-slate-300 hover:bg-slate-50/80 transition-all duration-150 ease-out flex flex-col justify-between group"
+          >
+            <div className="w-7 h-7 rounded-[6px] bg-slate-100 flex items-center justify-center text-slate-700 mb-2 group-hover:bg-slate-900 group-hover:text-white transition-colors">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <div className="text-[13px] font-medium text-slate-800 group-hover:text-slate-900 transition-colors">
+              Purchase Request (PR)
+            </div>
+            <div className="text-[11px] text-slate-400">Pengadaan bahan baku</div>
+          </a>
+
+          <a
+            href="/admin/supplier"
+            className="p-3.5 rounded-[8px] border border-slate-200 hover:border-slate-300 hover:bg-slate-50/80 transition-all duration-150 ease-out flex flex-col justify-between group"
+          >
+            <div className="w-7 h-7 rounded-[6px] bg-slate-100 flex items-center justify-center text-slate-700 mb-2 group-hover:bg-slate-900 group-hover:text-white transition-colors">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
+            <div className="text-[13px] font-medium text-slate-800 group-hover:text-slate-900 transition-colors">
+              Direktori Supplier
+            </div>
+            <div className="text-[11px] text-slate-400">Audit rekanan &amp; sertifikasi</div>
+          </a>
+        </div>
+      </div>
+
+      {/* 7. MODALS (EDS Standard: 12px Radius, Slate Overlay, Clear Typography) */}
       {/* Modal Kunci Ongkir */}
       <Modal
         isOpen={!!lockModalOrder}

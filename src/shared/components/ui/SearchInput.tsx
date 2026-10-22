@@ -75,8 +75,8 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
           onChange={(e) => onChange?.(e.target.value)}
           placeholder={placeholder}
           className={cn(
-            "w-full bg-slate-50 border border-slate-200 rounded-[12px] text-slate-900 placeholder:text-slate-400",
-            "focus:bg-white focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 transition-colors",
+            "w-full bg-slate-50 border border-slate-200 rounded-[8px] text-slate-900 placeholder:text-slate-400",
+            "focus:bg-white focus:border-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900 transition-all duration-150 ease-out",
             "disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed",
             sizeStyles[size]
           )}

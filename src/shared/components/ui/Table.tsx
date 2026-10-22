@@ -20,7 +20,7 @@ export function TableHeader({ className, children, ...props }: HTMLAttributes<HT
   return (
     <thead
       className={cn(
-        "bg-slate-50 border-b border-slate-200 text-[11px] font-semibold uppercase tracking-wider text-slate-500 sticky top-0 z-10 select-none",
+        "bg-slate-50/95 backdrop-blur-xs border-b border-slate-200 text-[11px] font-semibold uppercase tracking-wider text-slate-500 sticky top-0 z-10 select-none",
         className
       )}
       {...props}
@@ -47,7 +47,7 @@ export function TableRow({
   return (
     <tr
       className={cn(
-        "hover:bg-slate-50/80 transition-colors group",
+        "hover:bg-slate-50/80 transition-colors duration-150 ease-out group focus-within:bg-slate-50/90",
         isSelected && "bg-blue-50/40 hover:bg-blue-50/60",
         className
       )}
@@ -191,9 +191,9 @@ export function TableLoadingRow({
   return (
     <>
       {Array.from({ length: rows }).map((_, idx) => (
-        <tr key={idx} className="animate-pulse">
+        <tr key={idx} className="border-b border-slate-100 last:border-0">
           <td colSpan={colSpan} className="py-4 px-4">
-            <div className="h-4 bg-slate-100 rounded-[6px] w-full" />
+            <div className="h-4 bg-slate-100 rounded-[6px] w-full relative overflow-hidden after:absolute after:inset-0 after:-translate-x-full after:animate-enterprise-shimmer after:bg-gradient-to-r after:from-transparent after:via-slate-200/50 after:to-transparent" />
           </td>
         </tr>
       ))}

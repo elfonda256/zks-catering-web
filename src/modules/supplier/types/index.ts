@@ -3,12 +3,16 @@
  */
 
 export type SupplierStatus =
-  | "ACTIVE"
-  | "INACTIVE"
-  | "PREFERRED"
-  | "REVIEW"
-  | "SUSPENDED"
-  | "PROBATION";
+  | "PREFERRED" // Preferred Partner
+  | "APPROVED" // Approved Vendor
+  | "PENDING_VERIFICATION" // Pending Verification
+  | "CONTRACT_RENEWAL" // Contract Renewal
+  | "INACTIVE" // Inactive
+  | "BLACKLISTED" // Blacklisted (only if blocked)
+  | "ACTIVE" // Legacy alias for APPROVED
+  | "REVIEW" // Legacy alias for PENDING_VERIFICATION
+  | "SUSPENDED" // Legacy alias for BLACKLISTED
+  | "PROBATION"; // Legacy alias for CONTRACT_RENEWAL
 
 export type SupplierTier = "GOLD" | "SILVER" | "BRONZE";
 

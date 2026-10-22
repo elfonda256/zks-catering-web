@@ -51,7 +51,7 @@ export function Modal({
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-enterprise-fade-in"
     >
       <div
         className="fixed inset-0"
@@ -61,7 +61,7 @@ export function Modal({
 
       <div
         className={cn(
-          "relative w-full bg-white border border-slate-200 rounded-[12px] shadow-xl overflow-hidden flex flex-col max-h-[90vh] z-10 animate-in zoom-in-95 duration-150",
+          "relative w-full bg-white border border-slate-200 rounded-[12px] shadow-xl overflow-hidden flex flex-col max-h-[90vh] z-10 animate-enterprise-modal",
           widthClasses[maxWidth]
         )}
       >

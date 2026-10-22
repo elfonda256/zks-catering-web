@@ -14,3 +14,4 @@ export * from "./KpiCard";
 export * from "./FilterBar";
 export * from "./SearchInput";
 export * from "./RecentActivityTimeline";
+export * from "./EnterpriseChart";

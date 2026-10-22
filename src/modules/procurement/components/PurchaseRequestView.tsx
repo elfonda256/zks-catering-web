@@ -1174,7 +1174,7 @@ export default function PurchaseRequestClient() {
 
                 <div className="w-full bg-neutral-200 h-2 rounded-full overflow-hidden">
                   <div
-                    className="bg-emerald-600 h-full rounded-full transition-all duration-300"
+                    className="bg-emerald-600 h-full rounded-full transition-all duration-200 ease-out"
                     style={{
                       width: `${Math.min(
                         100,

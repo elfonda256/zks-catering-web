@@ -170,18 +170,6 @@ const INITIAL_ACTIVITIES: ActivityItem[] = [
     isPositive: true,
     operator: "INSP-QA (Fajar)",
   },
-  {
-    id: "act-6",
-    time: "15:50",
-    date: "Hari ini",
-    item: "Daging Sapi Sandung Lamur (Brisket)",
-    sku: "SKU-BEEF-023",
-    type: "Transfer",
-    party: "Cold Storage Freezer 2 → Thawing Chiller",
-    delta: "150 kg",
-    isPositive: true,
-    operator: "COLD-SPV (Hendra)",
-  },
 ];
 
 const INITIAL_ALERTS: AlertItem[] = [
@@ -239,28 +227,6 @@ const INITIAL_ALERTS: AlertItem[] = [
     severity: "critical",
     value: "-2.0 kg",
     actionLabel: "Sesuaikan Stok",
-  },
-  {
-    id: "alt-6",
-    category: "PENDING_APPROVAL",
-    title: "PO #ZKS-PO-2026-1049 (Beras Ramos 5 Ton)",
-    sku: "PO-REQ-1049",
-    location: "Purchasing Dept",
-    description: "Pengajuan pembelian bahan pokok senilai Rp 74.500.000 menunggu otorisasi digital Purchasing Manager.",
-    severity: "action",
-    value: "Rp 74.5 M",
-    actionLabel: "Review & Setujui",
-  },
-  {
-    id: "alt-7",
-    category: "PENDING_APPROVAL",
-    title: "Transfer Request #TR-088 (Minyak Goreng 200L)",
-    sku: "TR-REQ-088",
-    location: "Warehouse A → Buffer",
-    description: "Permintaan transfer tambahan untuk pesanan katering lembur PT. Aisin Karawang.",
-    severity: "action",
-    value: "200 Liter",
-    actionLabel: "Otorisasi Mutasi",
   },
 ];
 
@@ -673,7 +639,14 @@ export default function InventoryDashboardClient() {
 
             {/* Interactive SVG Bar & Line Canvas Chart */}
             <div className="relative pt-4">
-              <div className="h-64 sm:h-72 w-full flex items-end gap-2 sm:gap-4 px-2 pb-6 border-b border-[#141413]/15">
+              {/* Soft background grid lines */}
+              <div className="absolute inset-x-0 top-4 bottom-6 flex flex-col justify-between pointer-events-none opacity-40">
+                <div className="border-b border-dashed border-slate-200 w-full" />
+                <div className="border-b border-dashed border-slate-200 w-full" />
+                <div className="border-b border-dashed border-slate-200 w-full" />
+              </div>
+
+              <div className="h-64 sm:h-72 w-full flex items-end gap-2 sm:gap-4 px-2 pb-6 border-b border-slate-200 relative z-10">
                 {chartPoints.map((pt, idx) => {
                   const inHeightPct = Math.max(12, Math.round((pt.stockIn / maxVolume) * 88));
                   const outHeightPct = Math.max(10, Math.round((pt.stockOut / maxVolume) * 88));
@@ -689,19 +662,19 @@ export default function InventoryDashboardClient() {
                         {/* Stock In Bar */}
                         <div
                           style={{ height: `${inHeightPct}%` }}
-                          className="w-1/2 bg-emerald-600/90 group-hover:bg-emerald-700 transition-all duration-300 rounded-t-xs"
+                          className="w-1/2 bg-emerald-600/90 group-hover:bg-emerald-700 transition-all duration-200 ease-out rounded-t-xs"
                           title={`Stock In: ${pt.stockIn.toLocaleString("id-ID")} kg`}
                         ></div>
                         {/* Stock Out Bar */}
                         <div
                           style={{ height: `${outHeightPct}%` }}
-                          className="w-1/2 bg-amber-600/85 group-hover:bg-amber-700 transition-all duration-300 rounded-t-xs"
+                          className="w-1/2 bg-amber-600/85 group-hover:bg-amber-700 transition-all duration-200 ease-out rounded-t-xs"
                           title={`Stock Out: ${pt.stockOut.toLocaleString("id-ID")} kg`}
                         ></div>
                       </div>
 
                       {/* X-Axis Label */}
-                      <span className="absolute -bottom-5 text-[10px] font-mono text-[#626058] group-hover:text-[#141413] font-medium whitespace-nowrap">
+                      <span className="absolute -bottom-5 text-[10px] font-mono text-slate-500 group-hover:text-slate-900 font-medium whitespace-nowrap">
                         {pt.label}
                       </span>
                     </div>
@@ -711,9 +684,9 @@ export default function InventoryDashboardClient() {
 
               {/* Hover Floating Tooltip */}
               {hoveredDataPoint && (
-                <div className="mt-8 p-3.5 bg-neutral-900 text-[#FAF9F5] text-xs font-mono rounded border border-neutral-700 shadow-lg flex flex-wrap items-center justify-between gap-4 transition-all animate-fade-in">
+                <div className="mt-8 p-3.5 bg-slate-900 text-slate-50 text-xs font-mono rounded-md border border-slate-700 shadow-md flex flex-wrap items-center justify-between gap-4 transition-all duration-200 ease-out">
                   <div>
-                    <span className="text-[#8E8B81] text-[10px] uppercase block">Periode</span>
+                    <span className="text-slate-400 text-[10px] uppercase block">Periode</span>
                     <strong className="text-white text-sm">{hoveredDataPoint.date}</strong>
                   </div>
                   <div>
@@ -806,19 +779,40 @@ export default function InventoryDashboardClient() {
                       </span>
                     </div>
 
-                    {/* Progress Bar of Utilization */}
+                    {/* Enterprise Segmented Capacity Rail */}
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs font-mono">
-                        <span className="text-[#626058]">Kapasitas Terpakai</span>
-                        <strong className="text-[#141413]">{wh.utilizationPct}% ({wh.currentLoad})</strong>
+                        <span className="text-slate-600 flex items-center gap-1">
+                          <span className="text-[10px]" aria-hidden="true">
+                            {isNearFull ? "●" : isWarning ? "▲" : "✓"}
+                          </span>
+                          Kapasitas Terpakai
+                        </span>
+                        <strong className="text-slate-900 tabular-nums">
+                          {wh.utilizationPct}% <span className="font-normal text-slate-500">({wh.currentLoad})</span>
+                        </strong>
                       </div>
-                      <div className="w-full h-2 bg-neutral-100 rounded-xs overflow-hidden">
+                      <div className="relative w-full h-2.5 bg-slate-100 rounded-xs overflow-hidden border border-slate-200/60">
+                        {/* 80% Buffer Line Marker */}
+                        <div
+                          className="absolute top-0 bottom-0 left-[80%] w-px bg-amber-400/80 z-10"
+                          title="Buffer Threshold (80%)"
+                        />
                         <div
                           style={{ width: `${wh.utilizationPct}%` }}
-                          className={`h-full transition-all duration-500 ${
-                            isNearFull ? "bg-amber-600" : isWarning ? "bg-[#C85A17]" : "bg-emerald-600"
+                          className={`h-full transition-all duration-200 ease-out ${
+                            isNearFull
+                              ? "bg-rose-600"
+                              : isWarning
+                              ? "bg-amber-500"
+                              : "bg-emerald-600"
                           }`}
-                        ></div>
+                        />
+                      </div>
+                      <div className="flex justify-between text-[9px] font-mono text-slate-400">
+                        <span>0%</span>
+                        <span className="text-amber-600/80">Buffer (80%)</span>
+                        <span>100%</span>
                       </div>
                     </div>
 

@@ -8,8 +8,10 @@ export interface ErpPageTemplateProps {
   category?: string;
   title: string;
   description?: string;
-  actions?: ReactNode;
-  secondaryActions?: ReactNode;
+  actions?: ReactNode; // Primary Button (top right)
+  secondaryActions?: ReactNode; // Secondary Button (top right)
+  exportAction?: ReactNode; // Export Button (top right)
+  searchBar?: ReactNode; // Search bar (top right / toolbar)
   breadcrumb?: BreadcrumbItem[];
   hideBreadcrumb?: boolean;
   filters?: ReactNode;
@@ -24,8 +26,9 @@ export interface ErpPageTemplateProps {
 
 /**
  * Standard Enterprise Page Template
- * Follows EDS Layout Hierarchy:
- * Breadcrumb -> Header (Title + Description + Primary & Secondary Actions) -> Primary KPI -> Charts -> Main Table/Content -> Timeline/Activity -> Secondary Panels
+ * Follows Sprint 02.1 Standardized Action Area & Layout Hierarchy:
+ * Breadcrumb -> Header (Title + Description + Top Right Action Area [Search + Export + Secondary + Primary])
+ * -> Primary KPI -> Purposeful Charts -> Filters -> Main Content / Table -> Timeline -> Secondary Panels
  */
 export function ErpPageTemplate({
   category,
@@ -33,6 +36,8 @@ export function ErpPageTemplate({
   description,
   actions,
   secondaryActions,
+  exportAction,
+  searchBar,
   breadcrumb,
   hideBreadcrumb = false,
   filters,
@@ -45,7 +50,7 @@ export function ErpPageTemplate({
   className,
 }: ErpPageTemplateProps) {
   return (
-    <div className={cn("space-y-6", className)}>
+    <div className={cn("space-y-6 animate-enterprise-fade-up", className)}>
       {/* 1. Breadcrumb */}
       {!hideBreadcrumb && (
         <div className="pb-1">
@@ -53,27 +58,29 @@ export function ErpPageTemplate({
         </div>
       )}
 
-      {/* 2. Page Header: Category + Title + Description + Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+      {/* 2. Page Header: Category + Title + Description + Standardized Top Right Action Area */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
           {category && (
-            <div className="text-[12px] font-semibold uppercase tracking-wider text-slate-500 mb-1">
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1">
               {category}
             </div>
           )}
-          <h1 className="text-[24px] font-semibold text-slate-900 tracking-tight leading-snug">
+          <h1 className="text-[22px] sm:text-[24px] font-semibold text-slate-900 tracking-tight leading-snug">
             {title}
           </h1>
           {description && (
-            <p className="text-[14px] text-slate-600 mt-1 max-w-4xl">
+            <p className="text-[13px] sm:text-[14px] text-slate-600 mt-1 max-w-4xl">
               {description}
             </p>
           )}
         </div>
 
-        {/* Primary & Secondary Actions (Top Right) */}
-        {(actions || secondaryActions) && (
-          <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-center">
+        {/* Standardized Action Area (Top Right: Search -> Export -> Secondary -> Primary) */}
+        {(actions || secondaryActions || exportAction || searchBar) && (
+          <div className="flex flex-wrap items-center gap-2.5 shrink-0 self-start lg:self-center">
+            {searchBar && <div className="w-full sm:w-auto">{searchBar}</div>}
+            {exportAction}
             {secondaryActions}
             {actions}
           </div>

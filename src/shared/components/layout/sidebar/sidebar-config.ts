@@ -2,7 +2,8 @@ import { ErpNavSection } from "./types";
 
 /**
  * ZKS Catering ERP Navigation Configuration
- * Strictly follows Sprint 10.5 Module Structure & Role-Based Access Control
+ * Strictly follows Sprint 02.1 Enterprise Navigation & Information Architecture:
+ * Dashboard -> Sales -> Procurement -> Inventory -> Production -> Kitchen -> Delivery -> Finance -> Reports -> Settings
  */
 export const erpNavSections: ErpNavSection[] = [
   {
@@ -11,16 +12,53 @@ export const erpNavSections: ErpNavSection[] = [
     defaultExpanded: true,
     items: [
       {
-        id: "dash-orders",
-        label: "Dashboard Pesanan",
+        id: "dash-main",
+        label: "Dashboard Operasional",
         href: "/admin/dashboard",
         exact: true,
       },
     ],
   },
   {
+    id: "sales",
+    title: "PENJUALAN (SALES)",
+    defaultExpanded: true,
+    allowedRoles: ["SUPERADMIN", "ADMIN", "MANAGEMENT"],
+    items: [
+      {
+        id: "sales-orders",
+        label: "Pesanan Masuk & Tagihan",
+        href: "/admin/dashboard",
+        exact: false,
+      },
+    ],
+  },
+  {
+    id: "procurement",
+    title: "PENGADAAN (PROCUREMENT)",
+    defaultExpanded: true,
+    allowedRoles: ["SUPERADMIN", "ADMIN", "PURCHASING", "FINANCE", "MANAGEMENT"],
+    items: [
+      {
+        id: "proc-pr",
+        label: "Purchase Request (PR)",
+        href: "/admin/purchase-requests",
+      },
+      {
+        id: "proc-po",
+        label: "Purchase Order (PO)",
+        href: "/admin/purchase-orders",
+      },
+      {
+        id: "proc-supplier",
+        label: "Mitra Supplier (SRM)",
+        href: "/admin/supplier",
+      },
+    ],
+  },
+  {
     id: "inventory",
-    title: "INVENTARIS & GUDANG",
+    title: "INVENTARIS & GUDANG (INVENTORY)",
     defaultExpanded: true,
     allowedRoles: ["SUPERADMIN", "ADMIN", "WAREHOUSE", "PURCHASING", "MANAGEMENT"],
     items: [
@@ -42,14 +80,14 @@ export const erpNavSections: ErpNavSection[] = [
         href: "/admin/inventory/receiving",
       },
       {
-        id: "inv-movements",
-        label: "Ledger Mutasi Stok",
-        href: "/admin/inventory/movements",
-      },
-      {
         id: "inv-transfers",
         label: "Transfer Antar Gudang",
         href: "/admin/inventory/transfers",
+      },
+      {
+        id: "inv-movements",
+        label: "Ledger Mutasi Stok",
+        href: "/admin/inventory/movements",
       },
       {
         id: "inv-opname",
@@ -59,58 +97,28 @@ export const erpNavSections: ErpNavSection[] = [
     ],
   },
   {
-    id: "procurement",
-    title: "PENGADAAN & SRM",
-    defaultExpanded: true,
-    allowedRoles: ["SUPERADMIN", "ADMIN", "PURCHASING", "FINANCE", "MANAGEMENT"],
-    items: [
-      {
-        id: "proc-pr",
-        label: "Purchase Request (PR)",
-        href: "/admin/purchase-requests",
-      },
-      {
-        id: "proc-po",
-        label: "Purchase Order (PO)",
-        href: "/admin/purchase-orders",
-      },
-      {
-        id: "proc-supplier",
-        label: "Manajemen Supplier (SRM)",
-        href: "/admin/supplier",
-      },
-    ],
-  },
-  {
     id: "production",
-    title: "PRODUKSI",
+    title: "PRODUKSI (PRODUCTION)",
     defaultExpanded: false,
     allowedRoles: ["SUPERADMIN", "ADMIN", "KITCHEN", "MANAGEMENT"],
     items: [
       {
         id: "prod-dash",
-        label: "Dashboard Produksi",
+        label: "Jadwal Masak Harian",
         href: "#",
         badge: "Roadmap",
         badgeVariant: "neutral",
       },
       {
         id: "prod-recipe",
-        label: "Katalog Resep (Recipe)",
-        href: "#",
-        badge: "Roadmap",
-        badgeVariant: "neutral",
-      },
-      {
-        id: "prod-bom",
-        label: "Bill of Materials (BOM)",
+        label: "Katalog Resep & BOM",
         href: "#",
         badge: "Roadmap",
         badgeVariant: "neutral",
       },
       {
         id: "prod-planning",
-        label: "Perencanaan Produksi",
+        label: "Perencanaan Batch Produksi",
         href: "#",
         badge: "Roadmap",
         badgeVariant: "neutral",
@@ -119,13 +127,13 @@ export const erpNavSections: ErpNavSection[] = [
   },
   {
     id: "kitchen",
-    title: "DAPUR SENTRAL",
+    title: "DAPUR SENTRAL (KITCHEN)",
     defaultExpanded: false,
     allowedRoles: ["SUPERADMIN", "ADMIN", "KITCHEN", "MANAGEMENT"],
     items: [
       {
         id: "kitchen-dash",
-        label: "Dashboard Dapur",
+        label: "Konsol Display Dapur Sentral",
         href: "#",
         badge: "Roadmap",
         badgeVariant: "neutral",
@@ -134,7 +142,7 @@ export const erpNavSections: ErpNavSection[] = [
   },
   {
     id: "delivery",
-    title: "DISTRIBUSI & ARMADA",
+    title: "DISTRIBUSI (DELIVERY)",
     defaultExpanded: false,
     allowedRoles: ["SUPERADMIN", "ADMIN", "DELIVERY", "MANAGEMENT"],
     items: [
@@ -149,13 +157,13 @@ export const erpNavSections: ErpNavSection[] = [
   },
   {
     id: "finance",
-    title: "KEUANGAN & FAKTUR",
+    title: "KEUANGAN (FINANCE)",
     defaultExpanded: false,
     allowedRoles: ["SUPERADMIN", "ADMIN", "FINANCE", "MANAGEMENT"],
     items: [
       {
         id: "fin-settle",
-        label: "Faktur & Pembayaran Vendor",
+        label: "Faktur & Rekonsiliasi Bank",
         href: "#",
         badge: "Roadmap",
         badgeVariant: "neutral",
@@ -164,7 +172,7 @@ export const erpNavSections: ErpNavSection[] = [
   },
   {
     id: "reports",
-    title: "LAPORAN & AUDIT",
+    title: "LAPORAN (REPORTS)",
     defaultExpanded: false,
     allowedRoles: ["SUPERADMIN", "ADMIN", "MANAGEMENT", "AUDITOR"],
     items: [
@@ -178,8 +186,8 @@ export const erpNavSections: ErpNavSection[] = [
     ],
   },
   {
-    id: "administration",
-    title: "ADMINISTRASI",
+    id: "settings",
+    title: "PENGATURAN (SETTINGS)",
     defaultExpanded: false,
     allowedRoles: ["SUPERADMIN", "ADMIN"],
     items: [
@@ -190,17 +198,9 @@ export const erpNavSections: ErpNavSection[] = [
         badge: "Admin",
         badgeVariant: "neutral",
       },
-    ],
-  },
-  {
-    id: "settings",
-    title: "PENGATURAN",
-    defaultExpanded: false,
-    allowedRoles: ["SUPERADMIN", "ADMIN"],
-    items: [
       {
         id: "set-company",
-        label: "Konfigurasi Perusahaan & Cabang",
+        label: "Konfigurasi Cabang & Unit",
         href: "#",
         badge: "Konfigurasi",
         badgeVariant: "neutral",

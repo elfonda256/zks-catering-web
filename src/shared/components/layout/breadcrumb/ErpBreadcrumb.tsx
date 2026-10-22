@@ -17,18 +17,19 @@ interface ErpBreadcrumbProps {
 }
 
 const SEGMENT_LABELS: Record<string, { label: string; parentHref?: string }> = {
-  admin: { label: "Dashboard", parentHref: "/admin/dashboard" },
+  admin: { label: "Home", parentHref: "/admin/dashboard" },
   dashboard: { label: "Dashboard", parentHref: "/admin/dashboard" },
   inventory: { label: "Inventory", parentHref: "/admin/inventory" },
-  items: { label: "Master Item", parentHref: "/admin/inventory/items" },
+  items: { label: "Master Items", parentHref: "/admin/inventory/items" },
   receiving: { label: "Receiving", parentHref: "/admin/inventory/receiving" },
   movements: { label: "Stock Movement", parentHref: "/admin/inventory/movements" },
-  transfers: { label: "Warehouse Transfer", parentHref: "/admin/inventory/transfers" },
+  transfers: { label: "Warehouse Transfers", parentHref: "/admin/inventory/transfers" },
   opname: { label: "Stock Opname", parentHref: "/admin/inventory/opname" },
   procurement: { label: "Procurement", parentHref: "/admin/purchase-requests" },
   "purchase-requests": { label: "Purchase Request", parentHref: "/admin/purchase-requests" },
   "purchase-orders": { label: "Purchase Order", parentHref: "/admin/purchase-orders" },
   supplier: { label: "Supplier", parentHref: "/admin/supplier" },
+  suppliers: { label: "Supplier", parentHref: "/admin/supplier" },
   production: { label: "Production", parentHref: "#" },
   kitchen: { label: "Kitchen", parentHref: "#" },
   distribution: { label: "Delivery", parentHref: "#" },
@@ -46,18 +47,26 @@ export function ErpBreadcrumb({ customItems, className }: ErpBreadcrumbProps) {
     }
 
     // Auto-generate from pathname
-    // E.g. /admin/inventory/receiving -> ["admin", "inventory", "receiving"]
+    // Strict Sprint 02.1 hierarchy: Home -> Module -> Sub-module -> Detail
     const rawSegments = pathname
       .split("/")
       .filter(Boolean)
-      .filter((s) => s !== "admin"); // admin mapped to Dashboard root
+      .filter((s) => s !== "admin"); // admin mapped to Home root
 
     const items: BreadcrumbItem[] = [
       {
-        label: "Dashboard",
+        label: "Home",
         href: "/admin/dashboard",
       },
     ];
+
+    if (rawSegments.length === 0 || (rawSegments.length === 1 && rawSegments[0] === "dashboard")) {
+      items.push({
+        label: "Dashboard",
+        isCurrent: true,
+      });
+      return items;
+    }
 
     let accumulatedPath = "/admin";
 
@@ -70,7 +79,8 @@ export function ErpBreadcrumb({ customItems, className }: ErpBreadcrumbProps) {
       if (
         (segment === "purchase-requests" ||
           segment === "purchase-orders" ||
-          segment === "supplier") &&
+          segment === "supplier" ||
+          segment === "suppliers") &&
         !items.some((i) => i.label === "Procurement")
       ) {
         items.push({
@@ -94,7 +104,17 @@ export function ErpBreadcrumb({ customItems, className }: ErpBreadcrumbProps) {
         });
       }
 
-      const label = config ? config.label : segment;
+      // Detect if segment looks like an ID / SKU / slug / number -> label as "Detail"
+      const isEntityId =
+        segment.startsWith("sup-") ||
+        segment.startsWith("po-") ||
+        segment.startsWith("pr-") ||
+        segment.startsWith("tr-") ||
+        segment.startsWith("rec-") ||
+        /^\d+$/.test(segment) ||
+        segment.length > 20;
+
+      const label = isEntityId ? "Detail" : config ? config.label : segment;
 
       // Avoid duplicate consecutive items
       if (items[items.length - 1]?.label !== label) {

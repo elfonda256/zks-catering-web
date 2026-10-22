@@ -2,6 +2,44 @@
 
 All notable changes to the Zahdan Kamal Sentosa Enterprise ERP project are documented in this file.
 
+## [Sprint 02.1] - 2026-10-22
+### Enterprise Navigation & Information Architecture
+- **Sidebar Information Architecture Refactor**: Grouped modules into a clear enterprise hierarchy communicating true system architecture: Dashboard → Sales (Orders) → Procurement (PR, PO, Supplier) → Inventory (Command Center, Master Items, Receiving, Transfers, Stock Movement, Stock Opname) → Production → Kitchen → Delivery → Finance → Reports → Settings. Added crisp enterprise icons for every module.
+- **Hierarchical Breadcrumb Navigation**: Upgraded `ErpBreadcrumb.tsx` to strictly generate `Home → Module → Sub-module → Detail` paths with clear parent linking and active state semantics.
+- **Standardized Top-Right Action Area**: Refactored `ErpPageTemplate.tsx` to standardize action area positioning across all pages (Search → Export → Secondary Button → Primary Button), ensuring identical layout rhythm and eliminating ad-hoc button positioning.
+- **Enhanced Enterprise Empty State**: Replaced bare empty pages with a structured 4-part `EmptyState` component explicitly conveying: Module Category & Identity (What), Purpose Statement (Why), 3-step getting started guide (How to start), and Primary/Secondary CTAs.
+- **Dashboard Information Hierarchy Optimization**: Reorganized `AdminDashboardView.tsx` into a strict vertical sequence: Hero KPI (Bukti Bayar Masuk with executive dark dominance) → Operational Alerts Banner (direct action buttons to resolve urgent items) → Capacity & Fulfillment Charts → Today's Orders (Queue tabs with Slate-900 active state, Search, Cards/Table, and structured EmptyState) → Recent Activity Audit Timeline → Quick Actions Shortcuts Grid.
+- **Standardized Vendor Classification**: Replaced confusing probationary labels with 6 enterprise vendor classifications: Preferred Partner, Approved Vendor, Pending Verification, Contract Renewal, Inactive, and Blacklisted across types, constants, directory tables, and badge helpers.
+- **Global Action Button Consistency**: Converted all hardcoded primary action buttons across all admin views (`supplier`, `purchase-requests`, `purchase-orders`, `inventory`, `items`, `receiving`, `transfers`, `movements`, `opname`) to the unified executive `bg-slate-900 hover:bg-slate-800` design token.
+- **Zero Business Logic & Schema Breakage**: 100% preservation of database schema, NextAuth configuration, and backend API routes.
+
+## [Sprint 01] - 2026-10-22
+### Enterprise UI Foundation (Design System Refactor — Public Website + ERP Admin)
+- **Single Font Family Standard**: Standardized typography to SATU keluarga font (`Inter`) across both the Public Website and ERP Admin in `src/app/layout.tsx` and `src/app/globals.css`. Removed mixed font families (Manrope/Inter pairing) to achieve an Apple, Linear, Stripe, and Vercel-grade visual language.
+- **Unified Typography Hierarchy**: Formulated consistent 8-tier typographic tokens in `edsTokens.typography`: Display (36px/44px), H1 (28px/36px), H2 (22px/28px), H3 (18px/24px), Body Large (16px/24px), Body (14px/20px), Caption (12px/16px), Label (11px/14px), and `tabularNumbers` (`font-mono tabular-nums`). Enforced tabular numbers for all metrics, SKU codes, and monetary figures.
+- **Enterprise Color System**: Refactored palette to high-contrast Primary (Slate 900), Neutral ramp (Slate 50–900), and functional semantic colors (Emerald for Success, Amber for Warning, Rose for Danger, Sky for Info). Eliminated all purposeless decorative gradients and visual clutter.
+- **8pt Grid Spacing Standard**: Enforced spacing tokens strictly to 4, 8, 12, 16, 24, 32, 40, 48, 64px across cards, inputs, navigation, and section pacing.
+- **Standardized Border Radius**: Implemented single global radius rules: 8px (`rounded-lg`) for controls/buttons/inputs/badges, and 12px (`rounded-xl`) for cards/tables/modals/panels.
+- **3-Level Elevation Shadow System**: Reduced elevation to Level 0 (None / Hairline border), Level 1 (Subtle `shadow-[0_1px_2px_rgba(0,0,0,0.04)]`), and Level 2 (Overlay `shadow-md`), establishing border hairlines as the primary visual divider.
+- **Component Consistency Audit**: Audited and aligned all 11 core UI components: `Button`, `Card`, `Table`, `Badge`, `Input`, `Select`, `Modal`, `Tabs`, `Pagination`, `EmptyState`, and `LoadingState` to exact tokens.
+- **Canonical Information Hierarchy**: Standardized all ERP views to follow the canonical sequence: Title → Description → Action → KPI → Chart → Filter → Table → Timeline.
+- **Dummy Data Capped at ≤5 Items**: Verified and enforced strict item caps across all datasets: 5 Suppliers, 5 Inventory Items, 3 Purchase Requests, 3 Purchase Orders, 5 Stock Movements, 4 Receiving records, 5 Transfers, and 5 Notifications.
+- **Zero Business Logic & Schema Changes**: 100% preservation of database schemas, Prisma models, NextAuth security, API routes, and operational business workflows.
+
+## [Sprint 10.6A] - 2026-10-22
+### Enterprise Premium UI/UX Foundation (Ergonomics & Anti-Slop Enforcement)
+- **Enterprise Typography Tokens**: Refactored `edsTokens.typography` to define strict 8-level scale: Display XL (36px), Display L (28px), Page Title (24px), Section Title (20px), Card Title (16px), Body (14px), Caption (12px), Micro (10px). All metric and currency displays enforced to `font-mono tabular-nums`.
+- **8pt Grid Spacing Standard**: Enforced spacing tokens strictly to 4, 8, 12, 16, 24, 32, 40, 48, 64px, eliminating all arbitrary paddings and margins.
+- **95% Monochrome Palette**: Standardized canvas surfaces to white/slate-50 with Slate-200 hairline borders and 5% semantic accents only (Blue for Primary, Emerald for Success, Amber for Warning, Red for Danger).
+- **Enterprise Chart Design System**: Built `EnterpriseChart.tsx` featuring `EnterpriseBarChart` (thin grid lines, thin axes, 4px rounded bar tops, interactive floating tooltips) and `EnterpriseProgressMetric` (capacity indicators with calm status transitions).
+- **Motion Design System (150-250ms)**: Added micro-interactions across sidebar collapse/expand, card hover (`hover:border-slate-300`), table row hover (`bg-slate-50/70`), and button active scale.
+- **Card System Refactor**: Enhanced `Card.tsx` with padding options (`compact` 16px, `default` 24px, `spacious` 32px), hairline border, and Level 1 border-first shadow.
+- **Table Experience & Tabular Figures**: Enhanced `Pagination.tsx` and `Table.tsx` with `tabular-nums` alignment, sticky headers, and consistent sorting affordances.
+- **Sidebar Refinement**: Added 18x18px uniform SVG icons with `strokeWidth 1.75` across all 10 module groups and items in `ErpSidebar.tsx`, with crisp active indicator and memory persistence.
+- **Mock Data Cleanup**: Capped excessive dummy data across all views to maximum 5 items (Max 5 KPI, Max 5 Notifications, Max 5 Activities, Max 5 Suppliers, Max 5 POs, Max 5 PRs, Max 5 Inventory Items, Max 5 Stock Movements, Max 5 Transfers).
+- **Business Terminology Matrix**: Authored comprehensive glossary in Chapter 12 recommending catering-domain status transitions (`Approved Vendor`, `Preferred Partner Tier-1`, `Trial Period`, `Under Audit`, `Suspended Safety Hold`, `QC Hold`, `Allocated Committed`).
+- **Masterbook Chapter 12**: Created `12_ENTERPRISE_PREMIUM_DESIGN_LANGUAGE.md` as the definitive visual ergonomics and enterprise UI/UX specification.
+
 ## [Sprint 10.5] - 2026-10-22
 ### ERP Shell & Navigation Framework (Enterprise Workspace Architecture)
 - **Permanent Application Shell**: Built `src/shared/components/layout/shell/ErpShell.tsx` and updated `EnterpriseShell.tsx` to provide a persistent, unified workspace across all modules without page reloads or layout jumping.

@@ -1,60 +1,99 @@
 /**
- * Enterprise Design System (EDS) — Design Tokens
+ * Enterprise Design System (EDS) — Design Tokens v1.2
  * Anti AI Slop Edition | ZKS Catering ERP
+ * Sprint 10.6A Enterprise Premium UI/UX Foundation
  * 
  * Strict specifications:
- * - 8pt Spacing Grid (8, 16, 24, 32, 48, 64)
- * - Typography scale (Display 32px, Page Title 24px, Section Title 20px, Card Title 16px, Body 14px, Caption 12px)
- * - Single Border Radius (12px)
- * - Subtle Elevation (Level 0 and Level 1 border-first)
- * - Color System (White, Light Gray, Dark Gray, Primary Blue, Semantic Green/Orange/Red)
+ * - Typography scale: Display XL (36px), Display L (28px), Page Title (24px), Section Title (20px), Card Title (16px), Body (14px), Caption (12px), Micro (10px)
+ * - Tabular numbers for all numeric/metric/financial displays
+ * - Spacing Grid: strictly 4, 8, 12, 16, 24, 32, 40, 48, 64px
+ * - Color System: 95% Monochrome (White, Slate 50-900), 5% Semantic Accent (Primary, Success, Warning, Danger)
+ * - Motion Tokens: 150ms-250ms smooth ease-out curves
+ * - Single Uniform Border Radius: 12px
+ * - Elevation: Border-first (Level 0 flat, Level 1 ultralight shadow, Level 2 dialog overlay)
  */
 
 export const edsTokens = {
   typography: {
-    display: "text-[32px] leading-[40px] font-bold tracking-tight text-slate-900",
-    pageTitle: "text-[24px] leading-[32px] font-semibold tracking-tight text-slate-900",
-    sectionTitle: "text-[20px] leading-[28px] font-semibold tracking-tight text-slate-900",
-    cardTitle: "text-[16px] leading-[24px] font-medium text-slate-900",
-    body: "text-[14px] leading-[22px] font-normal text-slate-700",
-    bodyMuted: "text-[14px] leading-[22px] font-normal text-slate-500",
-    caption: "text-[12px] leading-[18px] font-normal text-slate-500",
-    captionMono: "font-mono text-[12px] leading-[18px] tracking-wide text-slate-600",
-    tableHeader: "text-[12px] leading-[16px] font-semibold uppercase tracking-wider text-slate-600",
+    // Sprint 01: Standardized Single Font Family Hierarchy
+    display: "text-[36px] leading-[44px] font-bold tracking-tight text-slate-900 font-sans",
+    h1: "text-[28px] leading-[36px] font-semibold tracking-tight text-slate-900 font-sans",
+    h2: "text-[22px] leading-[28px] font-semibold tracking-tight text-slate-900 font-sans",
+    h3: "text-[18px] leading-[24px] font-semibold tracking-tight text-slate-900 font-sans",
+    bodyLarge: "text-[16px] leading-[24px] font-normal text-slate-800 font-sans",
+    body: "text-[14px] leading-[20px] font-normal text-slate-700 font-sans",
+    caption: "text-[12px] leading-[16px] font-normal text-slate-500 font-sans",
+    label: "text-[11px] leading-[14px] font-semibold uppercase tracking-wider text-slate-500 font-sans",
+    tabularNumbers: "font-mono tabular-nums",
+
+    // Backward-compatible semantic aliases
+    displayXl: "text-[36px] leading-[44px] font-bold tracking-tight text-slate-900 font-sans tabular-nums",
+    displayL: "text-[28px] leading-[36px] font-bold tracking-tight text-slate-900 font-sans tabular-nums",
+    pageTitle: "text-[24px] leading-[32px] font-semibold tracking-tight text-slate-900 font-sans",
+    sectionTitle: "text-[20px] leading-[28px] font-semibold tracking-tight text-slate-900 font-sans",
+    cardTitle: "text-[16px] leading-[24px] font-medium text-slate-900 font-sans",
+    bodyMuted: "text-[14px] leading-[20px] font-normal text-slate-500 font-sans",
+    bodyMedium: "text-[14px] leading-[20px] font-medium text-slate-800 font-sans",
+    captionMono: "font-mono text-[12px] leading-[16px] tracking-wide text-slate-600 tabular-nums",
+    micro: "text-[10px] leading-[14px] font-semibold uppercase tracking-wider text-slate-500 font-sans",
+    tableHeader: "text-[11px] leading-[16px] font-semibold uppercase tracking-wider text-slate-500 font-sans",
   },
   spacing: {
-    xs: "8px",   // 1 unit
-    sm: "16px",  // 2 units
-    md: "24px",  // 3 units
-    lg: "32px",  // 4 units
-    xl: "48px",  // 6 units
-    xxl: "64px", // 8 units
+    // 8pt Grid Values
+    4: "4px",    // 0.5 unit (micro gaps, badge padding)
+    8: "8px",    // 1 unit (compact buttons, inline items)
+    12: "12px",  // 1.5 units (input padding, table cell vertical)
+    16: "16px",  // 2 units (card internal padding, form fields)
+    24: "24px",  // 3 units (component gaps, card-to-card)
+    32: "32px",  // 4 units (section spacing, page headers)
+    40: "40px",  // 5 units (intermediate section breaks)
+    48: "48px",  // 6 units (major view pacing)
+    64: "64px",  // 8 units (canvas outer margins)
   },
   radius: {
-    default: "rounded-[12px]", // 12px single border radius
-    inner: "rounded-[8px]",
-    badge: "rounded-[6px]",
+    // Standardized Global Radius
+    global: "rounded-[8px]",    // 8px global element radius (Button, Input, Select, Badge)
+    element: "rounded-[8px]",   // 8px controls
+    container: "rounded-[12px]",// 12px containers (Card, Modal, Table)
+    default: "rounded-[12px]",  // 12px uniform
+    inner: "rounded-[8px]",     // 8px inside cards/buttons
+    badge: "rounded-[6px]",     // 6px for compact status badges
     full: "rounded-full",
   },
   shadows: {
-    level0: "border border-slate-200",
-    level1: "border border-slate-200 shadow-[0_1px_2px_rgba(0,0,0,0.04)]",
-    level2: "border border-slate-200 shadow-[0_4px_12px_rgba(0,0,0,0.08)]",
+    // 3-Level Border-First Elevation
+    level0: "border border-slate-200/80 shadow-none",
+    level1: "border border-slate-200/80 shadow-[0_1px_2px_rgba(0,0,0,0.04)]",
+    level2: "border border-slate-200/90 shadow-md",
+  },
+  motion: {
+    fast: "150ms cubic-bezier(0.16, 1, 0.3, 1)",
+    base: "200ms cubic-bezier(0.16, 1, 0.3, 1)",
+    slow: "250ms cubic-bezier(0.16, 1, 0.3, 1)",
+    hoverTransition: "transition-colors duration-150 ease-out",
+    cardTransition: "transition-all duration-200 ease-out",
+    collapseTransition: "transition-[width,transform,opacity] duration-200 ease-in-out",
   },
   colors: {
-    background: "#FFFFFF",
-    secondaryBg: "#F8FAFC", // slate-50
-    surface: "#FFFFFF",
-    textPrimary: "#0F172A", // slate-900
-    textSecondary: "#475569", // slate-600
-    textMuted: "#64748B", // slate-500
-    border: "#E2E8F0", // slate-200
-    borderSubtle: "#F1F5F9", // slate-100
+    // Enterprise Color Palette: Primary (Slate 900), Neutral (Slate 50-900), Semantic
     primary: {
-      DEFAULT: "#2563EB", // blue-600
-      hover: "#1D4ED8", // blue-700
-      light: "#EFF6FF", // blue-50
-      text: "#1D4ED8",
+      DEFAULT: "#0F172A", // Slate 900
+      hover: "#1E293B",   // Slate 800
+      light: "#F8FAFC",   // Slate 50
+      text: "#FFFFFF",
+      border: "#334155",  // Slate 700
+    },
+    neutral: {
+      50: "#F8FAFC",
+      100: "#F1F5F9",
+      200: "#E2E8F0",
+      300: "#CBD5E1",
+      400: "#94A3B8",
+      500: "#64748B",
+      600: "#475569",
+      700: "#334155",
+      800: "#1E293B",
+      900: "#0F172A",
     },
     semantic: {
       success: {
@@ -82,10 +121,10 @@ export const edsTokens = {
         dot: "#64748B",
       },
       info: {
-        bg: "#EFF6FF", // blue-50
-        border: "#BFDBFE", // blue-200
-        text: "#1D4ED8", // blue-700
-        dot: "#2563EB",
+        bg: "#F0F9FF", // sky-50
+        border: "#BAE6FD", // sky-200
+        text: "#0369A1", // sky-700
+        dot: "#0284C7",
       },
     },
   },

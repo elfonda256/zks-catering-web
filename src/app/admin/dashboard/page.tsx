@@ -107,7 +107,7 @@ async function DashboardContent() {
         actions={
           <Link
             href="/admin/dashboard"
-            className="text-[12px] font-medium text-white bg-blue-600 hover:bg-blue-700 px-3.5 py-1.5 rounded-[8px] transition-colors shadow-2xs inline-flex items-center gap-1.5"
+            className="text-[12px] font-medium text-white bg-slate-900 hover:bg-slate-800 px-3.5 py-1.5 rounded-[8px] transition-colors shadow-2xs inline-flex items-center gap-1.5 cursor-pointer"
           >
             <span>↻ Segarkan Antrean</span>
           </Link>

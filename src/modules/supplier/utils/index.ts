@@ -15,17 +15,21 @@ export function getSupplierStatusBadge(status: SupplierStatus): {
 } {
   switch (status) {
     case "PREFERRED":
-      return { label: "Preferred (Prioritas)", variant: "success" };
+      return { label: "Preferred Partner", variant: "success" };
+    case "APPROVED":
     case "ACTIVE":
-      return { label: "Active", variant: "info" };
+      return { label: "Approved Vendor", variant: "info" };
+    case "PENDING_VERIFICATION":
     case "REVIEW":
-      return { label: "Under Review", variant: "warning" };
+      return { label: "Pending Verification", variant: "warning" };
+    case "CONTRACT_RENEWAL":
     case "PROBATION":
-      return { label: "Probation", variant: "warning" };
-    case "SUSPENDED":
-      return { label: "Suspended", variant: "danger" };
+      return { label: "Contract Renewal", variant: "warning" };
     case "INACTIVE":
       return { label: "Inactive", variant: "neutral" };
+    case "BLACKLISTED":
+    case "SUSPENDED":
+      return { label: "Blacklisted", variant: "danger" };
   }
 }
 

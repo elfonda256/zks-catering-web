@@ -1118,8 +1118,12 @@ export default function StockOpnameClient() {
                     onClick={() => setIsEvidenceModalOpen(ev)}
                     className="p-3 bg-[#FAF9F5] border border-[#141413]/10 hover:border-[#141413]/30 rounded-xs text-left space-y-1.5 transition-all group cursor-pointer"
                   >
-                    <div className="w-full h-16 bg-neutral-100 rounded-xs flex items-center justify-center text-3xl group-hover:scale-105 transition-transform border border-neutral-200">
-                      {ev.emoji}
+                    <div className="w-full h-16 bg-slate-100 rounded-[6px] flex flex-col items-center justify-center gap-1 group-hover:bg-slate-200/80 transition-colors border border-slate-200">
+                      <svg className="w-5 h-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      <span className="text-[9px] font-mono text-slate-500 uppercase tracking-wider">Foto Bukti Fisik</span>
                     </div>
                     <strong className="text-xs text-[#141413] block truncate">{ev.label}</strong>
                     <div className="flex justify-between text-[10px] text-[#8E8B81]">
@@ -1525,10 +1529,13 @@ export default function StockOpnameClient() {
                 ✕
               </button>
             </div>
-            <div className="w-full h-48 bg-neutral-100 border border-neutral-300 rounded-xs flex flex-col items-center justify-center text-6xl">
-              <span>{isEvidenceModalOpen.emoji}</span>
-              <span className="text-xs text-[#8E8B81] mt-2 font-mono">
-                {isEvidenceModalOpen.type}
+            <div className="w-full h-44 bg-slate-900 text-slate-100 rounded-[8px] flex flex-col items-center justify-center gap-2 border border-slate-800">
+              <svg className="w-10 h-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span className="text-xs font-mono text-slate-300">
+                Bukti Digital Terverifikasi #{isEvidenceModalOpen.id} ({isEvidenceModalOpen.type})
               </span>
             </div>
             <p className="text-xs text-[#141413] font-bold leading-relaxed">

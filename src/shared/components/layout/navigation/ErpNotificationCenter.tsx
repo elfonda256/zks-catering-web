@@ -66,15 +66,6 @@ const INITIAL_NOTIFICATIONS: ErpNotification[] = [
     read: true,
     href: "/admin/dashboard",
   },
-  {
-    id: "notif-6",
-    type: "system_maintenance",
-    title: "Pemeliharaan Server & Database",
-    description: "Sinkronisasi backup database PostgreSQL dijadwalkan dini hari pukul 02:00 WIB.",
-    timestamp: "Kemarin",
-    read: true,
-    href: "#",
-  },
 ];
 
 export function ErpNotificationCenter() {
@@ -155,7 +146,7 @@ export function ErpNotificationCenter() {
 
       {/* Notification Popover Panel */}
       {isOpen && (
-        <div className="absolute top-full right-0 mt-2 w-80 sm:w-96 bg-white rounded-[12px] border border-slate-200 shadow-xl z-50 flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+        <div className="absolute top-full right-0 mt-2 w-80 sm:w-96 bg-white rounded-[12px] border border-slate-200 shadow-xl z-50 flex flex-col overflow-hidden animate-enterprise-dropdown origin-top-right">
           {/* Header */}
           <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
             <div className="flex items-center gap-2">

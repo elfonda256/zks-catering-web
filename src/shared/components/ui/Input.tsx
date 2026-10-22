@@ -30,9 +30,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             id={inputId}
             className={cn(
-              "h-10 w-full rounded-[12px] border border-slate-200 bg-white px-3.5 py-2 text-[14px] text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 disabled:bg-slate-50 disabled:text-slate-500 transition-colors shadow-xs",
+              "h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900 disabled:bg-slate-50 disabled:text-slate-500 transition-all duration-150 ease-out shadow-xs",
               prefixNode && "pl-9",
-              error && "border-red-500 focus:border-red-600 focus:ring-red-600",
+              error && "border-rose-500 focus:border-rose-600 focus:ring-rose-600",
               className
             )}
             {...props}

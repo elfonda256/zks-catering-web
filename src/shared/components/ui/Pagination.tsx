@@ -34,19 +34,19 @@ export function Pagination({
         {totalItems !== undefined && itemsPerPage !== undefined ? (
           <>
             Menampilkan{" "}
-            <span className="font-semibold text-slate-900">
+            <span className="font-mono tabular-nums font-semibold text-slate-900">
               {Math.min((currentPage - 1) * itemsPerPage + 1, totalItems)}
             </span>
             -
-            <span className="font-semibold text-slate-900">
+            <span className="font-mono tabular-nums font-semibold text-slate-900">
               {Math.min(currentPage * itemsPerPage, totalItems)}
             </span>{" "}
-            dari <span className="font-semibold text-slate-900">{totalItems}</span> total data
+            dari <span className="font-mono tabular-nums font-semibold text-slate-900">{totalItems}</span> total data
           </>
         ) : (
           <>
-            Halaman <span className="font-semibold text-slate-900">{currentPage}</span> dari{" "}
-            <span className="font-semibold text-slate-900">{totalPages}</span>
+            Halaman <span className="font-mono tabular-nums font-semibold text-slate-900">{currentPage}</span> dari{" "}
+            <span className="font-mono tabular-nums font-semibold text-slate-900">{totalPages}</span>
           </>
         )}
       </div>
