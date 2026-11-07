@@ -1,0 +1,74 @@
+import { Suspense } from "react";
+import type { Metadata } from "next";
+import { connection } from "next/server";
+import { requireAdmin } from "@/lib/require-admin";
+import { signOut } from "@/auth";
+import Link from "next/link";
+import { EnterpriseShell, ErpPageTemplate } from "@/shared/components/layout";
+import { LoadingState } from "@/shared/components/ui/LoadingState";
+import ProductionManagementView from "@/modules/production/components/ProductionManagementView";
+
+export const metadata: Metadata = {
+  title: "Katalog Resep & BOM | PT. Zahdan Kamal Sentosa",
+  description: "Kalkulator scaling resep bahan baku dan ledakan Bill of Materials (BOM) Dapur Sentral Ciampel.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
+
+async function RecipesContent() {
+  await connection();
+  const admin = await requireAdmin();
+
+  async function handleLogout() {
+    "use server";
+    await signOut({ redirectTo: "/admin/login" });
+  }
+
+  return (
+    <EnterpriseShell
+      user={{ name: admin.name, role: admin.role }}
+      onLogout={handleLogout}
+    >
+      <ErpPageTemplate
+        category="CENTRAL KITCHEN & BATCHING"
+        title="Katalog Resep & Bill of Materials (BOM)"
+        description="Simulasi ledakan bahan baku resep master, faktor susut pemanasan, dan verifikasi ketersediaan stok gudang."
+        actions={
+          <Link
+            href="/admin/production"
+            className="text-[12px] font-medium text-white bg-slate-900 hover:bg-slate-800 px-3.5 py-1.5 rounded-[8px] transition-colors shadow-2xs inline-flex items-center gap-1.5 cursor-pointer"
+          >
+            <span>← Antrean Jadwal Masak</span>
+          </Link>
+        }
+        secondaryActions={
+          <Link
+            href="/admin/purchase-requests"
+            className="text-[12px] font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 px-3 py-1.5 rounded-[8px] transition-colors inline-flex items-center gap-1.5"
+          >
+            <span>Buat PR Bahan Baku</span>
+          </Link>
+        }
+      >
+        <ProductionManagementView initialTab="BOM_CALCULATOR" />
+      </ErpPageTemplate>
+    </EnterpriseShell>
+  );
+}
+
+export default function RecipesPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-8">
+          <LoadingState label="Memuat kalkulator BOM & resep..." rows={6} />
+        </div>
+      }
+    >
+      <RecipesContent />
+    </Suspense>
+  );
+}
+

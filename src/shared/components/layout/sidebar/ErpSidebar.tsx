@@ -37,6 +37,13 @@ function getNavIcon(id: string) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
         </svg>
       );
+    case "sales-adhoc":
+    case "order-adhoc":
+      return (
+        <svg className="w-4.5 h-4.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+      );
     case "sales-orders":
     case "sales":
       return (
@@ -202,9 +209,10 @@ export function ErpSidebar({
   }, [userRole]);
 
   const isActive = (href: string, exact?: boolean) => {
-    if (href === "#") return false;
-    if (exact) return pathname === href;
-    return pathname.startsWith(href);
+    if (href === "#" || !href) return false;
+    const cleanHref = href.split("#")[0].split("?")[0];
+    if (exact) return pathname === cleanHref;
+    return pathname === cleanHref || pathname.startsWith(cleanHref + "/");
   };
 
   const renderNavContent = (collapsed: boolean) => (
@@ -222,7 +230,7 @@ export function ErpSidebar({
                 onClick={() => toggleSection(section.id)}
                 className="w-full flex items-center justify-between px-2.5 py-1 text-[10px] font-semibold text-slate-400 hover:text-slate-700 tracking-wider uppercase transition-colors"
               >
-                <span className={cn(hasActiveChild && "text-blue-700 font-bold")}>
+                <span className={cn(hasActiveChild && "text-[#1B4332] font-bold")}>
                   {section.title}
                 </span>
                 <svg
@@ -261,10 +269,10 @@ export function ErpSidebar({
                         if (isMobileOpen) onCloseMobile();
                       }}
                       className={cn(
-                        "group relative flex items-center gap-2.5 px-3 py-2 rounded-[10px] text-[13px] font-medium transition-all duration-150 ease-out",
+                        "group relative flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 ease-out",
                         active
-                          ? "bg-blue-50 text-blue-700 font-semibold border border-blue-200/80 shadow-2xs"
-                          : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 border border-transparent",
+                          ? "bg-slate-100 text-[#1B4332] font-semibold"
+                          : "text-slate-600 hover:text-slate-900 hover:bg-slate-50",
                         isRoadmap && "opacity-50 cursor-not-allowed hover:bg-transparent hover:text-slate-500",
                         collapsed && "justify-center px-0 py-2.5"
                       )}
@@ -273,7 +281,7 @@ export function ErpSidebar({
                       <span
                         className={cn(
                           "transition-colors duration-150",
-                          active ? "text-blue-600" : "text-slate-400 group-hover:text-slate-600"
+                          active ? "text-[#1B4332]" : "text-slate-400 group-hover:text-slate-600"
                         )}
                       >
                         {getNavIcon(item.id)}
@@ -300,7 +308,7 @@ export function ErpSidebar({
 
                       {/* Active indicator bar on collapsed */}
                       {collapsed && active && (
-                        <div className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-blue-600 rounded-r-full" />
+                        <div className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-[#1B4332] rounded-r-full" />
                       )}
                     </Link>
                   );
@@ -366,7 +374,7 @@ export function ErpSidebar({
           <div className="relative w-72 max-w-[85vw] bg-white h-full shadow-2xl flex flex-col z-10 animate-enterprise-drawer">
             <div className="flex items-center justify-between px-4 py-3.5 border-b border-slate-200">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-[6px] bg-blue-600 text-white flex items-center justify-center font-bold text-xs">
+                <div className="w-6 h-6 rounded-[6px] bg-[#1B4332] text-white flex items-center justify-center font-bold text-xs">
                   Z
                 </div>
                 <span className="font-semibold text-slate-900 text-[14px]">ZKS ERP Navigation</span>

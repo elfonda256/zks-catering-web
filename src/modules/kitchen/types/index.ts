@@ -1,13 +1,52 @@
-export interface RecipeBOM {
+export type KitchenStationId =
+  | "ALL"
+  | "HOT_WOK"
+  | "STEAMER"
+  | "BUTCHER"
+  | "COLD_PACKING"
+  | "PASTRY";
+
+export type KitchenTicketStatus =
+  | "QUEUED"
+  | "COOKING"
+  | "HOLDING_HOT"
+  | "READY_PACK"
+  | "COMPLETED";
+
+export interface KitchenTicket {
   id: string;
-  recipeCode: string;
-  name: string;
-  category: string;
-  yieldPortions: number;
-  ingredients: {
-    sku: string;
-    name: string;
-    grammagePerPortion: number;
-    unit: string;
-  }[];
+  ticketCode: string;
+  clientName: string;
+  menuItemName: string;
+  portions: number;
+  shift: string;
+  targetDispatchTime: string;
+  station: KitchenStationId;
+  status: KitchenTicketStatus;
+  currentTemp?: number;
+  targetTemp: number;
+  isAdhoc?: boolean;
+  dietaryAlerts?: string[];
+  headChefName: string;
+}
+
+export interface HaccpLogEntry {
+  id: string;
+  ccpCode: string; // e.g. CCP-01, CCP-02
+  checkpointName: string;
+  itemTested: string;
+  recordedValue: number;
+  unit: string;
+  standardThreshold: string;
+  status: "PASS" | "WARNING" | "FAIL";
+  inspectorName: string;
+  recordedTime: string;
+}
+
+export interface KitchenSummaryKpi {
+  activeTicketsCount: number;
+  totalPortionsInKitchen: number;
+  haccpPassRate: number;
+  bainMarieAvgTemp: number;
+  activeBoilersOnline: number;
 }

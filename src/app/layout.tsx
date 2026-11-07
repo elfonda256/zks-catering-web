@@ -1,12 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-
-const inter = Inter({
-  variable: "--font-sans",
-  subsets: ["latin"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "PT. Zahdan Kamal Sentosa | Catering Profesional Karawang",
@@ -22,7 +15,7 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${inter.variable} font-sans h-full antialiased`}
+      className="font-sans h-full antialiased"
     >
       <body className="min-h-full flex flex-col bg-[#FAF9F5] text-[#141413] selection:bg-[#D96B27]/20 selection:text-[#141413] font-sans">
         {children}

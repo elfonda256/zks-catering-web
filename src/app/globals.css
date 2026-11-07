@@ -1,9 +1,29 @@
 @import "tailwindcss";
 
+@theme {
+  --color-zks-forest: #1B4332;
+  --color-zks-forest-mid: #2D5A3E;
+  --color-zks-leaf: #3F704D;
+  --color-zks-mint: #E8EFE4;
+  --color-zks-surface: #F6FBF5;
+  --color-zks-container: #F0F5F0;
+  --color-zks-gold: #D4AF37;
+  --color-zks-turmeric: #B38400;
+  --color-zks-dark: #191C19;
+  --color-zks-border: #D7DBD6;
+  --color-zks-cold: #0284C7;
+  --color-zks-hot: #D97706;
+  --color-zks-haccp: #16A34A;
+  --color-zks-alert: #DC2626;
+
+  --font-serif: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "SF Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
 :root {
-  --font-sans: var(--font-sans), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-display: var(--font-sans);
-  --font-body: var(--font-sans);
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "SF Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --canvas-warm: #FAF9F5;
   --canvas-surface: #F3F1E9;
   --canvas-muted: #E8E5DA;
