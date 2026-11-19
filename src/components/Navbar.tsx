@@ -47,9 +47,8 @@ export default function Navbar({ overlay = false }: NavbarProps) {
 
       <div className="mx-auto flex h-20 max-w-[90rem] items-center justify-between gap-8 px-6 sm:px-10">
         <Link href="/" className="flex shrink-0 items-center gap-3 rounded-lg" aria-label="Beranda PT Zahdan Kamal Sentosa">
-          <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border-2 border-white bg-[#0d2238]">
-            <Image src="/images/zks-logo-official.png" alt="" fill sizes="40px" className="object-cover object-left" priority />
-          </span>
+          {/* Served unoptimized: the emblem file is already sized for 2x displays */}
+          <Image src="/images/zks-emblem.png" alt="" width={63} height={40} unoptimized priority className="shrink-0" />
           <span className="flex flex-col leading-none text-white">
             <span className="font-heading text-xl font-extrabold uppercase">ZKS Catering</span>
             <span className="mt-1 font-heading text-[10px] font-bold uppercase tracking-[0.12em] text-white/75">
