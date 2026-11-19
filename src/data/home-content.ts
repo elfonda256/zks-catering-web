@@ -130,9 +130,18 @@ export interface SiteImage {
 
 /** Card photo for each menu package, keyed by price. */
 export const PACKAGE_IMAGES: Record<number, SiteImage> = {
-  17000: { src: "/images/industrial-facility.jpg", alt: "Lini produksi dapur sentral ZKS menyiapkan ribuan porsi" },
-  20000: { src: "/images/chef-real-cooking.png", alt: "Juru masak ZKS memasak di dapur Ciampel" },
-  25000: { src: "/images/hero-culinary.jpg", alt: "Hidangan premium ditata oleh juru masak" },
+  17000: {
+    src: "/images/packages/paket-hemat-industri.jpg",
+    alt: "Nasi, ayam goreng, tempe, sayur, sambal, dan kerupuk dalam ompreng stainless",
+  },
+  20000: {
+    src: "/images/packages/paket-favorit-korporat.jpg",
+    alt: "Nasi box berisi rendang, ayam bakar, buncis, sambal, jeruk, dan kerupuk",
+  },
+  25000: {
+    src: "/images/packages/paket-eksekutif-event.jpg",
+    alt: "Nasi kuning dengan udang, daging lada hitam, dan sambal matah di meja prasmanan",
+  },
 };
 
 export interface FacilityDocument {
