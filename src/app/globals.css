@@ -84,104 +84,12 @@ body::before {
 }
 
 /* Soft Ambient Lighting Gradients (Natural, Never Neon) */
-.ambient-glow-warm {
-  background: radial-gradient(ellipse 65% 50% at 50% 0%, rgba(200, 90, 23, 0.045) 0%, rgba(250, 249, 245, 0) 70%);
-}
-
-.ambient-glow-cream {
-  background: radial-gradient(ellipse 70% 55% at 75% 25%, rgba(245, 241, 230, 0.9) 0%, rgba(250, 249, 245, 0) 75%);
-}
-
-.ambient-glow-white {
-  background: radial-gradient(ellipse 55% 45% at 20% 15%, rgba(255, 255, 255, 0.65) 0%, rgba(250, 249, 245, 0) 70%);
-}
-
-.ambient-dark-warmth {
-  background: radial-gradient(ellipse 75% 55% at 50% 0%, rgba(200, 90, 23, 0.085) 0%, rgba(20, 20, 19, 0) 75%);
-}
 
 /* Seamless Editorial Photography Mask Gradients (Fade naturally, No visible rectangles) */
-.photo-mask-corner {
-  mask-image: radial-gradient(ellipse 80% 80% at 90% 20%, black 15%, transparent 75%);
-  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 90% 20%, black 15%, transparent 75%);
-}
-
-.photo-mask-center {
-  mask-image: radial-gradient(ellipse 75% 65% at 50% 45%, black 20%, transparent 80%);
-  -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 45%, black 20%, transparent 80%);
-}
-
-.photo-mask-left {
-  mask-image: radial-gradient(ellipse 85% 75% at 10% 40%, black 15%, transparent 75%);
-  -webkit-mask-image: radial-gradient(ellipse 85% 75% at 10% 40%, black 15%, transparent 75%);
-}
-
-.photo-mask-diagonal {
-  mask-image: linear-gradient(135deg, black 0%, rgba(0,0,0,0.6) 35%, transparent 75%);
-  -webkit-mask-image: linear-gradient(135deg, black 0%, rgba(0,0,0,0.6) 35%, transparent 75%);
-}
 
 /* Editorial Gradient Masks */
-.mask-fade-bottom {
-  mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%);
-  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%);
-}
-
-.mask-fade-right {
-  mask-image: linear-gradient(to right, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
-  -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
-}
-
-.mask-fade-left {
-  mask-image: linear-gradient(to left, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
-  -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
-}
-
-.mask-radial {
-  mask-image: radial-gradient(circle at center, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 90%);
-  -webkit-mask-image: radial-gradient(circle at center, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 90%);
-}
 
 /* Soft Gradient Hairline Dividers */
-.divider-hairline {
-  position: relative;
-}
-
-.divider-hairline::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(
-    to right,
-    transparent 0%,
-    rgba(20, 20, 19, 0.05) 15%,
-    rgba(20, 20, 19, 0.08) 50%,
-    rgba(20, 20, 19, 0.05) 85%,
-    transparent 100%
-  );
-  pointer-events: none;
-}
-
-.divider-hairline-dark::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(
-    to right,
-    transparent 0%,
-    rgba(250, 249, 245, 0.07) 20%,
-    rgba(250, 249, 245, 0.12) 50%,
-    rgba(250, 249, 245, 0.07) 80%,
-    transparent 100%
-  );
-  pointer-events: none;
-}
 
 /* ==============================================================
    SPRINT 04: MOTION DESIGN SYSTEM (Apple / Linear / Framer)
@@ -236,153 +144,11 @@ textarea:focus-visible {
   outline-offset: 2px;
 }
 
-.btn-primary,
-.btn-interactive-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  background-color: var(--charcoal-900);
-  color: #FAF9F5;
-  transition: background-color 180ms ease-out,
-              box-shadow 180ms ease-out,
-              transform 180ms ease-out;
-  will-change: transform, box-shadow;
-}
-
-.btn-primary:focus-visible,
-.btn-interactive-primary:focus-visible {
-  outline: 2px solid var(--industrial-orange);
-  outline-offset: 3px;
-}
-
-.btn-primary:hover,
-.btn-interactive-primary:hover {
-  background-color: var(--charcoal-800);
-  box-shadow: 0 4px 14px rgba(20, 20, 19, 0.14);
-}
-
-.btn-primary:active,
-.btn-interactive-primary:active {
-  transform: scale(0.98);
-}
-
-.btn-accent,
-.btn-interactive-accent {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  background-color: var(--industrial-orange);
-  color: #FFFFFF;
-  transition: background-color 180ms ease-out,
-              box-shadow 180ms ease-out,
-              transform 180ms ease-out;
-  will-change: transform, box-shadow;
-}
-
-.btn-accent:focus-visible,
-.btn-interactive-accent:focus-visible {
-  outline: 2px solid #FFFFFF;
-  outline-offset: 3px;
-}
-
-.btn-accent:hover,
-.btn-interactive-accent:hover {
-  background-color: var(--industrial-dark);
-  box-shadow: 0 6px 18px rgba(200, 90, 23, 0.28);
-}
-
-.btn-accent:active,
-.btn-interactive-accent:active {
-  transform: scale(0.98);
-}
-
 /* Secondary Button with Apple/Linear Underline Animation, Text Opacity & Icon Fade */
-.btn-ghost,
-.btn-interactive-secondary {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  border: 1px solid var(--hairline);
-  color: var(--charcoal-900);
-  background: transparent;
-  transition: background-color 180ms ease-out,
-              border-color 180ms ease-out,
-              box-shadow 180ms ease-out,
-              transform 180ms ease-out;
-  will-change: transform;
-}
-
-.btn-ghost:focus-visible,
-.btn-interactive-secondary:focus-visible {
-  outline: 2px solid var(--industrial-orange);
-  outline-offset: 3px;
-}
-
-.btn-ghost:hover,
-.btn-interactive-secondary:hover {
-  background-color: rgba(20, 20, 19, 0.04);
-  border-color: rgba(20, 20, 19, 0.16);
-  box-shadow: 0 2px 8px rgba(20, 20, 19, 0.05);
-}
-
-.btn-ghost:active,
-.btn-interactive-secondary:active {
-  transform: scale(0.98);
-}
 
 /* Text Underline Micro-Animation */
-.btn-text-underline {
-  position: relative;
-  display: inline-block;
-  transition: opacity 180ms ease-out;
-}
-
-.btn-text-underline::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 100%;
-  height: 1.5px;
-  background-color: currentColor;
-  transform: scaleX(0);
-  transform-origin: left center;
-  transition: transform 180ms ease-out;
-}
-
-.group:hover .btn-text-underline::after,
-a:hover .btn-text-underline::after,
-button:hover .btn-text-underline::after,
-.btn-interactive-secondary:hover .btn-text-underline::after {
-  transform: scaleX(1);
-}
 
 /* Secondary Icon Fade & Subtle Translation */
-.btn-secondary-icon {
-  display: inline-block;
-  opacity: 0.55;
-  transition: opacity 180ms ease-out,
-              transform 180ms ease-out;
-  will-change: transform, opacity;
-}
-
-.group:hover .btn-secondary-icon,
-a:hover .btn-secondary-icon,
-button:hover .btn-secondary-icon,
-.btn-interactive-secondary:hover .btn-secondary-icon {
-  opacity: 1;
-  transform: translate(4px, -2px);
-}
 
 /* Arrow Icon Hover: Exactly 4px smooth vector shift */
 .btn-arrow {
@@ -411,24 +177,6 @@ button:hover .btn-arrow {
   }
 }
 
-@keyframes heroSoftBg {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 0.06;
-  }
-}
-
-.hero-enter-bg {
-  animation: heroSoftBg 1400ms var(--ease-natural) forwards;
-}
-
-.hero-enter-badge {
-  opacity: 0;
-  animation: heroFadeUp 650ms var(--ease-natural) 50ms forwards;
-}
-
 .hero-enter-headline {
   opacity: 0;
   animation: heroFadeUp 700ms var(--ease-natural) 120ms forwards;
@@ -444,16 +192,6 @@ button:hover .btn-arrow {
   animation: heroFadeUp 650ms var(--ease-natural) 360ms forwards;
 }
 
-.hero-enter-assurances {
-  opacity: 0;
-  animation: heroFadeUp 650ms var(--ease-natural) 480ms forwards;
-}
-
-.hero-enter-photo {
-  opacity: 0;
-  animation: heroFadeUp 800ms var(--ease-natural) 220ms forwards;
-}
-
 /* Progressive Scroll Reveal (Fade, Translate Y, Opacity, Small Blur, 500-700ms) */
 .reveal-fade-up {
   opacity: 0;
@@ -463,12 +201,6 @@ button:hover .btn-arrow {
               transform 650ms var(--ease-natural),
               filter 650ms var(--ease-natural);
   will-change: opacity, transform, filter;
-}
-
-.reveal-fade {
-  opacity: 0;
-  transition: opacity 650ms var(--ease-natural);
-  will-change: opacity;
 }
 
 .reveal-title {
@@ -495,12 +227,6 @@ button:hover .btn-arrow {
   opacity: 1;
   transform: translateY(0);
   filter: blur(0);
-}
-
-.is-revealed.reveal-fade,
-.is-revealed .reveal-fade,
-.reveal-fade.is-revealed {
-  opacity: 1;
 }
 
 .is-revealed.reveal-title,
@@ -537,17 +263,6 @@ button:hover .btn-arrow {
 }
 
 /* Timeline Progressive Line Growth */
-.timeline-progress-line {
-  transform-origin: left center;
-  transform: scaleX(0);
-  transition: transform 900ms var(--ease-natural);
-}
-
-.is-revealed.timeline-progress-line,
-.is-revealed .timeline-progress-line,
-.timeline-progress-line.is-revealed {
-  transform: scaleX(1);
-}
 
 /* Stagger Delays (50ms - 560ms) */
 .stagger-1 { transition-delay: 80ms; }
@@ -578,17 +293,6 @@ button:hover .btn-arrow {
   animation-play-state: paused;
 }
 
-.client-logo-item {
-  transition: opacity 200ms var(--ease-natural),
-              transform 200ms var(--ease-natural),
-              filter 200ms var(--ease-natural);
-}
-
-.client-logo-item:hover {
-  transform: scale(1.04);
-  opacity: 1;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .logo-marquee-track {
     animation: none;
@@ -617,142 +321,9 @@ button:hover .btn-arrow {
    - Stainless steel reflection sheen sweep (12s slow cycle)
    ============================================================== */
 
-.hero-visual-container {
-  isolation: isolate;
-}
-
 /* Atmospheric Steam Layer */
-.hero-steam-layer {
-  mix-blend-mode: screen;
-  opacity: 0.65;
-}
-
-.hero-steam-wisp {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(28px);
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0.12) 45%, transparent 75%);
-  pointer-events: none;
-}
-
-.hero-steam-1 {
-  width: 190px;
-  height: 250px;
-  bottom: 22%;
-  left: 16%;
-  animation: steamDriftOne 11s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-}
-
-.hero-steam-2 {
-  width: 220px;
-  height: 290px;
-  bottom: 28%;
-  left: 38%;
-  animation: steamDriftTwo 14s cubic-bezier(0.4, 0, 0.2, 1) infinite 3s;
-}
-
-.hero-steam-3 {
-  width: 170px;
-  height: 230px;
-  bottom: 20%;
-  left: 6%;
-  animation: steamDriftThree 12s cubic-bezier(0.4, 0, 0.2, 1) infinite 6s;
-}
-
-@keyframes steamDriftOne {
-  0% {
-    transform: translate3d(0, 20px, 0) scale(0.9);
-    opacity: 0;
-  }
-  30% {
-    opacity: 0.35;
-  }
-  70% {
-    opacity: 0.22;
-    transform: translate3d(-15px, -35px, 0) scale(1.15);
-  }
-  100% {
-    transform: translate3d(-25px, -70px, 0) scale(1.3);
-    opacity: 0;
-  }
-}
-
-@keyframes steamDriftTwo {
-  0% {
-    transform: translate3d(0, 15px, 0) scale(0.85);
-    opacity: 0;
-  }
-  35% {
-    opacity: 0.3;
-  }
-  75% {
-    opacity: 0.18;
-    transform: translate3d(12px, -40px, 0) scale(1.18);
-  }
-  100% {
-    transform: translate3d(20px, -75px, 0) scale(1.35);
-    opacity: 0;
-  }
-}
-
-@keyframes steamDriftThree {
-  0% {
-    transform: translate3d(0, 20px, 0) scale(0.9);
-    opacity: 0;
-  }
-  40% {
-    opacity: 0.28;
-  }
-  80% {
-    opacity: 0.16;
-    transform: translate3d(-10px, -30px, 0) scale(1.1);
-  }
-  100% {
-    transform: translate3d(-18px, -60px, 0) scale(1.25);
-    opacity: 0;
-  }
-}
 
 /* Stainless Steel Reflection Sheen Sweep */
-.hero-steel-reflection {
-  mix-blend-mode: overlay;
-}
-
-.hero-sheen-line {
-  position: absolute;
-  top: -60%;
-  left: -60%;
-  width: 220%;
-  height: 220%;
-  background: linear-gradient(
-    115deg,
-    transparent 42%,
-    rgba(255, 255, 255, 0.03) 47%,
-    rgba(255, 255, 255, 0.16) 50%,
-    rgba(255, 255, 255, 0.03) 53%,
-    transparent 58%
-  );
-  animation: steelSheenSweep 12s cubic-bezier(0.16, 1, 0.3, 1) infinite;
-  pointer-events: none;
-}
-
-@keyframes steelSheenSweep {
-  0%, 25% {
-    transform: translate3d(-40%, -40%, 0);
-    opacity: 0;
-  }
-  40% {
-    opacity: 0.85;
-  }
-  60% {
-    transform: translate3d(40%, 40%, 0);
-    opacity: 0;
-  }
-  100% {
-    transform: translate3d(40%, 40%, 0);
-    opacity: 0;
-  }
-}
 
 /* ==============================================================
    SPRINT 03: ENTERPRISE MOTION SYSTEM
@@ -903,14 +474,5 @@ button:hover .btn-arrow {
     animation: none !important;
   }
 
-  .timeline-progress-line {
-    transform: scaleX(1) !important;
-  }
-
-  .hero-steam-wisp,
-  .hero-sheen-line {
-    animation: none !important;
-    display: none !important;
-  }
 }
 

@@ -1,19 +1,44 @@
 "use client";
 
-import { useState, useEffect, useActionState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useActionState, type ReactNode } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createOrderAction, type CreateOrderState } from "./actions";
 import { MENU_PACKAGES } from "@/data/catering-data";
 import { ArrowUpRight } from "@/components/icons";
+import { HEADING } from "@/components/site/ui";
+import { FIELD_HINT, FIELD_INPUT, FIELD_LABEL, REQUIRED_MARK } from "@/components/site/form";
 
-export default function OrderFormClient({
-  initialPrice = 17000,
-}: {
-  initialPrice?: number;
-}) {
+const PACKAGE_PRICES = Object.values(MENU_PACKAGES).map((pkg) => pkg.price);
+const DEFAULT_PRICE = 17000;
+
+const formatRupiah = (value: number) => `Rp${value.toLocaleString("id-ID")}`;
+
+function FormSection({ step, title, hint, children }: { step: string; title: string; hint: string; children: ReactNode }) {
+  return (
+    <section className="space-y-6 border-t border-white/15 pt-10">
+      <div>
+        <span className="font-heading text-sm font-bold uppercase text-[#E07A35]">{step}</span>
+        <h2 className={`${HEADING} mt-1 text-[1.75rem] sm:text-[2rem]`}>{title}</h2>
+        <p className={`${FIELD_HINT} mt-2`}>{hint}</p>
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function Required() {
+  return <span className={REQUIRED_MARK}> *</span>;
+}
+
+export default function OrderFormClient() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const requestedPrice = Number(searchParams.get("paket"));
 
-  const [packagePrice, setPackagePrice] = useState<number>(initialPrice);
+  // The selected price only drives the on-screen estimate; the server recomputes every total.
+  const [packagePrice, setPackagePrice] = useState<number>(
+    PACKAGE_PRICES.includes(requestedPrice) ? requestedPrice : DEFAULT_PRICE
+  );
   const [quantity, setQuantity] = useState<number>(50);
   const [formLoadedAt] = useState<number>(() => Date.now());
 
@@ -35,54 +60,31 @@ export default function OrderFormClient({
   const minDateStr = tomorrow.toISOString().split("T")[0];
 
   return (
-    <form action={formAction} className="space-y-14">
+    <form action={formAction} className="space-y-10">
       {/* Hidden Security Fields */}
       <input type="hidden" name="formLoadedAt" value={formLoadedAt} />
-      <input
-        type="text"
-        name="hp_website"
-        tabIndex={-1}
-        autoComplete="off"
-        className="hidden"
-        aria-hidden="true"
-      />
+      <input type="text" name="hp_website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
 
-      {/* Error Alert */}
       {state.error && (
-        <div
-          role="alert"
-          className="border-l-2 border-red-600 bg-red-50/50 p-4 text-xs text-red-900 flex items-start gap-3"
-        >
-          <span className="font-mono font-bold uppercase tracking-wider">Perhatian:</span>
-          <span>{state.error}</span>
+        <div role="alert" className="rounded-[10px] border-l-4 border-red-500 bg-red-500/10 p-4 text-[15px] text-red-100">
+          <span className="font-heading font-bold uppercase">Perhatian: </span>
+          {state.error}
         </div>
       )}
 
-      {/* Bagian 01: Pilihan Paket & Volume (Clean Editorial Layout, No Nested Card Box) */}
-      <div className="space-y-6 pt-2">
-        <div className="space-y-1">
-          <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[#C85A17] font-semibold block">
-            01 / PILIHAN PAKET &amp; KUANTITAS
-          </span>
-          <h2 className="font-display font-bold text-2xl text-[#141413] tracking-tight">
-            Pilihan Paket Menu &amp; Volume Pemesanan
-          </h2>
-          <p className="text-xs text-[#626058] leading-relaxed">
-            Pilih paket menu sesuai preferensi anggaran dan tentukan total porsi (minimal 20 porsi).
-          </p>
-        </div>
-
-        {/* Tier Selector Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <FormSection
+        step="01 / Paket & kuantitas"
+        title="Pilih paket dan jumlah porsi"
+        hint="Pilih paket sesuai anggaran dan tentukan total porsi (minimal 20 porsi)."
+      >
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           {Object.values(MENU_PACKAGES).map((pkg) => {
             const isSelected = packagePrice === pkg.price;
             return (
               <label
                 key={pkg.id}
-                className={`p-6 border block cursor-pointer transition-all ${
-                  isSelected
-                    ? "border-[#141413] bg-[#141413] text-[#FAF9F5]"
-                    : "border-[#141413]/15 bg-transparent text-[#141413] hover:border-[#141413]/40"
+                className={`block cursor-pointer rounded-[10px] border-2 p-6 transition-colors ${
+                  isSelected ? "border-[#C85A17] bg-[#C85A17]/15" : "border-white/15 bg-[#232A2E] hover:border-white/40"
                 }`}
               >
                 <input
@@ -93,34 +95,22 @@ export default function OrderFormClient({
                   onChange={() => setPackagePrice(pkg.price)}
                   className="sr-only"
                 />
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-[10px] uppercase tracking-wider opacity-75">
-                    TIER {pkg.price === 17000 ? "01" : pkg.price === 20000 ? "02" : "03"}
-                  </span>
-                  <span className="font-display font-bold text-sm tracking-tight">{pkg.name}</span>
-                </div>
-                <p className="font-display font-extrabold text-2xl mt-2 tracking-tight">
-                  Rp{pkg.price.toLocaleString("id-ID")}
-                  <span className={`text-xs font-normal ml-1 ${isSelected ? "text-[#A8A69E]" : "text-[#8E8B81]"}`}>
-                    / porsi
-                  </span>
-                </p>
-                <p className={`text-xs mt-2 leading-relaxed line-clamp-2 ${isSelected ? "text-[#A8A69E]" : "text-[#626058]"}`}>
-                  {pkg.itemsSummary}
-                </p>
+                <span className="block font-heading text-lg font-extrabold uppercase leading-tight">{pkg.name}</span>
+                <span className={`${HEADING} mt-3 block text-3xl text-[#E07A35]`}>
+                  {formatRupiah(pkg.price)}
+                  <span className="ml-1 font-text text-sm font-medium normal-case text-white/60">/ porsi</span>
+                </span>
+                <span className="mt-3 block text-sm leading-relaxed text-white/70 line-clamp-3">{pkg.itemsSummary}</span>
               </label>
             );
           })}
         </div>
 
-        {/* Input Kuantitas Porsi & Estimasi Nilai */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-4 border-t border-[#141413]/10">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
           <div className="space-y-2">
-            <label
-              htmlFor="quantity"
-              className="block font-mono text-[11px] uppercase tracking-wider text-[#141413] font-semibold"
-            >
-              Jumlah Porsi (Minimal 20) <span className="text-[#C85A17]">*</span>
+            <label htmlFor="quantity" className={FIELD_LABEL}>
+              Jumlah porsi (minimal 20)
+              <Required />
             </label>
             <input
               id="quantity"
@@ -132,73 +122,48 @@ export default function OrderFormClient({
               value={quantity || ""}
               onChange={(e) => setQuantity(Number(e.target.value))}
               disabled={isPending}
-              className="w-full border border-[#141413]/15 bg-transparent px-4 py-3 text-[#141413] text-sm focus:border-[#141413] focus:outline-none disabled:opacity-50"
+              className={FIELD_INPUT}
               placeholder="50"
             />
-            <p className="text-xs text-[#626058]">
+            <p className={FIELD_HINT}>
               {isLargeOrder ? (
-                <span className="text-[#C85A17] font-medium">
-                  Pesanan skala besar (≥ 500 pcs) memerlukan batas pemesanan minimal H-3 sebelum acara.
+                <span className="font-medium text-[#E07A35]">
+                  Pesanan skala besar (≥ 500 porsi) perlu dipesan minimal H-3 sebelum acara.
                 </span>
               ) : (
-                <span>Batas pemesanan reguler (&lt; 500 pcs) adalah minimal H-1 sebelum acara.</span>
+                <span>Pesanan reguler (&lt; 500 porsi) minimal H-1 sebelum acara.</span>
               )}
             </p>
           </div>
 
-          <div className="space-y-1.5 border-l border-[#141413]/10 pl-6 flex flex-col justify-center">
-            <span className="font-mono text-[11px] uppercase tracking-wider text-[#8E8B81]">
-              Estimasi Subtotal Makanan:
-            </span>
-            <span className="font-display font-extrabold text-3xl text-[#141413] tracking-tight">
-              Rp{subtotalEstimate.toLocaleString("id-ID")}
-            </span>
-            <span className="text-xs text-[#8E8B81]">
-              Biaya pengantaran akan ditentukan admin setelah verifikasi rute di Karawang.
+          <div className="rounded-[10px] bg-[#232A2E] p-6">
+            <span className="block font-heading text-sm font-bold uppercase text-white/70">Estimasi subtotal makanan</span>
+            <span className={`${HEADING} mt-2 block text-4xl`}>{formatRupiah(subtotalEstimate)}</span>
+            <span className={`${FIELD_HINT} mt-2 block`}>
+              Ongkos kirim ditentukan admin setelah verifikasi rute di Karawang.
             </span>
           </div>
         </div>
-      </div>
+      </FormSection>
 
-      {/* Bagian 02: Jadwal Acara & Pengiriman */}
-      <div className="space-y-6 pt-10 border-t border-[#141413]/10">
-        <div className="space-y-1">
-          <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[#C85A17] font-semibold block">
-            02 / JADWAL PENGANTARAN
-          </span>
-          <h2 className="font-display font-bold text-2xl text-[#141413] tracking-tight">
-            Jadwal Acara &amp; Waktu Tiba di Pabrik
-          </h2>
-          <p className="text-xs text-[#626058] leading-relaxed">
-            Waktu pengantaran disesuaikan dengan zona waktu WIB untuk ketepatan pergantian shift kerja karyawan.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+      <FormSection
+        step="02 / Jadwal pengantaran"
+        title="Tanggal dan jam tiba"
+        hint="Waktu pengantaran dalam WIB, disesuaikan dengan pergantian shift karyawan."
+      >
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
           <div className="space-y-2">
-            <label
-              htmlFor="eventDate"
-              className="block font-mono text-[11px] uppercase tracking-wider text-[#141413] font-semibold"
-            >
-              Tanggal Acara <span className="text-[#C85A17]">*</span>
+            <label htmlFor="eventDate" className={FIELD_LABEL}>
+              Tanggal acara
+              <Required />
             </label>
-            <input
-              id="eventDate"
-              name="eventDate"
-              type="date"
-              min={minDateStr}
-              required
-              disabled={isPending}
-              className="w-full border border-[#141413]/15 bg-transparent px-4 py-3 text-[#141413] text-sm focus:border-[#141413] focus:outline-none disabled:opacity-50"
-            />
+            <input id="eventDate" name="eventDate" type="date" min={minDateStr} required disabled={isPending} className={FIELD_INPUT} />
           </div>
 
           <div className="space-y-2">
-            <label
-              htmlFor="eventTime"
-              className="block font-mono text-[11px] uppercase tracking-wider text-[#141413] font-semibold"
-            >
-              Jam Tiba di Lokasi (WIB) <span className="text-[#C85A17]">*</span>
+            <label htmlFor="eventTime" className={FIELD_LABEL}>
+              Jam tiba di lokasi (WIB)
+              <Required />
             </label>
             <input
               id="eventTime"
@@ -207,36 +172,23 @@ export default function OrderFormClient({
               defaultValue="11:30"
               required
               disabled={isPending}
-              className="w-full border border-[#141413]/15 bg-transparent px-4 py-3 text-[#141413] text-sm focus:border-[#141413] focus:outline-none disabled:opacity-50"
+              className={FIELD_INPUT}
             />
-            <p className="text-xs text-[#8E8B81]">
-              Armada siap melayani kebutuhan makan shift pagi, siang, dan lembur malam.
-            </p>
+            <p className={FIELD_HINT}>Armada melayani shift pagi, siang, dan lembur malam.</p>
           </div>
         </div>
-      </div>
+      </FormSection>
 
-      {/* Bagian 03: Kontak Pemesan & Alamat */}
-      <div className="space-y-6 pt-10 border-t border-[#141413]/10">
-        <div className="space-y-1">
-          <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[#C85A17] font-semibold block">
-            03 / DATA PIC &amp; LOKASI PABRIK
-          </span>
-          <h2 className="font-display font-bold text-2xl text-[#141413] tracking-tight">
-            Data Pemesan &amp; Alamat Pengantaran
-          </h2>
-          <p className="text-xs text-[#626058] leading-relaxed">
-            Informasi PIC operasional untuk konfirmasi status pesanan dan rute armada.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+      <FormSection
+        step="03 / Data PIC & lokasi"
+        title="Data pemesan dan alamat"
+        hint="Kontak PIC untuk konfirmasi status pesanan dan rute armada."
+      >
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
           <div className="space-y-2">
-            <label
-              htmlFor="customerName"
-              className="block font-mono text-[11px] uppercase tracking-wider text-[#141413] font-semibold"
-            >
-              Nama Pemesan / Entitas Perusahaan <span className="text-[#C85A17]">*</span>
+            <label htmlFor="customerName" className={FIELD_LABEL}>
+              Nama pemesan / perusahaan
+              <Required />
             </label>
             <input
               id="customerName"
@@ -244,17 +196,15 @@ export default function OrderFormClient({
               type="text"
               required
               disabled={isPending}
-              className="w-full border border-[#141413]/15 bg-transparent px-4 py-3 text-[#141413] text-sm focus:border-[#141413] focus:outline-none disabled:opacity-50"
+              className={FIELD_INPUT}
               placeholder="PT. Nama Perusahaan / Nama Pemesan"
             />
           </div>
 
           <div className="space-y-2">
-            <label
-              htmlFor="customerPhone"
-              className="block font-mono text-[11px] uppercase tracking-wider text-[#141413] font-semibold"
-            >
-              Nomor WhatsApp PIC <span className="text-[#C85A17]">*</span>
+            <label htmlFor="customerPhone" className={FIELD_LABEL}>
+              Nomor WhatsApp PIC
+              <Required />
             </label>
             <input
               id="customerPhone"
@@ -262,54 +212,44 @@ export default function OrderFormClient({
               type="tel"
               required
               disabled={isPending}
-              className="w-full border border-[#141413]/15 bg-transparent px-4 py-3 text-[#141413] text-sm focus:border-[#141413] focus:outline-none disabled:opacity-50"
+              className={FIELD_INPUT}
               placeholder="0812xxxxxxxx"
             />
           </div>
-        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
           <div className="space-y-2">
-            <label
-              htmlFor="customerEmail"
-              className="block font-mono text-[11px] uppercase tracking-wider text-[#141413] font-semibold"
-            >
-              Email Kantor (Opsional)
+            <label htmlFor="customerEmail" className={FIELD_LABEL}>
+              Email kantor (opsional)
             </label>
             <input
               id="customerEmail"
               name="customerEmail"
               type="email"
               disabled={isPending}
-              className="w-full border border-[#141413]/15 bg-transparent px-4 py-3 text-[#141413] text-sm focus:border-[#141413] focus:outline-none disabled:opacity-50"
+              className={FIELD_INPUT}
               placeholder="procurement@company.co.id"
             />
           </div>
 
           <div className="space-y-2">
-            <label
-              htmlFor="notes"
-              className="block font-mono text-[11px] uppercase tracking-wider text-[#141413] font-semibold"
-            >
-              Catatan Menu / Permintaan Khusus
+            <label htmlFor="notes" className={FIELD_LABEL}>
+              Catatan menu / permintaan khusus
             </label>
             <input
               id="notes"
               name="notes"
               type="text"
               disabled={isPending}
-              className="w-full border border-[#141413]/15 bg-transparent px-4 py-3 text-[#141413] text-sm focus:border-[#141413] focus:outline-none disabled:opacity-50"
-              placeholder="Contoh: Pisahkan sambal, variasi ayam kecap"
+              className={FIELD_INPUT}
+              placeholder="Contoh: pisahkan sambal, variasi ayam kecap"
             />
           </div>
         </div>
 
         <div className="space-y-2">
-          <label
-            htmlFor="customerAddress"
-            className="block font-mono text-[11px] uppercase tracking-wider text-[#141413] font-semibold"
-          >
-            Alamat Lengkap Pengantaran di Karawang <span className="text-[#C85A17]">*</span>
+          <label htmlFor="customerAddress" className={FIELD_LABEL}>
+            Alamat lengkap pengantaran di Karawang
+            <Required />
           </label>
           <textarea
             id="customerAddress"
@@ -317,47 +257,44 @@ export default function OrderFormClient({
             rows={3}
             required
             disabled={isPending}
-            className="w-full border border-[#141413]/15 bg-transparent px-4 py-3 text-[#141413] text-sm focus:border-[#141413] focus:outline-none disabled:opacity-50"
-            placeholder="Sebutkan gedung/pabrik, nama jalan, blok, dan nama kawasan industri (KIIC, Suryacipta, KIM, BIC, dll.)."
+            className={FIELD_INPUT}
+            placeholder="Gedung/pabrik, nama jalan, blok, dan kawasan industri (KIIC, Suryacipta, KIM, BIC, dll.)."
           />
         </div>
-      </div>
+      </FormSection>
 
-      {/* Bagian 04: Persetujuan Syarat & Submit (Minimalist Confirmation Ledger) */}
-      <div className="space-y-8 pt-10 border-t border-[#141413]/10">
-        <label className="flex items-start gap-3 cursor-pointer">
+      <section className="space-y-8 border-t border-white/15 pt-10">
+        <label className="flex cursor-pointer items-start gap-3">
           <input
             type="checkbox"
             name="acceptTerms"
             required
             disabled={isPending}
-            className="mt-1 w-4 h-4 border-[#141413]/30 text-[#141413] focus:ring-0 cursor-pointer"
+            className="mt-1 h-5 w-5 shrink-0 cursor-pointer accent-[#C85A17]"
           />
-          <span className="text-xs text-[#626058] leading-relaxed">
-            Saya mengonfirmasi bahwa spesifikasi pesanan di atas telah sesuai dengan kebutuhan perusahaan kami, dan menyetujui ketentuan pemesanan katering PT. Zahdan Kamal Sentosa. Saya memahami bahwa status pesanan awal adalah <strong>Menunggu Konfirmasi Admin</strong> dan besaran ongkos kirim akan ditetapkan setelah verifikasi rute pengantaran.
+          <span className="text-[15px] leading-relaxed text-white/80">
+            Saya mengonfirmasi spesifikasi pesanan di atas sudah sesuai kebutuhan perusahaan kami dan menyetujui ketentuan
+            pemesanan PT. Zahdan Kamal Sentosa. Status awal pesanan adalah <strong className="text-white">Menunggu
+            Konfirmasi Admin</strong>, dan ongkos kirim ditetapkan setelah verifikasi rute pengantaran.
           </span>
         </label>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pt-6 border-t border-[#141413]/10">
+        <div className="flex flex-col justify-between gap-6 rounded-[10px] bg-[#232A2E] p-6 sm:flex-row sm:items-center sm:p-8">
           <div>
-            <span className="font-mono text-[11px] uppercase tracking-wider text-[#8E8B81] block">
-              Estimasi Nilai Pesanan:
-            </span>
-            <span className="font-display font-extrabold text-3xl text-[#141413] tracking-tight">
-              Rp{subtotalEstimate.toLocaleString("id-ID")}
-            </span>
+            <span className="block font-heading text-sm font-bold uppercase text-white/70">Estimasi nilai pesanan</span>
+            <span className={`${HEADING} mt-1 block text-4xl`}>{formatRupiah(subtotalEstimate)}</span>
           </div>
 
           <button
             type="submit"
             disabled={isPending}
-            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#141413] text-[#FAF9F5] hover:bg-[#141413]/90 text-xs font-semibold tracking-tight transition-all cursor-pointer disabled:opacity-50 active:scale-[0.98]"
+            className="inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-full bg-[#C85A17] px-8 font-heading text-base font-bold uppercase text-white transition-colors hover:bg-[#A4460E] active:scale-[0.98] disabled:opacity-50"
           >
-            <span>{isPending ? "Memproses Data..." : "Kirim Pengajuan Pesanan"}</span>
-            <ArrowUpRight className="w-3.5 h-3.5 opacity-70" />
+            <span>{isPending ? "Memproses data…" : "Kirim pengajuan pesanan"}</span>
+            <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
-      </div>
+      </section>
     </form>
   );
 }

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ScrollObserver from "@/components/ScrollObserver";
@@ -10,7 +11,12 @@ import PackageCards from "@/components/home/PackageCards";
 import CapacityBand from "@/components/home/CapacityBand";
 import DocumentCards from "@/components/home/DocumentCards";
 import ContactBlock from "@/components/home/ContactBlock";
+import BusinessJsonLd from "@/components/home/BusinessJsonLd";
 import { QA_PROTOCOLS, WORKFLOW_STAGES } from "@/data/home-content";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 /** Numbered list used inside the feature sections. */
 function StepList({ steps }: { steps: { title: string }[] }) {
@@ -29,6 +35,7 @@ function StepList({ steps }: { steps: { title: string }[] }) {
 export default function HomePage() {
   return (
     <div className="flex min-h-screen flex-col bg-[#1A1F22] font-text">
+      <BusinessJsonLd />
       <Navbar overlay />
 
       <main id="main-content" className="flex-1">
