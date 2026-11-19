@@ -81,11 +81,16 @@ Use:
 
 ---
 
-## RULE 06: ONE BACKGROUND
-Avoid changing background colors every section.
-Maintain a large, continuous editorial canvas (`#FAF9F5`).
+## RULE 06: FEW BACKGROUNDS, CHANGED BY CHAPTER
+Avoid changing background colors every section. A background changes only when the chapter changes.
 
-Only change background when the narrative changes dramatically (e.g. transitioning to `#141413` for heavy industrial operational scale and final corporate proposal).
+- **Public homepage** (updated 2026-11-19): charcoal `#141413` is the main canvas for the company and
+  operations chapters, with `#1C1C1A` as the one alternate tone. Paper `#FAF9F5` is reserved for the
+  quality, documents and menu chapter, plus the client logo strip (logo artwork has white backgrounds).
+  Brand orange `#A4460E` is used for the final proposal block only.
+- **Admin ERP and other public pages**: keep the continuous paper canvas (`#FAF9F5`).
+
+See the chapter "Public Homepage Visual Language" below for the full specification.
 
 ---
 
@@ -105,14 +110,16 @@ Motion should explain, never entertain.
 ## RULE 08: SCROLL STORYTELLING
 Visitors must feel they are taking an escorted executive tour through an industrial facility:
 
-1. **Entrance** → Hero Facility Ledger
-2. **Company** → History, Credentials, Strategic Value
-3. **Production** → Central Kitchen Capacity & Latency Matrix
-4. **Workflow** → 7-Stage Engineering Schematic
-5. **Quality** → HACCP/ISO Protocols & Laboratory Verification
-6. **Verification** → Archive Document Explorer
-7. **Specification** → Industrial Nutrition & Portion Grammage
-8. **Proposal** → Direct Executive Sign-Off Ledger
+1. **Entrance** → Full-bleed hero with headline and four key facts
+2. **Clients** → Manufacturing client logos
+3. **Company** → History, credentials, milestones
+4. **Production** → Central kitchen capacity and fleet travel times
+5. **Menu** → Full-width menu spotlight linking to `/menu`
+6. **Workflow** → 7-stage one-way production flow
+7. **Quality** → HACCP/ISO protocols
+8. **Verification** → Archive document explorer
+9. **Specification** → Weekly menu and portion grammage
+10. **Proposal** → Contact block with management WhatsApp links
 
 *Each section is a deliberate chapter. Never random.*
 
@@ -130,6 +137,49 @@ Every single component, element, and text block must answer:
 > *"Why does this exist?"*
 
 If it has no clear answer, **delete it**.
+
+---
+
+## CHAPTER — PUBLIC HOMEPAGE VISUAL LANGUAGE (2026-11-19)
+
+The public homepage (`src/app/page.tsx`, sections in `src/components/home/`) follows a bold editorial
+style inspired by hospitality brand sites: full-bleed photography, condensed uppercase headlines,
+rounded pill buttons. It applies to the homepage only; the admin ERP keeps its own design system.
+
+### Typography
+- **Display face**: Barlow Condensed 700/800 (SIL OFL 1.1), self-hosted via `next/font/local` in
+  `src/components/home/fonts.ts`, exposed as the Tailwind utility `font-condensed`.
+- **Body face**: the existing system sans stack. Monospace only for registration numbers.
+- **Headlines** are uppercase, weight 800, line-height 0.95, and always `text-balance` so no single
+  word is left alone on the last line.
+- **One title size per level.** Use the shared constants in `src/components/home/ui.tsx`:
+  - H1 (hero only): `clamp(3.25rem, 8vw, 7.5rem)`
+  - Section titles: `SECTION_TITLE_SIZE` (2.75rem → 3.75rem → 4.5rem)
+  - Small labels (list titles, stat captions): `LABEL`
+- **Every section opens with `SectionHeading`**: eyebrow, 16px gap, title, 24px gap, lead paragraph
+  (max 42rem, `text-pretty`). Buttons follow 36px below. Never hand-roll a section heading.
+- **Alignment**: all text is left-aligned to the `max-w-7xl` grid. No centered sections and no
+  staggered or indented headline lines.
+
+### Colour
+| Role | Value |
+|---|---|
+| Main canvas | `#141413` |
+| Alternate dark | `#1C1C1A` |
+| Paper chapter | `#FAF9F5` |
+| Primary button | `#C85A17`, hover `#A4460E` |
+| Eyebrow on dark | `#E07A35` |
+| Eyebrow on paper | `#A4460E` |
+| Proposal block | `#A4460E` |
+
+Small orange text is never placed on paper in `#E07A35` or `#C85A17`; use `#A4460E` for contrast.
+
+### Layout
+- Hero is full viewport height with a photo, a dark gradient for legibility, and content anchored
+  to the bottom-left.
+- Split sections bleed the photo to the viewport edge while the text column stays on the grid.
+- Section padding: 96px mobile, 128px desktop.
+- Calls to action use `PillLink` (solid, outline, dark). External links open in a new tab.
 
 ---
 

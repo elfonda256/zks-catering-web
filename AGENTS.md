@@ -38,7 +38,7 @@ Extends the Global Rules. May add stricter requirements, never weaken them.
 - Compute prices and order totals on the server. Never trust values sent from the browser.
 - Verify payment status via the provider's signed webhook or server API, not via the redirect.
 - Store secrets only in environment variables, never in the repository.
-- Strictly adhere to DESIGN_MASTERBOOK.md: every component and section must follow the 10 permanent design doctrines (One focal point, no repeated compositions, no decorative UI, photography as verifiable evidence, typography before cards, one continuous canvas, explanatory motion only, industrial scroll storytelling, varied visual density, and purpose validation).
+- Strictly adhere to DESIGN_MASTERBOOK.md: every component and section must follow the 10 permanent design doctrines (One focal point, no repeated compositions, no decorative UI, photography as verifiable evidence, typography before cards, few backgrounds changed by chapter, explanatory motion only, industrial scroll storytelling, varied visual density, and purpose validation).
 
 ## Project Architecture Rules
 

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { Download, ExternalLink } from "@/components/icons";
+import { SectionHeading } from "@/components/home/ui";
 
 export interface DocumentItem {
   id: string;
@@ -240,21 +241,16 @@ export default function CompanyVerificationGallery() {
   return (
     <section
       id="verifikasi-dokumen"
-      className="py-24 sm:py-32 bg-[#FAF9F5] relative"
+      className="py-24 sm:py-32 bg-[#FAF9F5] text-[#141413] relative"
     >
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 space-y-10 sm:space-y-12">
         {/* Section Header: Editorial & Architectural */}
-        <div className="max-w-3xl space-y-3">
-          <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-[#8E8B81] block">
-            Eksplorer Arsip &amp; Verifikasi Industri
-          </span>
-          <h2 className="font-display font-bold text-3xl sm:text-4xl text-[#141413] tracking-[-0.03em] leading-tight">
-            Dokumentasi Fasilitas &amp; Kualifikasi Legalitas Resmi.
-          </h2>
-          <p className="font-sans text-sm sm:text-base text-[#626058] font-normal leading-relaxed">
-            Akses langsung bukti fisik kapasitas dapur, kepatuhan sanitasi, unit pendingin, dan perizinan operasional PT Zahdan Kamal Sentosa untuk kepastian audit vendor.
-          </p>
-        </div>
+        <SectionHeading
+          theme="light"
+          eyebrow="Arsip & verifikasi"
+          title="Dokumen fasilitas & legalitas"
+          lead="Akses langsung bukti fisik kapasitas dapur, kepatuhan sanitasi, unit pendingin, dan perizinan operasional PT Zahdan Kamal Sentosa untuk kepastian audit vendor."
+        />
 
         {/* ==============================================================
             PART 1: HORIZONTAL CATEGORY NAVIGATION
