@@ -20,6 +20,11 @@
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
+/* Homepage display face; --font-barlow-condensed is set by src/components/home/fonts.ts */
+@theme inline {
+  --font-condensed: var(--font-barlow-condensed), "Arial Narrow", Arial, sans-serif;
+}
+
 :root {
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "SF Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -49,9 +54,12 @@ body {
   line-height: 1.65;
 }
 
-h1, h2, h3, h4, h5, h6, .font-display {
-  font-family: var(--font-sans);
-  letter-spacing: -0.025em;
+/* In the base layer so utilities such as font-condensed can override it */
+@layer base {
+  h1, h2, h3, h4, h5, h6, .font-display {
+    font-family: var(--font-sans);
+    letter-spacing: -0.025em;
+  }
 }
 
 /* ==============================================================

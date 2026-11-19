@@ -2,6 +2,14 @@
 
 All notable changes to the Zahdan Kamal Sentosa Enterprise ERP project are documented in this file.
 
+## [Homepage Redesign] - 2026-11-19
+- Redesigned the public homepage with full-bleed photography, condensed uppercase headlines (Barlow Condensed, self-hosted) and a charcoal canvas.
+- Split `src/app/page.tsx` into section components under `src/components/home/`; homepage copy and figures moved to `src/data/home-content.ts`.
+- Removed duplicated homepage sections (second metrics row, value proposition list, mid-page CTA).
+- `Navbar` gained an `overlay` variant for dark full-bleed heroes; other pages keep the default.
+- Heading font rule in `globals.css` moved into `@layer base` so Tailwind font utilities can override it.
+- Updated the design masterbook: Rule 06, Rule 08 and a new "Public Homepage Visual Language" chapter.
+
 ## [Sprint 02.1] - 2026-10-22
 ### Enterprise Navigation & Information Architecture
 - **Sidebar Information Architecture Refactor**: Grouped modules into a clear enterprise hierarchy communicating true system architecture: Dashboard → Sales (Orders) → Procurement (PR, PO, Supplier) → Inventory (Command Center, Master Items, Receiving, Transfers, Stock Movement, Stock Opname) → Production → Kitchen → Delivery → Finance → Reports → Settings. Added crisp enterprise icons for every module.
