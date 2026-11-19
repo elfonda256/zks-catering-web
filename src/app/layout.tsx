@@ -1,11 +1,23 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { bodyFont, headingFont } from "./fonts";
+import { SITE_URL } from "@/lib/site-url";
 
 export const metadata: Metadata = {
-  title: "PT. Zahdan Kamal Sentosa | Catering Profesional Karawang",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "ZKS Catering | Katering Industri Karawang - PT. Zahdan Kamal Sentosa",
+    template: "%s | ZKS Catering Karawang",
+  },
   description:
-    "Jasa catering profesional untuk perusahaan, pabrik, event, dan jasa boga di kawasan industri Karawang. Bersertifikasi ISO 22000 dan Halal.",
+    "Dapur sentral katering industri di Karawang. Ribuan porsi per hari untuk pabrik dan perusahaan, bersertifikat ISO 22000 dan Halal, diantar tepat waktu lintas shift.",
+  applicationName: "ZKS Catering",
+  openGraph: {
+    type: "website",
+    locale: "id_ID",
+    siteName: "ZKS Catering",
+  },
+  twitter: { card: "summary_large_image" },
 };
 
 export default function RootLayout({

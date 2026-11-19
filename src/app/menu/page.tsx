@@ -7,9 +7,10 @@ import { CONTAINER, Eyebrow, HEADING, TITLE_SIZE } from "@/components/site/ui";
 import MenuCatalogClient from "./MenuCatalogClient";
 
 export const metadata: Metadata = {
-  title: "Katalog Menu Katering Industri | PT. Zahdan Kamal Sentosa Karawang",
+  title: "Katalog Menu Katering Industri",
   description:
     "Daftar spesifikasi paket menu katering harian dan event industri Karawang. Paket Rp17.000, Rp20.000, dan Rp25.000 dengan rotasi menu Senin sampai Sabtu.",
+  alternates: { canonical: "/menu" },
 };
 
 export default function MenuPage() {

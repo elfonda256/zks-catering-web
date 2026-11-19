@@ -2,6 +2,66 @@
 
 import { useState, useTransition, useActionState, useRef } from "react";
 import { submitPaymentProofAction, type SubmitPaymentProofState } from "./actions";
+import { HEADING } from "@/components/site/ui";
+import { FIELD_HINT, FIELD_INPUT, FIELD_LABEL } from "@/components/site/form";
+
+const SENDER_BANKS = [
+  { value: "BCA", label: "BCA (Bank Central Asia)" },
+  { value: "Mandiri", label: "Bank Mandiri" },
+  { value: "BRI", label: "BRI (Bank Rakyat Indonesia)" },
+  { value: "BNI", label: "BNI (Bank Negara Indonesia)" },
+  { value: "CIMB Niaga", label: "CIMB Niaga" },
+  { value: "Bank Permata", label: "Bank Permata" },
+  { value: "BSI", label: "BSI (Bank Syariah Indonesia)" },
+  { value: "Lainnya", label: "Bank lainnya / dompet digital" },
+];
+
+// TODO(owner): confirm these are the company's real accounts before go-live.
+const COMPANY_ACCOUNTS = [
+  { bank: "Bank Mandiri", number: "173-00-1122334-5" },
+  { bank: "Bank BCA", number: "109-8877-665" },
+];
+
+function OptionCard({
+  selected,
+  onSelect,
+  title,
+  amount,
+  description,
+  accent = false,
+}: {
+  selected: boolean;
+  onSelect: () => void;
+  title: string;
+  amount: number | null;
+  description: string;
+  accent?: boolean;
+}) {
+  return (
+    <label
+      onClick={onSelect}
+      className={`block cursor-pointer rounded-[10px] border-2 p-5 transition-colors ${
+        selected ? "border-[#C85A17] bg-[#C85A17]/15" : "border-white/15 bg-[#1A1F22] hover:border-white/40"
+      }`}
+    >
+      <span className="flex items-center justify-between gap-3">
+        <span className="font-heading text-sm font-bold uppercase text-white/80">{title}</span>
+        <span
+          className={`flex h-5 w-5 items-center justify-center rounded-full border-2 ${
+            selected ? "border-[#C85A17] bg-[#C85A17]" : "border-white/40"
+          }`}
+          aria-hidden="true"
+        >
+          {selected && <span className="h-2 w-2 rounded-full bg-white" />}
+        </span>
+      </span>
+      <span className={`${HEADING} mt-2 block text-3xl ${accent ? "text-[#E07A35]" : ""}`}>
+        Rp{amount?.toLocaleString("id-ID")}
+      </span>
+      <span className={`${FIELD_HINT} mt-2 block leading-relaxed`}>{description}</span>
+    </label>
+  );
+}
 
 interface PaymentUploadClientProps {
   rawToken: string;
@@ -114,120 +174,55 @@ export default function PaymentUploadClient({
     : null;
 
   return (
-    <div className="p-6 bg-white border-2 border-[#141413] space-y-6 mt-6">
-      {/* Header Instruksi */}
-      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-b border-[#141413]/10 pb-4">
+    <div className="mt-8 space-y-8 rounded-[10px] bg-[#232A2E] p-6 sm:p-8">
+      <div className="flex flex-col justify-between gap-2 border-b border-white/10 pb-5 sm:flex-row sm:items-end">
         <div>
-          <span className="font-mono text-[10px] uppercase tracking-widest text-[#C85A17] font-semibold block">
-            PEMBAYARAN DIVERIFIKASI
-          </span>
-          <h3 className="text-base sm:text-lg font-bold text-[#141413] tracking-tight mt-0.5">
-            Total Tagihan Resmi Telah Dikunci Admin
-          </h3>
+          <span className="font-heading text-sm font-bold uppercase text-[#E07A35]">Pembayaran</span>
+          <h2 className={`${HEADING} mt-1 text-[1.75rem]`}>Total tagihan sudah dikunci admin</h2>
         </div>
         {formattedDueDate && (
-          <span className="font-mono text-xs text-[#C85A17] font-semibold">
-            Batas Bayar: {formattedDueDate} WIB
+          <span className="font-heading text-sm font-bold uppercase text-[#E07A35]">
+            Batas bayar: {formattedDueDate} WIB
           </span>
         )}
       </div>
 
-      {/* Pilihan Nominal Tagihan */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {dpAmount && (
-          <label
-            onClick={() => setSelectedType("DP")}
-            className={`p-4 border rounded cursor-pointer transition-all ${
-              selectedType === "DP"
-                ? "bg-[#FAF9F5] border-[#141413] ring-1 ring-[#141413]"
-                : "bg-white border-[#141413]/15 hover:border-[#141413]/40"
-            }`}
-          >
-            <div className="flex items-center justify-between mb-1">
-              <span className="font-mono text-[10px] uppercase tracking-wider text-[#626058]">
-                Opsi A — Uang Muka (DP 20%)
-              </span>
-              <span
-                className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${
-                  selectedType === "DP"
-                    ? "border-[#141413] bg-[#141413]"
-                    : "border-neutral-300"
-                }`}
-              >
-                {selectedType === "DP" && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-white" />
-                )}
-              </span>
-            </div>
-            <p className="font-mono text-2xl font-extrabold text-[#141413]">
-              Rp{dpAmount.toLocaleString("id-ID")}
-            </p>
-            <p className="text-[11px] text-[#626058] mt-1 leading-relaxed">
-              Mengunci kuota boiler dapur & armada. Pelunasan sisa tagihan paling lambat H-1 pukul 23:59 WIB.
-            </p>
-          </label>
+          <OptionCard
+            selected={selectedType === "DP"}
+            onSelect={() => setSelectedType("DP")}
+            title="Opsi A · Uang muka (DP 20%)"
+            amount={dpAmount}
+            description="Mengunci kuota dapur dan armada. Pelunasan paling lambat H-1 pukul 23.59 WIB."
+          />
         )}
-
-        <label
-          onClick={() => setSelectedType("FULL")}
-          className={`p-4 border rounded cursor-pointer transition-all ${
-            selectedType === "FULL"
-              ? "bg-[#FAF9F5] border-[#141413] ring-1 ring-[#141413]"
-              : "bg-white border-[#141413]/15 hover:border-[#141413]/40"
-          }`}
-        >
-          <div className="flex items-center justify-between mb-1">
-            <span className="font-mono text-[10px] uppercase tracking-wider text-[#626058]">
-              {dpAmount ? "Opsi B — Pelunasan Penuh (100%)" : "Pembayaran Lunas Penuh (100%)"}
-            </span>
-            <span
-              className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${
-                selectedType === "FULL"
-                  ? "border-[#141413] bg-[#141413]"
-                  : "border-neutral-300"
-              }`}
-            >
-              {selectedType === "FULL" && (
-                <span className="w-1.5 h-1.5 rounded-full bg-white" />
-              )}
-            </span>
-          </div>
-          <p className="font-mono text-2xl font-extrabold text-[#C85A17]">
-            Rp{totalAmount?.toLocaleString("id-ID")}
-          </p>
-          <p className="text-[11px] text-[#626058] mt-1 leading-relaxed">
-            Mencakup seluruh subtotal porsi makanan dan ongkos kirim resmi armada Karawang.
-          </p>
-        </label>
+        <OptionCard
+          selected={selectedType === "FULL"}
+          onSelect={() => setSelectedType("FULL")}
+          title={dpAmount ? "Opsi B · Lunas penuh (100%)" : "Lunas penuh (100%)"}
+          amount={totalAmount}
+          description="Mencakup seluruh subtotal makanan dan ongkos kirim resmi armada."
+          accent
+        />
       </div>
 
-      {/* Rekening Bank Perusahaan */}
-      <div className="space-y-3 pt-2">
-        <span className="font-mono text-[11px] uppercase tracking-wider text-[#141413] font-semibold block">
-          Tujuan Transfer Rekening Resmi Perusahaan (BCA &amp; Mandiri)
-        </span>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-          <div className="p-3.5 bg-[#FAF9F5] border border-[#141413]/10 space-y-0.5">
-            <p className="font-mono font-bold text-[#141413]">BANK MANDIRI</p>
-            <p className="font-mono text-base font-bold text-[#141413] tracking-wider">
-              173-00-1122334-5
-            </p>
-            <p className="text-[11px] text-[#626058]">a.n. PT. Zahdan Kamal Sentosa</p>
-          </div>
-          <div className="p-3.5 bg-[#FAF9F5] border border-[#141413]/10 space-y-0.5">
-            <p className="font-mono font-bold text-[#141413]">BANK BCA</p>
-            <p className="font-mono text-base font-bold text-[#141413] tracking-wider">
-              109-8877-665
-            </p>
-            <p className="text-[11px] text-[#626058]">a.n. PT. Zahdan Kamal Sentosa</p>
-          </div>
+      <div className="space-y-3">
+        <span className={FIELD_LABEL}>Rekening tujuan transfer</span>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {COMPANY_ACCOUNTS.map((account) => (
+            <div key={account.bank} className="rounded-[10px] border border-white/10 bg-[#1A1F22] p-4">
+              <p className="font-heading text-sm font-bold uppercase text-white/80">{account.bank}</p>
+              <p className="mt-1 font-mono text-lg font-bold tracking-wider text-white">{account.number}</p>
+              <p className={FIELD_HINT}>a.n. PT. Zahdan Kamal Sentosa</p>
+            </div>
+          ))}
         </div>
-        <p className="text-[11px] text-[#626058] font-mono">
-          *Cantumkan Berita Transfer: <strong>{orderCode}</strong>
+        <p className={FIELD_HINT}>
+          Cantumkan berita transfer: <strong className="font-mono text-white">{orderCode}</strong>
         </p>
       </div>
 
-      {/* Formulir Unggah Bukti Transfer */}
       <form
         action={(formData) => {
           if (processedFile) {
@@ -237,57 +232,51 @@ export default function PaymentUploadClient({
             formAction(formData);
           });
         }}
-        className="space-y-4 pt-4 border-t border-[#141413]/10"
+        className="space-y-5 border-t border-white/10 pt-6"
       >
         <input type="hidden" name="paymentType" value={selectedType} />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block font-mono text-[11px] uppercase tracking-wider text-[#141413] mb-1">
-              Bank Pengirim Anda
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <div className="space-y-2">
+            <label htmlFor="senderBank" className={FIELD_LABEL}>
+              Bank pengirim
             </label>
-            <select
-              required
-              name="senderBank"
-              className="w-full text-xs p-2.5 bg-[#FAF9F5] border border-[#141413]/20 rounded text-[#141413] focus:outline-none focus:border-[#141413]"
-            >
-              <option value="">-- Pilih Bank Pengirim --</option>
-              <option value="BCA">BCA (Bank Central Asia)</option>
-              <option value="Mandiri">Bank Mandiri</option>
-              <option value="BRI">BRI (Bank Rakyat Indonesia)</option>
-              <option value="BNI">BNI (Bank Negara Indonesia)</option>
-              <option value="CIMB Niaga">CIMB Niaga</option>
-              <option value="Bank Permata">Bank Permata</option>
-              <option value="BSI">BSI (Bank Syariah Indonesia)</option>
-              <option value="Lainnya">Bank Lainnya / Dompet Digital</option>
+            <select id="senderBank" required name="senderBank" className={FIELD_INPUT} defaultValue="">
+              <option value="">Pilih bank pengirim</option>
+              {SENDER_BANKS.map((bank) => (
+                <option key={bank.value} value={bank.value}>
+                  {bank.label}
+                </option>
+              ))}
             </select>
           </div>
 
-          <div>
-            <label className="block font-mono text-[11px] uppercase tracking-wider text-[#141413] mb-1">
-              Nama Pemilik Rekening Pengirim
+          <div className="space-y-2">
+            <label htmlFor="senderName" className={FIELD_LABEL}>
+              Nama pemilik rekening
             </label>
             <input
+              id="senderName"
               type="text"
               required
               name="senderName"
               placeholder="Sesuai nama di buku tabungan / m-Banking"
-              className="w-full text-xs p-2.5 bg-[#FAF9F5] border border-[#141413]/20 rounded text-[#141413] focus:outline-none focus:border-[#141413]"
+              className={FIELD_INPUT}
             />
           </div>
         </div>
 
-        {/* Upload File Input with Drag / Click Visual */}
-        <div>
-          <label className="block font-mono text-[11px] uppercase tracking-wider text-[#141413] mb-1">
-            Unggah Berkas Bukti Transfer (Foto / Tangkapan Layar)
+        <div className="space-y-2">
+          <label htmlFor="proofFile" className={FIELD_LABEL}>
+            Bukti transfer (foto atau tangkapan layar)
           </label>
           <div
             onClick={() => fileInputRef.current?.click()}
-            className="border-2 border-dashed border-[#141413]/20 hover:border-[#141413] p-5 text-center rounded bg-[#FAF9F5] cursor-pointer transition-colors"
+            className="cursor-pointer rounded-[10px] border-2 border-dashed border-white/25 bg-[#1A1F22] p-6 text-center transition-colors hover:border-[#E07A35]"
           >
             <input
               ref={fileInputRef}
+              id="proofFile"
               type="file"
               required
               name="proofFile"
@@ -301,62 +290,53 @@ export default function PaymentUploadClient({
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={filePreview}
-                  alt="Pratinjau Bukti Transfer"
-                  className="max-h-48 mx-auto rounded border border-[#141413]/10 object-contain"
+                  alt="Pratinjau bukti transfer"
+                  className="mx-auto max-h-48 rounded-[10px] object-contain"
                 />
-                <p className="font-mono text-xs text-emerald-800 font-semibold">
-                  ✓ {selectedFileName}
-                </p>
-                <p className="text-[10px] text-[#626058]">Klik untuk mengganti foto</p>
+                <p className="text-sm font-semibold text-emerald-300">✓ {selectedFileName}</p>
+                <p className={FIELD_HINT}>Klik untuk mengganti foto</p>
               </div>
             ) : (
               <div className="space-y-1">
-                <span className="font-mono text-xs text-[#141413] font-semibold block">
-                  📁 Klik di sini untuk memilih foto bukti transfer
-                </span>
-                <p className="text-[11px] text-[#626058]">
-                  Format berkas: JPG, PNG, atau WebP (Maksimal 5 MB)
-                </p>
+                <span className="block font-heading text-base font-bold uppercase">Klik untuk memilih foto</span>
+                <p className={FIELD_HINT}>JPG, PNG, atau WebP, maksimal 5 MB</p>
               </div>
             )}
           </div>
         </div>
 
-        <div>
-          <label className="block font-mono text-[11px] uppercase tracking-wider text-[#141413] mb-1">
-            Catatan Tambahan (Opsional)
+        <div className="space-y-2">
+          <label htmlFor="paymentNotes" className={FIELD_LABEL}>
+            Catatan tambahan (opsional)
           </label>
           <input
+            id="paymentNotes"
             type="text"
             name="notes"
-            placeholder="Contoh: Transfer via m-BCA jam 10:15 WIB"
-            className="w-full text-xs p-2.5 bg-[#FAF9F5] border border-[#141413]/20 rounded text-[#141413] focus:outline-none focus:border-[#141413]"
+            placeholder="Contoh: transfer via m-BCA pukul 10.15 WIB"
+            className={FIELD_INPUT}
           />
         </div>
 
-        {/* Feedback State */}
         {state.error && (
-          <div className="p-3 text-xs bg-red-50 text-red-800 border border-red-200 rounded font-mono">
-            ⚠ {state.error}
+          <div role="alert" className="rounded-[10px] border-l-4 border-red-500 bg-red-500/10 p-4 text-[15px] text-red-100">
+            {state.error}
           </div>
         )}
 
         {state.success && (
-          <div className="p-3 text-xs bg-emerald-50 text-emerald-900 border border-emerald-300 rounded font-mono">
+          <div role="status" className="rounded-[10px] border-l-4 border-emerald-500 bg-emerald-500/10 p-4 text-[15px] text-emerald-100">
             ✓ {state.message}
           </div>
         )}
 
-        {/* Tombol Kirim */}
-        <div className="pt-2">
-          <button
-            type="submit"
-            disabled={isPending}
-            className="w-full sm:w-auto px-8 py-3.5 bg-[#141413] hover:bg-neutral-800 text-[#FAF9F5] text-xs font-mono uppercase tracking-wider font-semibold transition-all cursor-pointer disabled:opacity-50"
-          >
-            {isPending ? "Mengunggah Berkas..." : "Kirim Bukti Pembayaran ke Sistem ↗"}
-          </button>
-        </div>
+        <button
+          type="submit"
+          disabled={isPending}
+          className="inline-flex min-h-12 w-full cursor-pointer items-center justify-center rounded-full bg-[#C85A17] px-8 font-heading text-base font-bold uppercase text-white transition-colors hover:bg-[#A4460E] disabled:opacity-50 sm:w-auto"
+        >
+          {isPending ? "Mengunggah berkas…" : "Kirim bukti pembayaran"}
+        </button>
       </form>
     </div>
   );
