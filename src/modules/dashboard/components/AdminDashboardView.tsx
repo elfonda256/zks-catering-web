@@ -247,6 +247,11 @@ export default function AdminDashboardClient({ orders }: AdminDashboardClientPro
   };
 
   const handleRegenerateToken = (order: AdminOrderData) => {
+    const confirmed = window.confirm(
+      `Buat tautan pelanggan baru untuk ${order.orderCode}?\n\nTautan lama akan langsung tidak berlaku. Tautan baru dikirim otomatis ke WhatsApp pelanggan.`
+    );
+    if (!confirmed) return;
+
     setTokenModalOrder(order);
     setGeneratedTrackingUrl(null);
     setCopyFeedback(false);
@@ -765,7 +770,7 @@ export default function AdminDashboardClient({ orders }: AdminDashboardClientPro
                       onClick={() => handleRegenerateToken(order)}
                       className="px-3 py-1.5 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-[8px] hover:bg-slate-50 transition-colors"
                     >
-                      🔗 Tautan Pelanggan
+                      🔗 Buat Tautan Pelanggan Baru
                     </button>
                   </div>
 
@@ -1022,6 +1027,9 @@ export default function AdminDashboardClient({ orders }: AdminDashboardClientPro
           <p className="text-[13px] text-slate-600">
             Tautan ini digunakan oleh pelanggan untuk melihat status pesanan, rincian tagihan resmi, dan mengunggah bukti transfer:
           </p>
+          <p className="text-[12px] text-amber-700 bg-amber-50 border border-amber-200 rounded-[8px] p-2.5">
+            Tautan sebelumnya untuk pesanan ini sudah tidak berlaku. Bagikan hanya tautan di bawah.
+          </p>
           {generatedTrackingUrl ? (
             <div className="space-y-2">
               <input
@@ -1041,6 +1049,14 @@ export default function AdminDashboardClient({ orders }: AdminDashboardClientPro
               >
                 {copyFeedback ? "✓ Berhasil Disalin!" : "Salin Tautan"}
               </Button>
+              <a
+                href={generatedTrackingUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="ml-2 px-3 py-1.5 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-[8px] hover:bg-slate-50 transition-colors inline-flex items-center"
+              >
+                Buka Tautan ↗
+              </a>
             </div>
           ) : (
             <p className="text-[12px] text-slate-400 font-mono">

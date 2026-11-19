@@ -315,7 +315,7 @@ export async function regenerateOrderTokenAction(
     return {
       success: true,
       newRawToken: rawToken,
-      trackingUrl: `/pesanan/${rawToken}`,
+      trackingUrl: fullTrackingUrl,
     };
   } catch (err: unknown) {
     console.error("Gagal membuat ulang token pesanan:", err);
