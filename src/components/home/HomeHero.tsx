@@ -1,54 +1,31 @@
 import Image from "next/image";
-import { HERO_FACTS, WA_MESSAGES, buildWhatsAppUrl } from "@/data/home-content";
-import { DISPLAY, Eyebrow, PillLink } from "./ui";
+import { WA_MESSAGES, buildWhatsAppUrl } from "@/data/home-content";
+import { ButtonLink, HEADING, TITLE_SIZE } from "@/components/site/ui";
 
 export default function HomeHero() {
   return (
-    <section className="relative isolate flex min-h-svh flex-col justify-end overflow-hidden bg-[#141413] text-white">
+    <section className="relative isolate flex min-h-[100svh] items-center overflow-hidden bg-[#1A1F22] text-white">
       <Image
         src="/images/industrial-facility.jpg"
         alt="Dapur sentral PT Zahdan Kamal Sentosa saat produksi katering industri"
         fill
         priority
         sizes="100vw"
-        className="-z-20 object-cover object-center"
+        className="-z-20 object-cover"
       />
-      <div
-        className="absolute inset-0 -z-10 bg-gradient-to-t from-[#141413] via-[#141413]/70 to-[#141413]/35"
-        aria-hidden="true"
-      />
+      <div className="absolute inset-0 -z-10 bg-[#1A1F22]/55" aria-hidden="true" />
+      <div className="absolute inset-x-0 bottom-0 -z-10 h-1/2 bg-gradient-to-t from-[#1A1F22] to-transparent" aria-hidden="true" />
 
-      <div className="mx-auto w-full max-w-7xl px-6 pb-12 pt-36 sm:px-8 lg:px-12 lg:pb-16">
-        <div className="max-w-4xl">
-          <div className="hero-enter-badge">
-            <Eyebrow>PT Zahdan Kamal Sentosa · Karawang · Sejak 2007</Eyebrow>
-          </div>
-
-          <h1 className={`${DISPLAY} mt-5 text-[clamp(3.25rem,8vw,7.5rem)] hero-enter-headline`}>
-            Dapur sentral katering industri
+      <div className="mx-auto w-full max-w-[90rem] px-6 pb-40 pt-32 sm:px-10">
+        <div className="mx-auto w-fit">
+          <h1 className={`${HEADING} ${TITLE_SIZE.hero} hero-enter-headline`}>
+            <span className="block">Dapur sentral,</span>
+            <span className="block sm:pl-[1.4em]">katering industri</span>
           </h1>
-
-          <p className="mt-6 max-w-xl text-base leading-relaxed text-pretty text-white/80 sm:text-lg hero-enter-sub">
-            Ribuan porsi untuk pekerja pabrik manufaktur Karawang setiap hari, tepat jadwal lintas shift, dengan
-            standar ISO 22000 dan Halal resmi.
-          </p>
-
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row hero-enter-actions">
-            <PillLink href={buildWhatsAppUrl(WA_MESSAGES.consultation)}>Konsultasi &amp; uji rasa</PillLink>
-            <PillLink href="/menu" variant="outline">
-              Lihat menu
-            </PillLink>
+          <div className="mt-10 flex justify-center hero-enter-actions">
+            <ButtonLink href={buildWhatsAppUrl(WA_MESSAGES.consultation)}>Konsultasi &amp; uji rasa</ButtonLink>
           </div>
         </div>
-
-        <dl className="mt-16 grid grid-cols-2 gap-x-6 gap-y-8 border-t border-white/20 pt-8 sm:grid-cols-4 hero-enter-assurances">
-          {HERO_FACTS.map((fact) => (
-            <div key={fact.label} className="flex flex-col-reverse gap-1">
-              <dt className="text-sm text-white/65">{fact.label}</dt>
-              <dd className={`${DISPLAY} text-4xl`}>{fact.value}</dd>
-            </div>
-          ))}
-        </dl>
       </div>
     </section>
   );

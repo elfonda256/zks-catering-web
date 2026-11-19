@@ -1,207 +1,127 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowUpRight } from "@/components/icons";
+import { WA_MESSAGES, buildWhatsAppUrl } from "@/data/home-content";
 
 const NAV_LINKS = [
-  { href: "/#operasional", label: "Kapasitas & Fasilitas", mobileLabel: "Kapasitas & Fasilitas Dapur" },
-  { href: "/#keamanan-pangan", label: "Standar ISO 22000", mobileLabel: "Standar ISO 22000" },
-  { href: "/#klien-industri", label: "Klien Manufaktur", mobileLabel: "Klien Manufaktur" },
-  { href: "/menu", label: "Katalog Menu", mobileLabel: "Katalog Menu", highlight: true },
-  { href: "/#kontak-korporat", label: "Kontak Procurement", mobileLabel: "Kontak Procurement" },
+  { href: "/menu", label: "Menu" },
+  { href: "/#paket", label: "Paket" },
+  { href: "/#keamanan-pangan", label: "Keamanan pangan" },
+  { href: "/#dokumen", label: "Fasilitas" },
+  { href: "/#kontak", label: "Kontak" },
 ];
 
-/** "overlay" sits transparent over a dark full-bleed hero and turns solid charcoal on scroll. */
-const THEMES = {
-  default: {
-    desktop: "lg:flex",
-    mobile: "lg:hidden",
-    top: "bg-transparent border-b border-transparent py-5",
-    scrolled: "bg-[#FAF9F5]/95 backdrop-blur-md border-b border-[#141413]/[0.07] py-3.5 shadow-xs",
-    brand: "text-[#141413]",
-    brandSub: "text-[#6B685F]",
-    nav: "text-xs font-medium text-[#57544C]",
-    link: "hover:text-[#141413]",
-    highlight: "text-[#C85A17] font-semibold hover:text-[#A4460E]",
-    cta: "btn-interactive-primary gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold tracking-tight",
-    admin: "text-xs font-medium text-[#6B685F] hover:text-[#141413]",
-    toggle: "text-[#141413] hover:bg-[#141413]/[0.05]",
-    drawer: "border-[#141413]/[0.08] bg-[#FAF9F5] text-[#141413]",
-    drawerLink: "text-xs font-medium hover:bg-[#141413]/[0.04]",
-  },
-  overlay: {
-    desktop: "xl:flex",
-    mobile: "xl:hidden",
-    top: "bg-transparent border-b border-white/10 py-5",
-    scrolled: "bg-[#141413]/95 backdrop-blur-md border-b border-white/10 py-3.5",
-    brand: "text-white",
-    brandSub: "text-white/60",
-    nav: "font-condensed text-[15px] font-bold uppercase tracking-[0.06em] text-white/80",
-    link: "hover:text-white",
-    highlight: "text-[#E07A35] hover:text-white",
-    cta: "inline-flex min-h-[44px] items-center gap-1.5 rounded-full bg-[#C85A17] px-5 font-condensed text-[15px] font-bold uppercase tracking-[0.08em] text-white transition-colors hover:bg-[#A4460E]",
-    admin: "font-condensed text-[15px] font-bold uppercase tracking-[0.08em] text-white/60 hover:text-white",
-    toggle: "text-white hover:bg-white/10",
-    drawer: "border-white/10 bg-[#1C1C1A] text-white",
-    drawerLink: "font-condensed text-base font-bold uppercase tracking-[0.06em] hover:bg-white/[0.06]",
-  },
-} as const;
+const NAV_LINK = "font-heading text-[13px] font-bold uppercase tracking-[0.02em] text-white transition-colors hover:text-[#E07A35]";
+const OUTLINE_PILL =
+  "inline-flex min-h-10 items-center rounded-full border-2 border-white/80 px-4 font-heading text-[13px] font-bold uppercase text-white transition-colors hover:bg-white hover:text-[#1A1F22]";
 
 interface NavbarProps {
-  variant?: keyof typeof THEMES;
+  /** Start transparent over a full-bleed hero and turn solid on scroll. */
+  overlay?: boolean;
 }
 
-export default function Navbar({ variant = "default" }: NavbarProps) {
-  const theme = THEMES[variant];
+export default function Navbar({ overlay = false }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 15);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 15);
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const solid = !overlay || isScrolled || isOpen;
+
   return (
     <header
-      className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-        isScrolled || isOpen ? theme.scrolled : theme.top
+      className={`${overlay ? "fixed" : "sticky"} inset-x-0 top-0 z-50 transition-colors duration-300 ${
+        solid ? "bg-[#1A1F22]" : "bg-transparent"
       }`}
     >
-      {/* Skip to Main Content Link for Keyboard Accessibility (WCAG 2.4.1) */}
       <a href="#main-content" className="skip-link">
-        Lewati ke Konten Utama
+        Lewati ke konten utama
       </a>
 
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-        <div className="flex items-center justify-between gap-8">
-          {/* Brand Wordmark with Official ZKS Logo */}
-          <Link href="/" className="flex items-center gap-3 group focus-visible:ring-2 focus-visible:ring-[#C85A17] rounded-lg p-0.5">
-            <div className="relative w-8 h-8 rounded-lg overflow-hidden shrink-0 bg-[#0d2238] border border-[#141413]/10 shadow-xs">
-              <Image
-                src="/images/zks-logo-official.png"
-                alt="PT. Zahdan Kamal Sentosa Logo"
-                fill
-                className="object-cover object-left"
-                priority
-              />
-            </div>
-            <div className="flex flex-col whitespace-nowrap">
-              <span className={`font-display font-bold text-sm sm:text-[15px] leading-tight tracking-[-0.02em] ${theme.brand}`}>
-                PT. Zahdan Kamal Sentosa
-              </span>
-              <span className={`text-[10px] font-medium tracking-[0.06em] uppercase ${theme.brandSub}`}>
-                Industrial Catering · Karawang
-              </span>
-            </div>
-          </Link>
+      <div className="mx-auto flex h-20 max-w-[90rem] items-center justify-between gap-8 px-6 sm:px-10">
+        <Link href="/" className="flex shrink-0 items-center gap-3 rounded-lg" aria-label="Beranda PT Zahdan Kamal Sentosa">
+          <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border-2 border-white bg-[#0d2238]">
+            <Image src="/images/zks-logo-official.png" alt="" fill sizes="40px" className="object-cover object-left" priority />
+          </span>
+          <span className="flex flex-col leading-none text-white">
+            <span className="font-heading text-xl font-extrabold uppercase">ZKS Catering</span>
+            <span className="mt-1 font-heading text-[10px] font-bold uppercase tracking-[0.12em] text-white/75">
+              Katering industri Karawang
+            </span>
+          </span>
+        </Link>
 
-          {/* Desktop Navigation Links */}
-          <nav className={`hidden items-center gap-6 whitespace-nowrap ${theme.desktop} ${theme.nav}`}>
+        <nav className="hidden items-center gap-7 xl:flex" aria-label="Navigasi utama">
+          {NAV_LINKS.map((link) => (
+            <Link key={link.href} href={link.href} className={NAV_LINK}>
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="hidden items-center gap-3 xl:flex">
+          <a href={buildWhatsAppUrl(WA_MESSAGES.consultation)} target="_blank" rel="noreferrer" className={OUTLINE_PILL}>
+            WhatsApp
+          </a>
+          <Link href="/pesan" className={OUTLINE_PILL}>
+            Pesan katering
+          </Link>
+          <Link href="/admin/login" className={`${NAV_LINK} ml-2 text-white/60`}>
+            Admin
+          </Link>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-white xl:hidden"
+          aria-label={isOpen ? "Tutup menu" : "Buka menu"}
+          aria-expanded={isOpen}
+        >
+          <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
+            {isOpen ? (
+              <path d="M18 6 6 18M6 6l12 12" />
+            ) : (
+              <path d="M4 7h16M4 12h16M4 17h16" />
+            )}
+          </svg>
+        </button>
+      </div>
+
+      {isOpen && (
+        <div className="border-t border-white/10 bg-[#1A1F22] px-6 pb-8 pt-4 sm:px-10 xl:hidden">
+          <nav className="flex flex-col" aria-label="Navigasi seluler">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`transition-colors py-1 focus-visible:ring-2 focus-visible:ring-[#C85A17] rounded-sm ${
-                  link.highlight ? theme.highlight : theme.link
-                }`}
+                onClick={() => setIsOpen(false)}
+                className="border-b border-white/10 py-4 font-heading text-2xl font-extrabold uppercase text-white"
               >
                 {link.label}
               </Link>
             ))}
           </nav>
-
-          {/* Desktop Actions (Minimal, Elegant, Sprint 07 accessible micro-interactions) */}
-          <div className={`hidden items-center gap-3 whitespace-nowrap ${theme.desktop}`}>
-            <Link
-              href="/pesan"
-              className={`group ${theme.cta}`}
-            >
-              <span>Pesan Katering</span>
-              <ArrowUpRight className="w-3 h-3 opacity-70 btn-arrow" />
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <Link href="/pesan" onClick={() => setIsOpen(false)} className={OUTLINE_PILL}>
+              Pesan katering
             </Link>
-            <Link
-              href="/admin/login"
-              className={`px-2.5 py-1.5 transition-colors rounded-lg focus-visible:ring-2 focus-visible:ring-[#C85A17] ${theme.admin}`}
-            >
+            <a href={buildWhatsAppUrl(WA_MESSAGES.consultation)} target="_blank" rel="noreferrer" className={OUTLINE_PILL}>
+              WhatsApp
+            </a>
+            <Link href="/admin/login" onClick={() => setIsOpen(false)} className={`${NAV_LINK} ml-2 text-white/60`}>
               Admin
             </Link>
           </div>
-
-          {/* Mobile Menu Toggle Button (Standard 44px min touch target) */}
-          <div className={`flex items-center ${theme.mobile}`}>
-            <button
-              type="button"
-              onClick={() => setIsOpen(!isOpen)}
-              className={`p-2 min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-[#C85A17] ${theme.toggle}`}
-              aria-label="Toggle navigation menu"
-              aria-expanded={isOpen}
-            >
-              <svg
-                className="w-5 h-5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={1.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                {isOpen ? (
-                  <>
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </>
-                ) : (
-                  <>
-                    <line x1="4" y1="8" x2="20" y2="8" />
-                    <line x1="4" y1="16" x2="20" y2="16" />
-                  </>
-                )}
-              </svg>
-            </button>
-          </div>
         </div>
-
-        {/* Mobile Dropdown Drawer */}
-        {isOpen && (
-          <div className={`${theme.mobile} mt-4 pt-4 border-t rounded-xl p-4 shadow-lg space-y-3 ${theme.drawer}`}>
-            <div className="space-y-1">
-              {NAV_LINKS.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setIsOpen(false)}
-                  className={`block px-3 py-2 rounded-md ${theme.drawerLink} ${link.highlight ? "text-[#C85A17]" : ""}`}
-                >
-                  {link.mobileLabel}
-                </Link>
-              ))}
-            </div>
-
-            <div className="pt-3 border-t border-current/10 flex items-center justify-between">
-              <Link
-                href="/pesan"
-                onClick={() => setIsOpen(false)}
-                className={theme.cta}
-              >
-                Pesan Katering
-              </Link>
-              <Link
-                href="/admin/login"
-                onClick={() => setIsOpen(false)}
-                className={`px-2 py-1 ${theme.admin}`}
-              >
-                Admin Portal
-              </Link>
-            </div>
-          </div>
-        )}
-      </div>
+      )}
     </header>
   );
 }
