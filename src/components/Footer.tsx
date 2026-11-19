@@ -22,9 +22,7 @@ export default function Footer() {
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-12 lg:gap-8">
           <div className="lg:col-span-4">
             <Link href="/" className="inline-flex flex-col items-start gap-4">
-              <span className="relative h-16 w-16 overflow-hidden rounded-full border-2 border-white bg-[#0d2238]">
-                <Image src="/images/zks-logo-official.png" alt="" fill sizes="64px" className="object-cover object-left" />
-              </span>
+              <Image src="/images/zks-emblem.png" alt="" width={94} height={60} unoptimized />
               <span className="font-heading text-3xl font-extrabold uppercase leading-none">
                 ZKS Catering
                 <span className="mt-1 block text-xs font-bold tracking-[0.12em]">{COMPANY_PROFILE.name}</span>
