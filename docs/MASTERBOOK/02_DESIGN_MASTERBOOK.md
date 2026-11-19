@@ -84,13 +84,11 @@ Use:
 ## RULE 06: FEW BACKGROUNDS, CHANGED BY CHAPTER
 Avoid changing background colors every section. A background changes only when the chapter changes.
 
-- **Public homepage** (updated 2026-11-19): charcoal `#141413` is the main canvas for the company and
-  operations chapters, with `#1C1C1A` as the one alternate tone. Paper `#FAF9F5` is reserved for the
-  quality, documents and menu chapter, plus the client logo strip (logo artwork has white backgrounds).
-  Brand orange `#A4460E` is used for the final proposal block only.
-- **Admin ERP and other public pages**: keep the continuous paper canvas (`#FAF9F5`).
+- **Public site** (updated 2026-11-19): one charcoal canvas `#1A1F22` throughout. Brand orange
+  `#C85A17` is reserved for the proposal block and the footer.
+- **Admin ERP and the order pages**: keep the continuous paper canvas (`#FAF9F5`).
 
-See the chapter "Public Homepage Visual Language" below for the full specification.
+See the chapter "Public Site Visual Language" below for the full specification.
 
 ---
 
@@ -110,16 +108,15 @@ Motion should explain, never entertain.
 ## RULE 08: SCROLL STORYTELLING
 Visitors must feel they are taking an escorted executive tour through an industrial facility:
 
-1. **Entrance** → Full-bleed hero with headline and four key facts
-2. **Clients** → Manufacturing client logos
-3. **Company** → History, credentials, milestones
-4. **Production** → Central kitchen capacity and fleet travel times
-5. **Menu** → Full-width menu spotlight linking to `/menu`
-6. **Workflow** → 7-stage one-way production flow
-7. **Quality** → HACCP/ISO protocols
-8. **Verification** → Archive document explorer
-9. **Specification** → Weekly menu and portion grammage
-10. **Proposal** → Contact block with management WhatsApp links
+1. **Entrance** → Full-bleed hero
+2. **Company** → Intro overlapping the hero, with key facts
+3. **Clients** → Manufacturing client logos
+4. **Packages** → Three menu package cards
+5. **Quality** → HACCP/ISO protocols (split feature)
+6. **Workflow** → 7-stage one-way production flow (split feature)
+7. **Production** → Capacity figures and fleet travel times
+8. **Verification** → Facility and legal document cards
+9. **Proposal** → Banner with the contact block
 
 *Each section is a deliberate chapter. Never random.*
 
@@ -140,46 +137,44 @@ If it has no clear answer, **delete it**.
 
 ---
 
-## CHAPTER — PUBLIC HOMEPAGE VISUAL LANGUAGE (2026-11-19)
+## CHAPTER — PUBLIC SITE VISUAL LANGUAGE (updated 2026-11-19)
 
-The public homepage (`src/app/page.tsx`, sections in `src/components/home/`) follows a bold editorial
-style inspired by hospitality brand sites: full-bleed photography, condensed uppercase headlines,
-rounded pill buttons. It applies to the homepage only; the admin ERP keeps its own design system.
+The public site (homepage `/` and menu catalogue `/menu`, plus the shared `Navbar` and `Footer`) follows
+the editorial hospitality style of cage.ca: full-bleed photography, heavy uppercase headlines, photos that
+bleed to the viewport edge with one large rounded corner, photo cards, and a solid brand-colour footer.
+The admin ERP keeps its own design system.
 
 ### Typography
-- **Display face**: Barlow Condensed 700/800 (SIL OFL 1.1), self-hosted via `next/font/local` in
-  `src/components/home/fonts.ts`, exposed as the Tailwind utility `font-condensed`.
-- **Body face**: the existing system sans stack. Monospace only for registration numbers.
-- **Headlines** are uppercase, weight 800, line-height 0.95, and always `text-balance` so no single
-  word is left alone on the last line.
-- **One title size per level.** Use the shared constants in `src/components/home/ui.tsx`:
-  - H1 (hero only): `clamp(3.25rem, 8vw, 7.5rem)`
-  - Section titles: `SECTION_TITLE_SIZE` (2.75rem → 3.75rem → 4.5rem)
-  - Small labels (list titles, stat captions): `LABEL`
-- **Every section opens with `SectionHeading`**: eyebrow, 16px gap, title, 24px gap, lead paragraph
-  (max 42rem, `text-pretty`). Buttons follow 36px below. Never hand-roll a section heading.
-- **Alignment**: all text is left-aligned to the `max-w-7xl` grid. No centered sections and no
-  staggered or indented headline lines.
+- **Headings**: Saira Semi Condensed 700/800 (SIL OFL 1.1), self-hosted in `src/app/fonts/`, Tailwind
+  utility `font-heading`. Always uppercase, leading 1.02, `text-balance`.
+- **Body**: Barlow 400/500/600/700 (SIL OFL 1.1), utility `font-text`, 17px with 1.7 line-height.
+- **Sizes** come from `TITLE_SIZE` in `src/components/site/ui.tsx`:
+  - `hero`: `clamp(3rem, 7.6vw, 7.5rem)`. The second line is indented so the block reads as a stagger.
+  - `large` (split feature sections): 2.75rem → 3.75rem → 4.375rem
+  - `medium` (card and list sections): 2.25rem → 3rem → 3.125rem
+- **Eyebrows**: either `Eyebrow` (Barlow semibold, 22px, uppercase) or `RuledEyebrow` (small heading
+  type followed by a double rule that runs to the viewport edge).
+- **Links under copy** use `TextLink` (small uppercase, underlined). Calls to action use `ButtonLink` pills.
 
 ### Colour
 | Role | Value |
 |---|---|
-| Main canvas | `#141413` |
-| Alternate dark | `#1C1C1A` |
-| Paper chapter | `#FAF9F5` |
-| Primary button | `#C85A17`, hover `#A4460E` |
-| Eyebrow on dark | `#E07A35` |
-| Eyebrow on paper | `#A4460E` |
-| Proposal block | `#A4460E` |
+| Canvas | `#1A1F22` |
+| Card / panel surface | `#232A2E` |
+| Brand accent, buttons, tags, footer | `#C85A17`, hover `#A4460E` |
+| Accent text on dark | `#E07A35` |
+| Text | white; secondary copy white at 75–85% |
 
-Small orange text is never placed on paper in `#E07A35` or `#C85A17`; use `#A4460E` for contrast.
-
-### Layout
-- Hero is full viewport height with a photo, a dark gradient for legibility, and content anchored
-  to the bottom-left.
-- Split sections bleed the photo to the viewport edge while the text column stays on the grid.
-- Section padding: 96px mobile, 128px desktop.
-- Calls to action use `PillLink` (solid, outline, dark). External links open in a new tab.
+### Layout and photography
+- Content aligns to `CONTAINER` (max 90rem, 100px side padding on desktop).
+- **Hero**: full viewport photo with a dark overlay; headline centred as a block; one primary pill.
+- **Intro**: the eyebrow, headline and a portrait photo overlap the bottom of the hero.
+- **Split feature** (`SplitFeature`): photo at aspect 641/504 bleeds to the left or right edge with a
+  70px rounded inner bottom corner; sides alternate down the page.
+- **Cards** (`PhotoCard`): 10px radius, photo fills the card, orange tag top-left, title over a gradient.
+- **Banner + block**: a full-width photo with an orange block overlapping its lower edge, inset from the
+  left, 50px rounded bottom-left corner.
+- **Footer**: solid `#C85A17`, logo, link columns in small uppercase heading type.
 
 ---
 

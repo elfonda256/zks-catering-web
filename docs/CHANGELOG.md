@@ -2,6 +2,13 @@
 
 All notable changes to the Zahdan Kamal Sentosa Enterprise ERP project are documented in this file.
 
+## [Public Site Redesign] - 2026-11-19
+- Homepage and `/menu` rebuilt to follow the cage.ca layout: staggered hero headline, intro overlapping the hero, photo cards, alternating edge-bleed split features with a rounded inner corner, ruled eyebrows, banner with overlapping orange block.
+- New fonts: Saira Semi Condensed (headings) and Barlow (body), self-hosted in `src/app/fonts/` and loaded in the root layout; Barlow Condensed removed.
+- `Navbar` rewritten as one dark header for all public pages (`overlay` prop for transparent-over-hero); `Footer` rewritten as a solid orange footer.
+- Shared public-site components in `src/components/site/` (`ui.tsx`, `SplitFeature`, `PhotoCard`).
+- Removed `InteractiveMenuSection` and `CompanyVerificationGallery`; the homepage now uses package cards and document cards, and `/menu` holds the full menu with portion standards.
+
 ## [Homepage Redesign] - 2026-11-19
 - Redesigned the public homepage with full-bleed photography, condensed uppercase headlines (Barlow Condensed, self-hosted) and a charcoal canvas.
 - Split `src/app/page.tsx` into section components under `src/components/home/`; homepage copy and figures moved to `src/data/home-content.ts`.

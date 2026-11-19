@@ -20,9 +20,10 @@
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-/* Homepage display face; --font-barlow-condensed is set by src/components/home/fonts.ts */
+/* Public-site faces; the variables are set in src/app/fonts/index.ts via the root layout */
 @theme inline {
-  --font-condensed: var(--font-barlow-condensed), "Arial Narrow", Arial, sans-serif;
+  --font-heading: var(--font-saira), "Arial Narrow", Arial, sans-serif;
+  --font-text: var(--font-barlow), Arial, sans-serif;
 }
 
 :root {

@@ -1,5 +1,5 @@
 /**
- * Static content for the public homepage (src/app/page.tsx).
+ * Static content for the public site (homepage and menu catalogue).
  * Section components read from here so copy and figures are defined once.
  */
 import { COMPANY_PROFILE } from "./catering-data";
@@ -99,19 +99,6 @@ export const CREDENTIALS: Credential[] = [
   { title: "Dinkes Karawang", reference: "Laik Higiene Gol. B" },
 ];
 
-export interface Milestone {
-  year: string;
-  title: string;
-  description: string;
-}
-
-export const MILESTONES: Milestone[] = [
-  { year: "2007", title: "Perusahaan berdiri", description: "Melayani katering pabrik pertama di Karawang." },
-  { year: "2012", title: "Ekspansi produksi", description: "Dapur sentral dengan boiler uap dan cold storage." },
-  { year: "2018", title: "Divisi industri", description: "Skala 5.000+ porsi dan sertifikasi ISO 22000." },
-  { year: "Kini", title: "Mitra tepercaya", description: "Katering perusahaan multinasional di Jawa Barat." },
-];
-
 export interface ProcessStep {
   title: string;
   description: string;
@@ -134,4 +121,98 @@ export const QA_PROTOCOLS: ProcessStep[] = [
   { title: "Cleanroom packaging", description: "Ruang kemas terisolasi dengan udara tersaring dan alur kerja satu arah." },
   { title: "Sanitation & water RO", description: "Air Reverse Osmosis untuk memasak dan mencuci, disinfeksi rutin peralatan." },
   { title: "Retention archive H-0", description: "Sampel setiap menu disimpan 3×24 jam untuk uji laboratorium independen." },
+];
+
+export interface SiteImage {
+  src: string;
+  alt: string;
+}
+
+/** Card photo for each menu package, keyed by price. */
+export const PACKAGE_IMAGES: Record<number, SiteImage> = {
+  17000: { src: "/images/industrial-facility.jpg", alt: "Lini produksi dapur sentral ZKS menyiapkan ribuan porsi" },
+  20000: { src: "/images/chef-real-cooking.png", alt: "Juru masak ZKS memasak di dapur Ciampel" },
+  25000: { src: "/images/hero-culinary.jpg", alt: "Hidangan premium ditata oleh juru masak" },
+};
+
+export interface FacilityDocument {
+  category: string;
+  title: string;
+  subtitle: string;
+  image: string;
+}
+
+export const FACILITY_DOCUMENTS: FacilityDocument[] = [
+  {
+    category: "Legalitas",
+    title: "Laik Higiene Sanitasi & Halal BPJPH",
+    subtitle: "Izin operasional jasaboga Gol. B dan sertifikat halal.",
+    image: "/images/profile-docs/legalitas-resmi-1.png",
+  },
+  {
+    category: "Dapur",
+    title: "Boiler uap & filtrasi air RO",
+    subtitle: "Instalasi air murni dan steam cooking volume besar.",
+    image: "/images/profile-docs/galeri-teknologi-ro-steamer.png",
+  },
+  {
+    category: "Cold storage",
+    title: "Deep freezer rantai dingin",
+    subtitle: "Penyimpanan daging, ayam, dan ikan pada suhu rendah.",
+    image: "/images/profile-docs/galeri-gudang-freezer.png",
+  },
+  {
+    category: "Produksi",
+    title: "Lini masak satu arah",
+    subtitle: "Tata ruang produksi searah berstandar higiene.",
+    image: "/images/profile-docs/galeri-dapur-industri.png",
+  },
+  {
+    category: "Armada",
+    title: "Packing & armada tertutup",
+    subtitle: "Pengantaran tepat waktu antar shift pabrik.",
+    image: "/images/profile-docs/galeri-packing-armada.png",
+  },
+  {
+    category: "Gudang",
+    title: "Gudang bahan kering FIFO",
+    subtitle: "Bahan baku pokok tersimpan di atas palet.",
+    image: "/images/profile-docs/galeri-fasilitas-operasional.png",
+  },
+  {
+    category: "Kantor",
+    title: "Kantor manajemen & ruang audit",
+    subtitle: "Pusat administrasi dan penerimaan auditor.",
+    image: "/images/profile-docs/galeri-gedung-kantor.png",
+  },
+  {
+    category: "SDM",
+    title: "Legalitas SDM & medical check-up",
+    subtitle: "Pemeriksaan kesehatan berkala tenaga dapur.",
+    image: "/images/profile-docs/legalitas-sdm-mcu.png",
+  },
+];
+
+/** Portion weights shared by every package, shown on the menu catalogue. */
+export const PORTION_SPEC: { label: string; value: string }[] = [
+  { label: "Karbohidrat (nasi pulen)", value: "±250 g" },
+  { label: "Lauk hewani utama", value: "±100 g" },
+  { label: "Sayur & serat", value: "±80 g" },
+  { label: "Lauk nabati / pendamping", value: "±40 g" },
+  { label: "Pelengkap & buah segar", value: "Termasuk" },
+];
+
+export const ORDER_TERMS: ProcessStep[] = [
+  {
+    title: "Lead time pemesanan",
+    description: "Di bawah 500 porsi minimal H-1 sebelum acara. Mulai 500 porsi minimal H-3, demi kepastian bahan baku segar.",
+  },
+  {
+    title: "Uang muka 20%",
+    description: "Tersedia DP 20% untuk pesanan yang dikonfirmasi admin paling lambat H-2. Pelunasan H-1 pukul 23.59 WIB.",
+  },
+  {
+    title: "Pengiriman ke kawasan industri",
+    description: "Langsung ke kantin pabrik di KIIC, Suryacipta, KIM, dan Karawang Barat/Timur dengan armada berinsulasi.",
+  },
 ];
