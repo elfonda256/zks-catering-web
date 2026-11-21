@@ -12,8 +12,7 @@ import AdminDashboardClient, {
 } from "./AdminDashboardClient";
 
 export const metadata: Metadata = {
-  title: "Konsol Operasional Dapur & Logistik | PT. Zahdan Kamal Sentosa",
-  description: "Pusat verifikasi pesanan, penetapan ongkos kirim, dan inspeksi pembayaran katering.",
+  title: "Pesanan | Admin ZKS Catering",
   robots: {
     index: false,
     follow: false,
@@ -101,29 +100,20 @@ async function DashboardContent() {
       onLogout={handleLogout}
     >
       <ErpPageTemplate
-        category="OPERATIONS & DISPATCH CONSOLE"
-        title="Panel Kendali & Logistik Pesanan"
-        description="Pusat verifikasi kapasitas dapur, penetapan rute armada Karawang, serta inspeksi pembayaran resmi katering industri."
+        hideBreadcrumb
+        title="Pesanan"
+        description="Tentukan ongkir, verifikasi bukti bayar, dan perbarui status pesanan."
         actions={
-          <Link
-            href="/admin/dashboard"
-            className="text-[12px] font-medium text-white bg-slate-900 hover:bg-slate-800 px-3.5 py-1.5 rounded-[8px] transition-colors shadow-2xs inline-flex items-center gap-1.5 cursor-pointer"
-          >
-            <span>↻ Segarkan Antrean</span>
-          </Link>
-        }
-        secondaryActions={
           <Link
             href="/pesan"
             target="_blank"
-            className="text-[12px] font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 px-3 py-1.5 rounded-[8px] transition-colors inline-flex items-center gap-1"
+            rel="noopener noreferrer"
+            className="inline-flex h-8 items-center gap-2 rounded-[8px] border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors"
           >
-            <span>Form Pemesanan</span>
-            <span className="text-slate-400">↗</span>
+            Form pemesanan <span aria-hidden="true">↗</span>
           </Link>
         }
       >
-        {/* Komponen Klien Operasional Pesanan */}
         <AdminDashboardClient orders={serializedOrders} />
       </ErpPageTemplate>
     </EnterpriseShell>
@@ -135,7 +125,7 @@ export default function AdminDashboardPage() {
     <Suspense
       fallback={
         <div className="min-h-screen bg-slate-50 flex items-center justify-center p-8">
-          <LoadingState label="Memuat konsol kendali operasional ZKS..." rows={6} />
+          <LoadingState label="Memuat pesanan..." rows={6} />
         </div>
       }
     >

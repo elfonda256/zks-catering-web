@@ -26,8 +26,8 @@ export function UserProfileMenu({ user, onLogout }: UserProfileMenuProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const displayName = user?.name || "Admin Operasional";
-  const displayRole = user?.role || "OPERATIONS_LEAD";
+  const displayName = user?.name || "Admin";
+  const displayRole = user?.role === "SUPERADMIN" ? "Super admin" : "Admin";
   const initials = displayName
     .split(" ")
     .map((w) => w[0])
@@ -40,8 +40,9 @@ export function UserProfileMenu({ user, onLogout }: UserProfileMenuProps) {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 p-1 rounded-[10px] hover:bg-slate-100 transition-colors cursor-pointer text-left focus:outline-none"
-        title="Menu Profil & Sesi"
+        className="flex items-center gap-2 p-1 rounded-[8px] hover:bg-slate-100 transition-colors cursor-pointer text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900"
+        aria-label="Menu akun"
+        aria-expanded={isOpen}
       >
         <div className="w-8 h-8 rounded-[8px] bg-slate-900 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs">
           {initials}
@@ -50,7 +51,7 @@ export function UserProfileMenu({ user, onLogout }: UserProfileMenuProps) {
           <span className="text-[12px] font-semibold text-slate-800 leading-tight truncate max-w-[120px]">
             {displayName}
           </span>
-          <span className="text-[10px] text-slate-400 font-mono leading-none">
+          <span className="text-[11px] text-slate-500 leading-none">
             {displayRole}
           </span>
         </div>
@@ -66,12 +67,7 @@ export function UserProfileMenu({ user, onLogout }: UserProfileMenuProps) {
             <div className="text-[13px] font-semibold text-slate-900 leading-tight">
               {displayName}
             </div>
-            <div className="text-[11px] text-slate-500 font-mono mt-0.5">
-              {user?.email || "admin@zks-catering.com"}
-            </div>
-            <div className="mt-1.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-[4px] bg-blue-50 border border-blue-200 text-blue-700 text-[10px] font-semibold">
-              Otoritas: {displayRole}
-            </div>
+            <div className="text-[12px] text-slate-500 mt-0.5">{displayRole}</div>
           </div>
 
           <div className="space-y-0.5">
@@ -85,9 +81,9 @@ export function UserProfileMenu({ user, onLogout }: UserProfileMenuProps) {
                 <svg className="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>
-                <span>Lihat Website Publik</span>
+                <span>Lihat website</span>
               </span>
-              <span className="text-[10px] text-slate-400">Baru</span>
+              <span className="text-[11px] text-slate-400" aria-hidden="true">↗</span>
             </Link>
 
             <Link
@@ -98,7 +94,7 @@ export function UserProfileMenu({ user, onLogout }: UserProfileMenuProps) {
               <svg className="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
               </svg>
-              <span>Beranda Operasional</span>
+              <span>Pesanan</span>
             </Link>
           </div>
 
@@ -115,7 +111,7 @@ export function UserProfileMenu({ user, onLogout }: UserProfileMenuProps) {
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
-                <span>Keluar dari Sesi ERP</span>
+                <span>Keluar</span>
               </button>
             </div>
           )}
