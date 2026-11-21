@@ -55,3 +55,8 @@ export function formatDateTime(dateInput: string | Date): string {
   }).format(date);
   return `${dateStr}, ${timeStr} WIB`;
 }
+
+/** Rupiah without a space, as written on the public site: Rp17.000 */
+export function formatRupiahCompact(amount: number): string {
+  return `Rp${amount.toLocaleString("id-ID")}`;
+}

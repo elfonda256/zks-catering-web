@@ -5,6 +5,7 @@ import { writeFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import { prisma } from "@/lib/prisma";
 import { hashAccessToken } from "@/lib/order-logic";
+import { getAmountDue } from "./payment-due";
 import type { PaymentType } from "@/generated/prisma/enums";
 
 export interface SubmitPaymentProofState {
@@ -26,15 +27,23 @@ export async function submitPaymentProofAction(
     const tokenHash = hashAccessToken(rawToken);
     const order = await prisma.order.findUnique({
       where: { accessTokenHash: tokenHash },
+      include: { payments: { select: { status: true, amount: true } } },
     });
 
     if (!order) {
       return { error: "Pesanan tidak ditemukan di sistem." };
     }
 
-    if (order.status !== "CONFIRMED_AWAITING_PAYMENT" && order.status !== "DP_PAID") {
+    const due = getAmountDue(order);
+    if (!due) {
       return {
-        error: `Pesanan saat ini berstatus ${order.status}. Bukti pembayaran hanya dapat diunggah untuk pesanan yang menunggu pembayaran.`,
+        error: "Pesanan ini sedang tidak menunggu pembayaran. Muat ulang halaman.",
+      };
+    }
+
+    if (order.payments.some((p) => p.status === "PENDING")) {
+      return {
+        error: "Bukti bayar sebelumnya masih diverifikasi admin. Tunggu sebentar, lalu muat ulang halaman.",
       };
     }
 
@@ -53,7 +62,9 @@ export async function submitPaymentProofAction(
     }
 
     if (!file || file.size === 0) {
-      return { error: "Berkas foto / tangkapan layar bukti transfer wajib diunggah." };
+      return {
+        error: "Berkas foto / tangkapan layar bukti transfer wajib diunggah.",
+      };
     }
 
     if (file.size > 5 * 1024 * 1024) {
@@ -62,7 +73,9 @@ export async function submitPaymentProofAction(
 
     const allowedMime = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
     if (!allowedMime.includes(file.type)) {
-      return { error: "Format berkas tidak valid. Harap unggah gambar JPG, PNG, atau WebP." };
+      return {
+        error: "Format berkas tidak valid. Harap unggah gambar JPG, PNG, atau WebP.",
+      };
     }
 
     const arrayBuffer = await file.arrayBuffer();
@@ -93,35 +106,50 @@ export async function submitPaymentProofAction(
       }
     }
 
-    const paymentType: PaymentType =
-      paymentTypeInput === "DP" && order.dpAmount ? "DP" : "FULL";
+    const { paymentType, amount } =
+      due.kind === "settlement"
+        ? { paymentType: "SETTLEMENT" as PaymentType, amount: due.remaining }
+        : paymentTypeInput === "DP" && due.dpAmount
+          ? { paymentType: "DP" as PaymentType, amount: due.dpAmount }
+          : { paymentType: "FULL" as PaymentType, amount: due.totalAmount };
 
-    const amount =
-      paymentType === "DP"
-        ? order.dpAmount || order.totalAmount || order.subtotal
-        : order.totalAmount || order.subtotal;
+    // Simpan record Payment PENDING. Baris pesanan dikunci agar dua kiriman bersamaan
+    // tidak menghasilkan dua bukti yang menunggu verifikasi.
+    const created = await prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM "Order" WHERE id = ${order.id} FOR UPDATE`;
+      const pending = await tx.payment.count({
+        where: { orderId: order.id, status: "PENDING" },
+      });
+      if (pending > 0) return false;
 
-    // Simpan record Payment dengan status PENDING
-    await prisma.payment.create({
-      data: {
-        orderId: order.id,
-        paymentRef: `${order.orderCode}-${paymentType}-${Date.now()}`,
-        paymentType,
-        amount: amount || order.subtotal,
-        status: "PENDING",
-        paymentChannel: senderBank,
-        paymentUrl,
-        gatewayName: "MANUAL_BANK_TRANSFER",
-        providerTransactionId: `manual-proof-${Date.now()}`,
-        maskedResponse: JSON.stringify({
-          senderBank,
-          senderName,
-          customerNotes: customerNotes || null,
-          uploadedAt: new Date().toISOString(),
-          originalFilename: file.name,
-        }),
-      },
+      await tx.payment.create({
+        data: {
+          orderId: order.id,
+          paymentRef: `${order.orderCode}-${paymentType}-${Date.now()}`,
+          paymentType,
+          amount,
+          status: "PENDING",
+          paymentChannel: senderBank,
+          paymentUrl,
+          gatewayName: "MANUAL_BANK_TRANSFER",
+          providerTransactionId: `manual-proof-${Date.now()}`,
+          maskedResponse: JSON.stringify({
+            senderBank,
+            senderName,
+            customerNotes: customerNotes || null,
+            uploadedAt: new Date().toISOString(),
+            originalFilename: file.name,
+          }),
+        },
+      });
+      return true;
     });
+
+    if (!created) {
+      return {
+        error: "Bukti bayar sebelumnya masih diverifikasi admin. Tunggu sebentar, lalu muat ulang halaman.",
+      };
+    }
 
     revalidatePath(`/pesanan/${rawToken}`);
     revalidatePath("/admin/dashboard");
@@ -133,10 +161,7 @@ export async function submitPaymentProofAction(
   } catch (err: unknown) {
     console.error("Gagal memproses unggah bukti transfer:", err);
     return {
-      error:
-        err instanceof Error
-          ? err.message
-          : "Terjadi kendala saat menyimpan berkas bukti transfer.",
+      error: "Bukti transfer belum terkirim karena kendala sistem. Silakan coba lagi.",
     };
   }
 }

@@ -11,6 +11,7 @@ import {
 } from "@/lib/order-logic";
 import { MENU_PACKAGES } from "@/data/catering-data";
 import { sendWhatsAppMessage, getAppBaseUrl } from "@/lib/whatsapp";
+import { MIN_ORDER_PCS } from "@/lib/order-rules";
 
 export interface CreateOrderState {
   error?: string;
@@ -66,12 +67,12 @@ export async function createOrderAction(
   }
 
   // 6. Validasi Paket & Kuantitas
-  if (![17000, 20000, 25000].includes(packagePrice)) {
+  if (!MENU_PACKAGES[packagePrice]) {
     return { error: "Paket katering yang dipilih tidak valid." };
   }
 
-  if (!quantity || quantity < 20) {
-    return { error: "Pemesanan katering minimal 20 porsi." };
+  if (!Number.isInteger(quantity) || quantity < MIN_ORDER_PCS) {
+    return { error: `Pemesanan katering minimal ${MIN_ORDER_PCS} porsi.` };
   }
 
   // 7. Validasi Tanggal & Jeda Pemesanan (WIB)

@@ -1,4 +1,5 @@
 import { createHash, randomBytes } from "node:crypto";
+import { LARGE_ORDER_PCS, minLeadDays } from "./order-rules";
 
 /**
  * Konversi tanggal ke tanggal kalender zona waktu Asia/Jakarta (WIB, UTC+7)
@@ -43,7 +44,7 @@ export function validateOrderLeadTime(
   nowDate: Date = new Date()
 ): DateValidationResult {
   const diffDays = getCalendarDayDifferenceWib(eventDate, nowDate);
-  const minDaysRequired = totalPcs >= 500 ? 3 : 1;
+  const minDaysRequired = minLeadDays(totalPcs);
 
   if (diffDays < minDaysRequired) {
     if (minDaysRequired === 3) {
@@ -51,14 +52,14 @@ export function validateOrderLeadTime(
         valid: false,
         minDaysRequired,
         actualDaysDiff: diffDays,
-        error: "Pemesanan katering volume besar (≥ 500 porsi) wajib diajukan paling lambat H-3 sebelum tanggal acara.",
+        error: `Pesanan ${LARGE_ORDER_PCS} porsi atau lebih perlu diajukan paling lambat H-3 sebelum tanggal acara.`,
       };
     }
     return {
       valid: false,
       minDaysRequired,
       actualDaysDiff: diffDays,
-      error: "Pemesanan katering (< 500 porsi) wajib diajukan paling lambat H-1 sebelum tanggal acara.",
+      error: "Pesanan perlu diajukan paling lambat H-1 sebelum tanggal acara.",
     };
   }
 
