@@ -1,33 +1,35 @@
 "use client";
 
-import { useState, useEffect, useActionState, type ReactNode } from "react";
+import { useState, useEffect, useActionState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createOrderAction, type CreateOrderState } from "./actions";
 import { MENU_PACKAGES } from "@/data/catering-data";
-import { ArrowUpRight } from "@/components/icons";
-import { HEADING } from "@/components/site/ui";
 import { FIELD_HINT, FIELD_INPUT, FIELD_LABEL, REQUIRED_MARK } from "@/components/site/form";
+import { earliestEventDateWib } from "@/lib/order-rules";
+import { FormStep } from "./FormStep";
+import { PackagePicker } from "./PackagePicker";
+import { QuantityField } from "./QuantityField";
+import { OrderSummary } from "./OrderSummary";
+import { PRIMARY_BUTTON, formatRupiah } from "./order-form-ui";
 
-const PACKAGE_PRICES = Object.values(MENU_PACKAGES).map((pkg) => pkg.price);
-const DEFAULT_PRICE = 17000;
-
-const formatRupiah = (value: number) => `Rp${value.toLocaleString("id-ID")}`;
-
-function FormSection({ step, title, hint, children }: { step: string; title: string; hint: string; children: ReactNode }) {
-  return (
-    <section className="space-y-6 border-t border-white/15 pt-10">
-      <div>
-        <span className="font-heading text-sm font-bold uppercase text-[#E07A35]">{step}</span>
-        <h2 className={`${HEADING} mt-1 text-[1.75rem] sm:text-[2rem]`}>{title}</h2>
-        <p className={`${FIELD_HINT} mt-2`}>{hint}</p>
-      </div>
-      {children}
-    </section>
-  );
-}
+const PACKAGES = Object.values(MENU_PACKAGES);
+const DEFAULT_QUANTITY = 50;
+const DEFAULT_TIME = "11:30";
 
 function Required() {
   return <span className={REQUIRED_MARK}> *</span>;
+}
+
+function formatSchedule(date: string, time: string): string | null {
+  if (!date) return null;
+  const [year, month, day] = date.split("-").map(Number);
+  const label = new Intl.DateTimeFormat("id-ID", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    timeZone: "UTC",
+  }).format(new Date(Date.UTC(year, month - 1, day)));
+  return time ? `${label}, ${time} WIB` : label;
 }
 
 export default function OrderFormClient() {
@@ -35,15 +37,18 @@ export default function OrderFormClient() {
   const searchParams = useSearchParams();
   const requestedPrice = Number(searchParams.get("paket"));
 
-  // The selected price only drives the on-screen estimate; the server recomputes every total.
+  // The selection only drives the on-screen estimate; the server recomputes every total.
   const [packagePrice, setPackagePrice] = useState<number>(
-    PACKAGE_PRICES.includes(requestedPrice) ? requestedPrice : DEFAULT_PRICE
+    MENU_PACKAGES[requestedPrice] ? requestedPrice : PACKAGES[0].price
   );
-  const [quantity, setQuantity] = useState<number>(50);
+  const [quantity, setQuantity] = useState<number>(DEFAULT_QUANTITY);
+  const [eventDate, setEventDate] = useState("");
+  const [eventTime, setEventTime] = useState(DEFAULT_TIME);
   const [formLoadedAt] = useState<number>(() => Date.now());
 
-  const initialState: CreateOrderState = {};
-  const [state, formAction, isPending] = useActionState(createOrderAction, initialState);
+  const [state, formAction, isActionPending] = useActionState<CreateOrderState, FormData>(createOrderAction, {});
+  const [isTransitionPending, startTransition] = useTransition();
+  const isPending = isActionPending || isTransitionPending;
 
   useEffect(() => {
     if (state.success && state.redirectUrl) {
@@ -51,250 +56,203 @@ export default function OrderFormClient() {
     }
   }, [state.success, state.redirectUrl, router]);
 
-  const subtotalEstimate = packagePrice * (quantity || 0);
-  const isLargeOrder = quantity >= 500;
-
-  // Tanggal minimal untuk input datepicker (besok)
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const minDateStr = tomorrow.toISOString().split("T")[0];
+  const selectedPackage = MENU_PACKAGES[packagePrice];
+  const minDate = earliestEventDateWib(quantity);
+  const dateTooEarly = eventDate !== "" && eventDate < minDate;
+  const subtotal = selectedPackage.price * (quantity || 0);
 
   return (
-    <form action={formAction} className="space-y-10">
-      {/* Hidden Security Fields */}
+    <form
+      onSubmit={(e) => {
+        // Submit manually so a server error does not reset what the customer already typed.
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        startTransition(() => formAction(formData));
+      }}
+    >
       <input type="hidden" name="formLoadedAt" value={formLoadedAt} />
       <input type="text" name="hp_website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
 
-      {state.error && (
-        <div role="alert" className="rounded-[10px] border-l-4 border-red-500 bg-red-500/10 p-4 text-[15px] text-red-100">
-          <span className="font-heading font-bold uppercase">Perhatian: </span>
-          {state.error}
-        </div>
-      )}
-
-      <FormSection
-        step="01 / Paket & kuantitas"
-        title="Pilih paket dan jumlah porsi"
-        hint="Pilih paket sesuai anggaran dan tentukan total porsi (minimal 20 porsi)."
-      >
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {Object.values(MENU_PACKAGES).map((pkg) => {
-            const isSelected = packagePrice === pkg.price;
-            return (
-              <label
-                key={pkg.id}
-                className={`block cursor-pointer rounded-[10px] border-2 p-6 transition-colors ${
-                  isSelected ? "border-[#C85A17] bg-[#C85A17]/15" : "border-white/15 bg-[#232A2E] hover:border-white/40"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="packagePrice"
-                  value={pkg.price}
-                  checked={isSelected}
-                  onChange={() => setPackagePrice(pkg.price)}
-                  className="sr-only"
-                />
-                <span className="block font-heading text-lg font-extrabold uppercase leading-tight">{pkg.name}</span>
-                <span className={`${HEADING} mt-3 block text-3xl text-[#E07A35]`}>
-                  {formatRupiah(pkg.price)}
-                  <span className="ml-1 font-text text-sm font-medium normal-case text-white/60">/ porsi</span>
-                </span>
-                <span className="mt-3 block text-sm leading-relaxed text-white/70 line-clamp-3">{pkg.itemsSummary}</span>
-              </label>
-            );
-          })}
-        </div>
-
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
-          <div className="space-y-2">
-            <label htmlFor="quantity" className={FIELD_LABEL}>
-              Jumlah porsi (minimal 20)
-              <Required />
-            </label>
-            <input
-              id="quantity"
-              name="quantity"
-              type="number"
-              min={20}
-              step={1}
-              required
-              value={quantity || ""}
-              onChange={(e) => setQuantity(Number(e.target.value))}
+      <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-16">
+        <div className="space-y-10">
+          <FormStep number={1} title="Pilih paket" hint="Harga per porsi, sudah termasuk nasi, lauk, sayur, dan buah.">
+            <PackagePicker
+              packages={PACKAGES}
+              selectedPrice={packagePrice}
+              onSelect={setPackagePrice}
               disabled={isPending}
-              className={FIELD_INPUT}
-              placeholder="50"
             />
-            <p className={FIELD_HINT}>
-              {isLargeOrder ? (
-                <span className="font-medium text-[#E07A35]">
-                  Pesanan skala besar (≥ 500 porsi) perlu dipesan minimal H-3 sebelum acara.
-                </span>
-              ) : (
-                <span>Pesanan reguler (&lt; 500 porsi) minimal H-1 sebelum acara.</span>
-              )}
+          </FormStep>
+
+          <FormStep number={2} title="Jumlah porsi">
+            <QuantityField value={quantity} onChange={setQuantity} disabled={isPending} />
+          </FormStep>
+
+          <FormStep number={3} title="Jadwal & alamat" hint="Waktu dalam WIB. Armada melayani shift pagi, siang, dan malam.">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div className="space-y-2">
+                <label htmlFor="eventDate" className={FIELD_LABEL}>
+                  Tanggal acara
+                  <Required />
+                </label>
+                <input
+                  id="eventDate"
+                  name="eventDate"
+                  type="date"
+                  min={minDate}
+                  required
+                  value={eventDate}
+                  onChange={(e) => setEventDate(e.target.value)}
+                  disabled={isPending}
+                  aria-invalid={dateTooEarly}
+                  aria-describedby="eventDate-hint"
+                  className={FIELD_INPUT}
+                />
+                <p id="eventDate-hint" className={dateTooEarly ? "text-sm font-medium text-red-300" : FIELD_HINT}>
+                  {dateTooEarly
+                    ? `Untuk ${quantity} porsi, tanggal paling cepat ${formatSchedule(minDate, "")}.`
+                    : `Paling cepat ${formatSchedule(minDate, "")}.`}
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="eventTime" className={FIELD_LABEL}>
+                  Jam tiba di lokasi
+                  <Required />
+                </label>
+                <input
+                  id="eventTime"
+                  name="eventTime"
+                  type="time"
+                  required
+                  value={eventTime}
+                  onChange={(e) => setEventTime(e.target.value)}
+                  disabled={isPending}
+                  className={FIELD_INPUT}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="customerAddress" className={FIELD_LABEL}>
+                Alamat pengantaran
+                <Required />
+              </label>
+              <textarea
+                id="customerAddress"
+                name="customerAddress"
+                rows={3}
+                required
+                minLength={10}
+                autoComplete="street-address"
+                disabled={isPending}
+                className={FIELD_INPUT}
+                placeholder="Nama gedung atau pabrik, jalan, blok, dan kawasan (KIIC, Suryacipta, KIM, BIC)"
+              />
+              <p className={FIELD_HINT}>Area layanan Karawang dan sekitarnya.</p>
+            </div>
+          </FormStep>
+
+          <FormStep number={4} title="Kontak pemesan" hint="Status pesanan dan tagihan dikirim ke nomor WhatsApp ini.">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div className="space-y-2">
+                <label htmlFor="customerName" className={FIELD_LABEL}>
+                  Nama pemesan atau perusahaan
+                  <Required />
+                </label>
+                <input
+                  id="customerName"
+                  name="customerName"
+                  type="text"
+                  required
+                  minLength={3}
+                  autoComplete="organization"
+                  disabled={isPending}
+                  className={FIELD_INPUT}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="customerPhone" className={FIELD_LABEL}>
+                  Nomor WhatsApp
+                  <Required />
+                </label>
+                <input
+                  id="customerPhone"
+                  name="customerPhone"
+                  type="tel"
+                  inputMode="tel"
+                  required
+                  autoComplete="tel"
+                  disabled={isPending}
+                  className={FIELD_INPUT}
+                  placeholder="0812 3456 7890"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="customerEmail" className={FIELD_LABEL}>
+                  Email (opsional)
+                </label>
+                <input
+                  id="customerEmail"
+                  name="customerEmail"
+                  type="email"
+                  autoComplete="email"
+                  disabled={isPending}
+                  className={FIELD_INPUT}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="notes" className={FIELD_LABEL}>
+                  Catatan untuk dapur (opsional)
+                </label>
+                <input
+                  id="notes"
+                  name="notes"
+                  type="text"
+                  disabled={isPending}
+                  className={FIELD_INPUT}
+                  placeholder="Contoh: sambal dipisah"
+                />
+              </div>
+            </div>
+          </FormStep>
+        </div>
+
+        <div className="lg:sticky lg:top-24 lg:self-start">
+          <OrderSummary
+            pkg={selectedPackage}
+            quantity={quantity}
+            scheduleLabel={formatSchedule(eventDate, eventTime)}
+            error={state.error}
+            isPending={isPending}
+          />
+        </div>
+      </div>
+
+      {/* Mobile order bar: total and the main action stay in reach, as in food-ordering apps. */}
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[#232A2E]/95 px-6 py-4 backdrop-blur lg:hidden">
+        {state.error && (
+          <p role="alert" className="mx-auto mb-3 max-w-xl text-sm font-medium text-red-300">
+            {state.error}
+          </p>
+        )}
+        <div className="mx-auto flex max-w-xl items-center justify-between gap-4">
+          <div className="min-w-0">
+            <p className="text-sm text-white/60">
+              {quantity || 0} porsi · {selectedPackage.name}
+            </p>
+            <p className="font-heading text-xl font-extrabold tabular-nums">
+              {formatRupiah(subtotal)} <span className="font-text text-sm font-medium text-white/60">+ ongkir</span>
             </p>
           </div>
-
-          <div className="rounded-[10px] bg-[#232A2E] p-6">
-            <span className="block font-heading text-sm font-bold uppercase text-white/70">Estimasi subtotal makanan</span>
-            <span className={`${HEADING} mt-2 block text-4xl`}>{formatRupiah(subtotalEstimate)}</span>
-            <span className={`${FIELD_HINT} mt-2 block`}>
-              Ongkos kirim ditentukan admin setelah verifikasi rute di Karawang.
-            </span>
-          </div>
-        </div>
-      </FormSection>
-
-      <FormSection
-        step="02 / Jadwal pengantaran"
-        title="Tanggal dan jam tiba"
-        hint="Waktu pengantaran dalam WIB, disesuaikan dengan pergantian shift karyawan."
-      >
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
-          <div className="space-y-2">
-            <label htmlFor="eventDate" className={FIELD_LABEL}>
-              Tanggal acara
-              <Required />
-            </label>
-            <input id="eventDate" name="eventDate" type="date" min={minDateStr} required disabled={isPending} className={FIELD_INPUT} />
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="eventTime" className={FIELD_LABEL}>
-              Jam tiba di lokasi (WIB)
-              <Required />
-            </label>
-            <input
-              id="eventTime"
-              name="eventTime"
-              type="time"
-              defaultValue="11:30"
-              required
-              disabled={isPending}
-              className={FIELD_INPUT}
-            />
-            <p className={FIELD_HINT}>Armada melayani shift pagi, siang, dan lembur malam.</p>
-          </div>
-        </div>
-      </FormSection>
-
-      <FormSection
-        step="03 / Data PIC & lokasi"
-        title="Data pemesan dan alamat"
-        hint="Kontak PIC untuk konfirmasi status pesanan dan rute armada."
-      >
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
-          <div className="space-y-2">
-            <label htmlFor="customerName" className={FIELD_LABEL}>
-              Nama pemesan / perusahaan
-              <Required />
-            </label>
-            <input
-              id="customerName"
-              name="customerName"
-              type="text"
-              required
-              disabled={isPending}
-              className={FIELD_INPUT}
-              placeholder="PT. Nama Perusahaan / Nama Pemesan"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="customerPhone" className={FIELD_LABEL}>
-              Nomor WhatsApp PIC
-              <Required />
-            </label>
-            <input
-              id="customerPhone"
-              name="customerPhone"
-              type="tel"
-              required
-              disabled={isPending}
-              className={FIELD_INPUT}
-              placeholder="0812xxxxxxxx"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="customerEmail" className={FIELD_LABEL}>
-              Email kantor (opsional)
-            </label>
-            <input
-              id="customerEmail"
-              name="customerEmail"
-              type="email"
-              disabled={isPending}
-              className={FIELD_INPUT}
-              placeholder="procurement@company.co.id"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="notes" className={FIELD_LABEL}>
-              Catatan menu / permintaan khusus
-            </label>
-            <input
-              id="notes"
-              name="notes"
-              type="text"
-              disabled={isPending}
-              className={FIELD_INPUT}
-              placeholder="Contoh: pisahkan sambal, variasi ayam kecap"
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <label htmlFor="customerAddress" className={FIELD_LABEL}>
-            Alamat lengkap pengantaran di Karawang
-            <Required />
-          </label>
-          <textarea
-            id="customerAddress"
-            name="customerAddress"
-            rows={3}
-            required
-            disabled={isPending}
-            className={FIELD_INPUT}
-            placeholder="Gedung/pabrik, nama jalan, blok, dan kawasan industri (KIIC, Suryacipta, KIM, BIC, dll.)."
-          />
-        </div>
-      </FormSection>
-
-      <section className="space-y-8 border-t border-white/15 pt-10">
-        <label className="flex cursor-pointer items-start gap-3">
-          <input
-            type="checkbox"
-            name="acceptTerms"
-            required
-            disabled={isPending}
-            className="mt-1 h-5 w-5 shrink-0 cursor-pointer accent-[#C85A17]"
-          />
-          <span className="text-[15px] leading-relaxed text-white/80">
-            Saya mengonfirmasi spesifikasi pesanan di atas sudah sesuai kebutuhan perusahaan kami dan menyetujui ketentuan
-            pemesanan PT. Zahdan Kamal Sentosa. Status awal pesanan adalah <strong className="text-white">Menunggu
-            Konfirmasi Admin</strong>, dan ongkos kirim ditetapkan setelah verifikasi rute pengantaran.
-          </span>
-        </label>
-
-        <div className="flex flex-col justify-between gap-6 rounded-[10px] bg-[#232A2E] p-6 sm:flex-row sm:items-center sm:p-8">
-          <div>
-            <span className="block font-heading text-sm font-bold uppercase text-white/70">Estimasi nilai pesanan</span>
-            <span className={`${HEADING} mt-1 block text-4xl`}>{formatRupiah(subtotalEstimate)}</span>
-          </div>
-
-          <button
-            type="submit"
-            disabled={isPending}
-            className="inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-full bg-[#C85A17] px-8 font-heading text-base font-bold uppercase text-white transition-colors hover:bg-[#A4460E] active:scale-[0.98] disabled:opacity-50"
-          >
-            <span>{isPending ? "Memproses data…" : "Kirim pengajuan pesanan"}</span>
-            <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+          <button type="submit" disabled={isPending} className={`${PRIMARY_BUTTON} shrink-0 px-6`}>
+            {isPending ? "Mengirim…" : "Pesan"}
           </button>
         </div>
-      </section>
+      </div>
     </form>
   );
 }

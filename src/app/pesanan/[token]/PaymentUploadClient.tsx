@@ -1,9 +1,12 @@
 "use client";
 
-import { useState, useTransition, useActionState, useRef } from "react";
+import { useState, useTransition, useActionState } from "react";
 import { submitPaymentProofAction, type SubmitPaymentProofState } from "./actions";
 import { HEADING } from "@/components/site/ui";
 import { FIELD_HINT, FIELD_INPUT, FIELD_LABEL } from "@/components/site/form";
+import { CopyButton } from "./CopyButton";
+import type { AmountDue } from "./payment-due";
+import { formatRupiahCompact as formatRupiah } from "@/shared/utils/formatters";
 
 const SENDER_BANKS = [
   { value: "BCA", label: "BCA (Bank Central Asia)" },
@@ -23,29 +26,36 @@ const COMPANY_ACCOUNTS = [
 ];
 
 function OptionCard({
+  value,
   selected,
   onSelect,
   title,
   amount,
   description,
-  accent = false,
 }: {
+  value: "DP" | "FULL";
   selected: boolean;
   onSelect: () => void;
   title: string;
-  amount: number | null;
+  amount: number;
   description: string;
-  accent?: boolean;
 }) {
   return (
     <label
-      onClick={onSelect}
-      className={`block cursor-pointer rounded-[10px] border-2 p-5 transition-colors ${
+      className={`block cursor-pointer rounded-[10px] border-2 p-5 transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-[#E07A35] ${
         selected ? "border-[#C85A17] bg-[#C85A17]/15" : "border-white/15 bg-[#1A1F22] hover:border-white/40"
       }`}
     >
+      <input
+        type="radio"
+        name="paymentChoice"
+        value={value}
+        checked={selected}
+        onChange={onSelect}
+        className="sr-only"
+      />
       <span className="flex items-center justify-between gap-3">
-        <span className="font-heading text-sm font-bold uppercase text-white/80">{title}</span>
+        <span className="font-heading text-sm font-bold uppercase text-white/85">{title}</span>
         <span
           className={`flex h-5 w-5 items-center justify-center rounded-full border-2 ${
             selected ? "border-[#C85A17] bg-[#C85A17]" : "border-white/40"
@@ -55,9 +65,7 @@ function OptionCard({
           {selected && <span className="h-2 w-2 rounded-full bg-white" />}
         </span>
       </span>
-      <span className={`${HEADING} mt-2 block text-3xl ${accent ? "text-[#E07A35]" : ""}`}>
-        Rp{amount?.toLocaleString("id-ID")}
-      </span>
+      <span className={`${HEADING} mt-2 block text-3xl tabular-nums`}>{formatRupiah(amount)}</span>
       <span className={`${FIELD_HINT} mt-2 block leading-relaxed`}>{description}</span>
     </label>
   );
@@ -66,10 +74,9 @@ function OptionCard({
 interface PaymentUploadClientProps {
   rawToken: string;
   orderCode: string;
-  subtotal: number;
-  totalAmount: number | null;
-  dpAmount: number | null;
-  initialPaymentDueAt: string | null;
+  due: AmountDue;
+  /** ISO time of the payment deadline, or null when it has passed. */
+  dueAt: string | null;
 }
 
 function compressImage(file: File): Promise<File> {
@@ -119,20 +126,14 @@ function compressImage(file: File): Promise<File> {
   });
 }
 
-export default function PaymentUploadClient({
-  rawToken,
-  orderCode,
-  totalAmount,
-  dpAmount,
-  initialPaymentDueAt,
-}: PaymentUploadClientProps) {
-  const [selectedType, setSelectedType] = useState<"DP" | "FULL">(
-    dpAmount ? "DP" : "FULL"
-  );
+export default function PaymentUploadClient({ rawToken, orderCode, due, dueAt }: PaymentUploadClientProps) {
+  const dpAmount = due.kind === "initial" ? due.dpAmount : null;
+  const [selectedType, setSelectedType] = useState<"DP" | "FULL">(dpAmount ? "DP" : "FULL");
+  const amountToPay =
+    due.kind === "settlement" ? due.remaining : selectedType === "DP" && dpAmount ? dpAmount : due.totalAmount;
   const [filePreview, setFilePreview] = useState<string | null>(null);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const [processedFile, setProcessedFile] = useState<File | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [, startTransition] = useTransition();
 
   const boundAction = submitPaymentProofAction.bind(null, rawToken);
@@ -165,66 +166,84 @@ export default function PaymentUploadClient({
     }
   };
 
-  const formattedDueDate = initialPaymentDueAt
+  const formattedDueDate = dueAt
     ? new Intl.DateTimeFormat("id-ID", {
         dateStyle: "medium",
         timeStyle: "short",
         timeZone: "Asia/Jakarta",
-      }).format(new Date(initialPaymentDueAt))
+      }).format(new Date(dueAt))
     : null;
 
   return (
-    <div className="mt-8 space-y-8 rounded-[10px] bg-[#232A2E] p-6 sm:p-8">
-      <div className="flex flex-col justify-between gap-2 border-b border-white/10 pb-5 sm:flex-row sm:items-end">
-        <div>
-          <span className="font-heading text-sm font-bold uppercase text-[#E07A35]">Pembayaran</span>
-          <h2 className={`${HEADING} mt-1 text-[1.75rem]`}>Total tagihan sudah dikunci admin</h2>
-        </div>
-        {formattedDueDate && (
-          <span className="font-heading text-sm font-bold uppercase text-[#E07A35]">
-            Batas bayar: {formattedDueDate} WIB
-          </span>
-        )}
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {dpAmount && (
-          <OptionCard
-            selected={selectedType === "DP"}
-            onSelect={() => setSelectedType("DP")}
-            title="Opsi A · Uang muka (DP 20%)"
-            amount={dpAmount}
-            description="Mengunci kuota dapur dan armada. Pelunasan paling lambat H-1 pukul 23.59 WIB."
-          />
-        )}
-        <OptionCard
-          selected={selectedType === "FULL"}
-          onSelect={() => setSelectedType("FULL")}
-          title={dpAmount ? "Opsi B · Lunas penuh (100%)" : "Lunas penuh (100%)"}
-          amount={totalAmount}
-          description="Mencakup seluruh subtotal makanan dan ongkos kirim resmi armada."
-          accent
-        />
-      </div>
-
-      <div className="space-y-3">
-        <span className={FIELD_LABEL}>Rekening tujuan transfer</span>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {COMPANY_ACCOUNTS.map((account) => (
-            <div key={account.bank} className="rounded-[10px] border border-white/10 bg-[#1A1F22] p-4">
-              <p className="font-heading text-sm font-bold uppercase text-white/80">{account.bank}</p>
-              <p className="mt-1 font-mono text-lg font-bold tracking-wider text-white">{account.number}</p>
-              <p className={FIELD_HINT}>a.n. PT. Zahdan Kamal Sentosa</p>
-            </div>
-          ))}
-        </div>
+    <section aria-labelledby="payment-title" className="space-y-8 rounded-[10px] bg-[#232A2E] p-6 sm:p-8">
+      <div className="space-y-1">
+        <span className="font-heading text-sm font-bold uppercase text-[#E07A35]">Langkah berikutnya</span>
+        <h2 id="payment-title" className={`${HEADING} text-[1.75rem]`}>
+          {due.kind === "settlement" ? "Lunasi sisa tagihan" : "Bayar pesanan"}
+        </h2>
         <p className={FIELD_HINT}>
-          Cantumkan berita transfer: <strong className="font-mono text-white">{orderCode}</strong>
+          {formattedDueDate ? `Bayar sebelum ${formattedDueDate} WIB.` : "Mohon segera lakukan pembayaran."}
         </p>
       </div>
 
+      {due.kind === "initial" && (
+        <fieldset className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <legend className="sr-only">Pilih jenis pembayaran</legend>
+          {dpAmount !== null && dpAmount > 0 && (
+            <OptionCard
+              value="DP"
+              selected={selectedType === "DP"}
+              onSelect={() => setSelectedType("DP")}
+              title="DP 20%"
+              amount={dpAmount}
+              description="Kunci jadwal dapur sekarang, lunasi sisanya paling lambat H-1 pukul 23.59 WIB."
+            />
+          )}
+          <OptionCard
+            value="FULL"
+            selected={selectedType === "FULL"}
+            onSelect={() => setSelectedType("FULL")}
+            title="Lunas"
+            amount={due.totalAmount}
+            description="Makanan dan ongkos kirim dibayar sekaligus."
+          />
+        </fieldset>
+      )}
+
+      <div className="space-y-3">
+        <h3 className={FIELD_LABEL}>1. Transfer ke salah satu rekening</h3>
+        <ul className="divide-y divide-white/10 rounded-[10px] border border-white/10 bg-[#1A1F22]">
+          <li className="flex items-center justify-between gap-4 p-4">
+            <div>
+              <p className="text-sm text-white/60">Nominal transfer</p>
+              <p className="font-heading text-2xl font-extrabold tabular-nums text-[#E07A35]">{formatRupiah(amountToPay)}</p>
+            </div>
+            <CopyButton value={String(amountToPay)} label="nominal transfer" />
+          </li>
+          {COMPANY_ACCOUNTS.map((account) => (
+            <li key={account.bank} className="flex items-center justify-between gap-4 p-4">
+              <div>
+                <p className="text-sm text-white/60">{account.bank} · a.n. PT. Zahdan Kamal Sentosa</p>
+                <p className="font-mono text-lg font-bold tracking-wider text-white">{account.number}</p>
+              </div>
+              <CopyButton value={account.number.replace(/[^0-9]/g, "")} label={`nomor rekening ${account.bank}`} />
+            </li>
+          ))}
+          <li className="flex items-center justify-between gap-4 p-4">
+            <div>
+              <p className="text-sm text-white/60">Berita transfer</p>
+              <p className="font-mono text-lg font-bold text-white">{orderCode}</p>
+            </div>
+            <CopyButton value={orderCode} label="kode pesanan" />
+          </li>
+        </ul>
+      </div>
+
       <form
-        action={(formData) => {
+        onSubmit={(e) => {
+          // Submit manually so a server error does not reset the fields React would clear after an action.
+          e.preventDefault();
+          const formData = new FormData(e.currentTarget);
           if (processedFile) {
             formData.set("proofFile", processedFile);
           }
@@ -232,13 +251,14 @@ export default function PaymentUploadClient({
             formAction(formData);
           });
         }}
-        className="space-y-5 border-t border-white/10 pt-6"
+        className="space-y-5"
       >
-        <input type="hidden" name="paymentType" value={selectedType} />
+        <h3 className={FIELD_LABEL}>2. Kirim bukti transfer</h3>
+        <input type="hidden" name="paymentType" value={due.kind === "settlement" ? "SETTLEMENT" : selectedType} />
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <div className="space-y-2">
-            <label htmlFor="senderBank" className={FIELD_LABEL}>
+            <label htmlFor="senderBank" className="block text-sm font-medium text-white/85">
               Bank pengirim
             </label>
             <select id="senderBank" required name="senderBank" className={FIELD_INPUT} defaultValue="">
@@ -252,7 +272,7 @@ export default function PaymentUploadClient({
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="senderName" className={FIELD_LABEL}>
+            <label htmlFor="senderName" className="block text-sm font-medium text-white/85">
               Nama pemilik rekening
             </label>
             <input
@@ -267,22 +287,18 @@ export default function PaymentUploadClient({
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="proofFile" className={FIELD_LABEL}>
-            Bukti transfer (foto atau tangkapan layar)
+          <label htmlFor="proofFile" className="block text-sm font-medium text-white/85">
+            Foto atau tangkapan layar bukti transfer
           </label>
-          <div
-            onClick={() => fileInputRef.current?.click()}
-            className="cursor-pointer rounded-[10px] border-2 border-dashed border-white/25 bg-[#1A1F22] p-6 text-center transition-colors hover:border-[#E07A35]"
-          >
+          <div className="relative rounded-[10px] border-2 border-dashed border-white/25 bg-[#1A1F22] p-6 text-center transition-colors hover:border-[#E07A35] has-[:focus-visible]:border-[#E07A35]">
             <input
-              ref={fileInputRef}
               id="proofFile"
               type="file"
               required
               name="proofFile"
               accept="image/jpeg,image/png,image/webp,image/jpg"
               onChange={handleFileChange}
-              className="hidden"
+              className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
             />
 
             {filePreview ? (
@@ -293,12 +309,12 @@ export default function PaymentUploadClient({
                   alt="Pratinjau bukti transfer"
                   className="mx-auto max-h-48 rounded-[10px] object-contain"
                 />
-                <p className="text-sm font-semibold text-emerald-300">✓ {selectedFileName}</p>
-                <p className={FIELD_HINT}>Klik untuk mengganti foto</p>
+                <p className="text-sm font-semibold text-emerald-300">{selectedFileName}</p>
+                <p className={FIELD_HINT}>Ketuk untuk mengganti foto</p>
               </div>
             ) : (
               <div className="space-y-1">
-                <span className="block font-heading text-base font-bold uppercase">Klik untuk memilih foto</span>
+                <span className="block font-heading text-base font-bold uppercase">Pilih foto bukti</span>
                 <p className={FIELD_HINT}>JPG, PNG, atau WebP, maksimal 5 MB</p>
               </div>
             )}
@@ -306,8 +322,8 @@ export default function PaymentUploadClient({
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="paymentNotes" className={FIELD_LABEL}>
-            Catatan tambahan (opsional)
+          <label htmlFor="paymentNotes" className="block text-sm font-medium text-white/85">
+            Catatan (opsional)
           </label>
           <input
             id="paymentNotes"
@@ -326,18 +342,18 @@ export default function PaymentUploadClient({
 
         {state.success && (
           <div role="status" className="rounded-[10px] border-l-4 border-emerald-500 bg-emerald-500/10 p-4 text-[15px] text-emerald-100">
-            ✓ {state.message}
+            {state.message}
           </div>
         )}
 
         <button
           type="submit"
           disabled={isPending}
-          className="inline-flex min-h-12 w-full cursor-pointer items-center justify-center rounded-full bg-[#C85A17] px-8 font-heading text-base font-bold uppercase text-white transition-colors hover:bg-[#A4460E] disabled:opacity-50 sm:w-auto"
+          className="inline-flex min-h-12 w-full cursor-pointer items-center justify-center rounded-full bg-[#C85A17] px-8 font-heading text-base font-bold uppercase text-white transition-colors hover:bg-[#A4460E] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E07A35] disabled:opacity-50 sm:w-auto"
         >
-          {isPending ? "Mengunggah berkas…" : "Kirim bukti pembayaran"}
+          {isPending ? "Mengirim bukti…" : `Kirim bukti ${formatRupiah(amountToPay)}`}
         </button>
       </form>
-    </div>
+    </section>
   );
 }
