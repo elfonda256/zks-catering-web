@@ -37,6 +37,7 @@ export function Tabs({ defaultValue, value, onValueChange, className, children }
 export function TabsList({ className, children }: { className?: string; children: ReactNode }) {
   return (
     <div
+      role="tablist"
       className={cn(
         "flex flex-wrap items-center gap-1 border-b border-slate-200 pb-px bg-transparent",
         className
@@ -64,6 +65,8 @@ export function TabsTrigger({
   return (
     <button
       type="button"
+      role="tab"
+      aria-selected={isActive}
       onClick={() => ctx.setValue(value)}
       className={cn(
         "px-4 py-2.5 text-sm font-medium transition-all duration-150 ease-out select-none border-b-2 -mb-px rounded-t-[8px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 cursor-pointer",

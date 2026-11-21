@@ -9,6 +9,11 @@ import {
 } from "@/lib/order-logic";
 import type { OrderStatus } from "@/generated/prisma/enums";
 import { sendWhatsAppMessage, getAppBaseUrl } from "@/lib/whatsapp";
+import {
+  NEXT_OPERATIONAL_STATUS,
+  OPERATIONAL_STATUSES,
+  type OrderStatusValue,
+} from "@/modules/dashboard/constants";
 
 export interface AdminActionResult {
   success?: boolean;
@@ -16,6 +21,18 @@ export interface AdminActionResult {
   newRawToken?: string;
   trackingUrl?: string;
 }
+
+class StaleOrderError extends Error {}
+
+const STATUS_CHANGED_ERROR = "Status pesanan sudah berubah. Muat ulang halaman lalu coba lagi.";
+
+/** Order statuses in which a pending proof may still be approved. */
+const PAYABLE_STATUSES: readonly OrderStatusValue[] = [
+  "CONFIRMED_AWAITING_PAYMENT",
+  "DP_PAID",
+  "FULLY_PAID",
+  ...OPERATIONAL_STATUSES,
+];
 
 /**
  * Mengunci total tagihan pesanan oleh admin:
@@ -46,9 +63,7 @@ export async function lockOrderTotalAction(
     }
 
     if (order.status !== "WAITING_ADMIN_CONFIRMATION") {
-      return {
-        error: `Pesanan sudah berstatus ${order.status}, tidak dapat dikunci ulang.`,
-      };
+      return { error: STATUS_CHANGED_ERROR };
     }
 
     const now = new Date();
@@ -59,8 +74,8 @@ export async function lockOrderTotalAction(
       now
     );
 
-    await prisma.order.update({
-      where: { id: orderId },
+    const locked = await prisma.order.updateMany({
+      where: { id: orderId, status: "WAITING_ADMIN_CONFIRMATION" },
       data: {
         shippingFee,
         totalAmount: lockValues.totalAmount,
@@ -70,6 +85,10 @@ export async function lockOrderTotalAction(
         status: "CONFIRMED_AWAITING_PAYMENT",
       },
     });
+
+    if (locked.count === 0) {
+      return { error: STATUS_CHANGED_ERROR };
+    }
 
     // Kirim notifikasi WhatsApp otomatis ke pelanggan
     try {
@@ -108,12 +127,7 @@ export async function lockOrderTotalAction(
     return { success: true };
   } catch (err: unknown) {
     console.error("Gagal mengunci total pesanan oleh admin:", err);
-    return {
-      error:
-        err instanceof Error
-          ? err.message
-          : "Terjadi galat sistem saat mengunci total pesanan.",
-    };
+    return { error: "Terjadi galat sistem saat mengunci total pesanan." };
   }
 }
 
@@ -144,18 +158,23 @@ export async function rejectOrderAction(
       return { error: "Pesanan tidak ditemukan di basis data." };
     }
 
-    if (["COMPLETED", "REFUNDED"].includes(order.status)) {
-      return { error: `Pesanan berstatus ${order.status} tidak dapat ditolak.` };
+    // Penolakan hanya untuk pesanan yang belum dikonfirmasi (tanpa biaya bagi pelanggan).
+    if (order.status !== "WAITING_ADMIN_CONFIRMATION") {
+      return { error: STATUS_CHANGED_ERROR };
     }
 
-    await prisma.order.update({
-      where: { id: orderId },
+    const rejected = await prisma.order.updateMany({
+      where: { id: orderId, status: "WAITING_ADMIN_CONFIRMATION" },
       data: {
         status: "REJECTED_BY_ADMIN",
         cancellationReason: cleanReason,
         cancelledAt: new Date(),
       },
     });
+
+    if (rejected.count === 0) {
+      return { error: STATUS_CHANGED_ERROR };
+    }
 
     // Kirim notifikasi WhatsApp otomatis ke pelanggan
     try {
@@ -179,12 +198,7 @@ export async function rejectOrderAction(
     return { success: true };
   } catch (err: unknown) {
     console.error("Gagal menolak pesanan oleh admin:", err);
-    return {
-      error:
-        err instanceof Error
-          ? err.message
-          : "Terjadi kendala saat memproses penolakan pesanan.",
-    };
+    return { error: "Terjadi kendala saat memproses penolakan pesanan." };
   }
 }
 
@@ -211,12 +225,20 @@ export async function updateOrderStatusAction(
       return { error: "Pesanan tidak ditemukan di basis data." };
     }
 
-    await prisma.order.update({
-      where: { id: orderId },
+    if (NEXT_OPERATIONAL_STATUS[order.status as OrderStatusValue] !== newStatus) {
+      return { error: STATUS_CHANGED_ERROR };
+    }
+
+    const { count } = await prisma.order.updateMany({
+      where: { id: orderId, status: order.status },
       data: {
         status: newStatus,
       },
     });
+
+    if (count === 0) {
+      return { error: STATUS_CHANGED_ERROR };
+    }
 
     // Kirim notifikasi status operasional via WhatsApp jika relevan
     try {
@@ -251,12 +273,7 @@ export async function updateOrderStatusAction(
     return { success: true };
   } catch (err: unknown) {
     console.error("Gagal memperbarui status pesanan oleh admin:", err);
-    return {
-      error:
-        err instanceof Error
-          ? err.message
-          : "Terjadi kendala saat memperbarui status pesanan.",
-    };
+    return { error: "Terjadi kendala saat memperbarui status pesanan." };
   }
 }
 
@@ -319,12 +336,7 @@ export async function regenerateOrderTokenAction(
     };
   } catch (err: unknown) {
     console.error("Gagal membuat ulang token pesanan:", err);
-    return {
-      error:
-        err instanceof Error
-          ? err.message
-          : "Terjadi kendala saat membuat ulang token pesanan.",
-    };
+    return { error: "Terjadi kendala saat membuat ulang token pesanan." };
   }
 }
 
@@ -347,6 +359,7 @@ export async function approvePaymentAction(
             customerName: true,
             customerPhone: true,
             orderCode: true,
+            status: true,
           },
         },
       },
@@ -356,30 +369,56 @@ export async function approvePaymentAction(
       return { error: "Data pembayaran tidak ditemukan." };
     }
 
-    const newOrderStatus = payment.paymentType === "DP" ? "DP_PAID" : "FULLY_PAID";
+    if (payment.status !== "PENDING") {
+      return { error: "Bukti bayar ini sudah diproses. Muat ulang halaman." };
+    }
 
-    await prisma.$transaction(async (tx) => {
-      await tx.payment.update({
-        where: { id: paymentId },
+    const currentStatus = payment.order.status as OrderStatusValue;
+    if (!PAYABLE_STATUSES.includes(currentStatus)) {
+      return { error: "Pesanan ini sudah dibatalkan atau kedaluwarsa, pembayaran tidak dapat disetujui." };
+    }
+
+    // Status hanya maju: pelunasan untuk pesanan yang sudah di dapur, atau DP pada pesanan
+    // yang sudah lunas, tidak memundurkan status pesanan.
+    const keepStatus =
+      OPERATIONAL_STATUSES.includes(currentStatus) ||
+      currentStatus === "FULLY_PAID" ||
+      (currentStatus === "DP_PAID" && payment.paymentType === "DP");
+    const newOrderStatus: OrderStatusValue = keepStatus
+      ? currentStatus
+      : payment.paymentType === "DP"
+        ? "DP_PAID"
+        : "FULLY_PAID";
+
+    const applied = await prisma.$transaction(async (tx) => {
+      const settled = await tx.payment.updateMany({
+        where: { id: paymentId, status: "PENDING" },
         data: {
           status: "SETTLED",
           settledAt: new Date(),
         },
       });
+      if (settled.count === 0) return false;
 
-      await tx.order.update({
-        where: { id: orderId },
-        data: {
-          status: newOrderStatus,
-        },
+      const moved = await tx.order.updateMany({
+        where: { id: orderId, status: currentStatus },
+        data: { status: newOrderStatus },
       });
+      if (moved.count === 0) {
+        throw new StaleOrderError();
+      }
+      return true;
     });
+
+    if (!applied) {
+      return { error: "Bukti bayar ini sudah diproses. Muat ulang halaman." };
+    }
 
     // Kirim notifikasi WhatsApp otomatis ke pelanggan bahwa pembayaran diterima
     if (payment.order) {
       try {
         const paymentTypeLabel = payment.paymentType === "DP" ? "Uang Muka (DP 20%)" : "Pelunasan Penuh";
-        const statusLabel = newOrderStatus === "DP_PAID" ? "DP Terkonfirmasi (Jadwal Terkunci)" : "Lunas Terverifikasi";
+        const statusLabel = payment.paymentType === "DP" ? "DP Terkonfirmasi (Jadwal Terkunci)" : "Lunas Terverifikasi";
         const waText =
           `*PT. ZAHDAN KAMAL SENTOSA*\n` +
           `_Pembayaran Berhasil Diverifikasi_\n\n` +
@@ -404,13 +443,11 @@ export async function approvePaymentAction(
     revalidatePath("/admin/dashboard");
     return { success: true };
   } catch (err: unknown) {
+    if (err instanceof StaleOrderError) {
+      return { error: STATUS_CHANGED_ERROR };
+    }
     console.error("Gagal menyetujui pembayaran:", err);
-    return {
-      error:
-        err instanceof Error
-          ? err.message
-          : "Terjadi kendala saat memverifikasi pembayaran.",
-    };
+    return { error: "Terjadi kendala saat memverifikasi pembayaran." };
   }
 }
 
@@ -442,16 +479,25 @@ export async function rejectPaymentAction(
       return { error: "Data pembayaran tidak ditemukan." };
     }
 
-    await prisma.payment.update({
-      where: { id: paymentId },
+    const cleanReason = reason.trim();
+    if (cleanReason.length < 5) {
+      return { error: "Tulis alasan minimal 5 karakter." };
+    }
+
+    const rejected = await prisma.payment.updateMany({
+      where: { id: paymentId, status: "PENDING" },
       data: {
         status: "FAILED",
         maskedResponse: JSON.stringify({
-          rejectedReason: reason,
+          rejectedReason: cleanReason,
           rejectedAt: new Date().toISOString(),
         }),
       },
     });
+
+    if (rejected.count === 0) {
+      return { error: "Bukti bayar ini sudah diproses. Muat ulang halaman." };
+    }
 
     // Kirim notifikasi WhatsApp otomatis ke pelanggan tentang alasan penolakan
     if (payment.order) {
@@ -461,7 +507,7 @@ export async function rejectPaymentAction(
           `_Pemberitahuan Verifikasi Pembayaran_\n\n` +
           `Halo Bpk/Ibu *${payment.order.customerName}*,\n` +
           `Bukti pembayaran yang Anda unggah untuk pesanan *${payment.order.orderCode}* belum dapat kami verifikasi.\n\n` +
-          `⚠️ *Catatan Admin:* ${reason.trim()}\n\n` +
+          `⚠️ *Catatan Admin:* ${cleanReason}\n\n` +
           `Mohon periksa kembali bukti transfer Anda dan unggah ulang bukti yang valid melalui tautan pelacakan pesanan Anda, atau hubungi admin kami jika ada kendala.`;
 
         await sendWhatsAppMessage({
@@ -477,12 +523,7 @@ export async function rejectPaymentAction(
     return { success: true };
   } catch (err: unknown) {
     console.error("Gagal menolak pembayaran:", err);
-    return {
-      error:
-        err instanceof Error
-          ? err.message
-          : "Terjadi kendala saat menolak bukti pembayaran.",
-    };
+    return { error: "Terjadi kendala saat menolak bukti pembayaran." };
   }
 }
 

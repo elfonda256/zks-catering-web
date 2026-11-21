@@ -336,8 +336,7 @@ export function ErpSidebar({
         <div className="p-2.5 border-t border-slate-200 bg-slate-50/60 flex items-center justify-between text-[11px] text-slate-400">
           {!isCollapsed && (
             <div className="flex items-center gap-1.5 pl-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              <span className="font-mono text-[10px] text-slate-500">ZKS ERP v2.5</span>
+              <span className="text-[11px] text-slate-500">ZKS Admin</span>
             </div>
           )}
           <button
@@ -347,7 +346,8 @@ export function ErpSidebar({
               "p-1.5 rounded-[8px] text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition-colors cursor-pointer",
               isCollapsed && "mx-auto"
             )}
-            title={isCollapsed ? "Buka Sidebar (⌘B)" : "Perkecil Sidebar (⌘B)"}
+            title={isCollapsed ? "Buka sidebar" : "Perkecil sidebar"}
+            aria-label={isCollapsed ? "Buka sidebar" : "Perkecil sidebar"}
           >
             <svg
               className={cn(
@@ -374,14 +374,12 @@ export function ErpSidebar({
           <div className="relative w-72 max-w-[85vw] bg-white h-full shadow-2xl flex flex-col z-10 animate-enterprise-drawer">
             <div className="flex items-center justify-between px-4 py-3.5 border-b border-slate-200">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-[6px] bg-[#1B4332] text-white flex items-center justify-center font-bold text-xs">
-                  Z
-                </div>
-                <span className="font-semibold text-slate-900 text-[14px]">ZKS ERP Navigation</span>
+                <span className="font-semibold text-slate-900 text-[14px]">Menu admin</span>
               </div>
               <button
                 type="button"
                 onClick={onCloseMobile}
+                aria-label="Tutup menu"
                 className="p-1.5 rounded-[8px] text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
               >
                 ✕

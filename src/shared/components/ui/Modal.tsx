@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, ReactNode, HTMLAttributes } from "react";
+import React, { useEffect, useId, ReactNode, HTMLAttributes } from "react";
 import { cn } from "@/shared/utils/cn";
 
 export interface ModalProps {
@@ -22,6 +22,8 @@ export function Modal({
   footer,
   maxWidth = "xl",
 }: ModalProps) {
+  const titleId = useId();
+
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
@@ -51,6 +53,7 @@ export function Modal({
     <div
       role="dialog"
       aria-modal="true"
+      aria-labelledby={titleId}
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-enterprise-fade-in"
     >
       <div
@@ -68,12 +71,13 @@ export function Modal({
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 bg-white shrink-0">
           <div>
-            <h3 className="text-[18px] font-semibold text-slate-900 tracking-tight">{title}</h3>
+            <h3 id={titleId} className="text-[18px] font-semibold text-slate-900 tracking-tight">{title}</h3>
             {subtitle && (
               <p className="text-[12px] text-slate-500 mt-0.5">{subtitle}</p>
             )}
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="w-8 h-8 rounded-[8px] flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
             aria-label="Tutup"

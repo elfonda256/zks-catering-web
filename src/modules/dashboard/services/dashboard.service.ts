@@ -1,38 +1,35 @@
 import type { AdminOrderData } from "../types";
+import { ORDER_TAB_STATUSES, type OrderStatusValue, type OrderTab } from "../constants";
 
-export class DashboardService {
-  /**
-   * Filter orders by status and search keyword.
-   */
-  static filterOrders(orders: AdminOrderData[], filterStatus: string, searchKeyword: string): AdminOrderData[] {
-    return orders.filter((order) => {
-      const matchesStatus = filterStatus === "ALL" || order.status === filterStatus;
-      const q = searchKeyword.toLowerCase().trim();
-      const matchesSearch =
-        !q ||
-        order.orderCode.toLowerCase().includes(q) ||
-        order.customerName.toLowerCase().includes(q) ||
-        order.customerPhone.includes(q);
-      return matchesStatus && matchesSearch;
-    });
-  }
-
-  /**
-   * Calculate summary metrics from an order list.
-   */
-  static calculateMetrics(orders: AdminOrderData[]) {
-    const totalOrders = orders.length;
-    const submittedCount = orders.filter((o) => o.status === "SUBMITTED").length;
-    const confirmedCount = orders.filter((o) => o.status === "AWAITING_PAYMENT" || o.status === "PAID_DP" || o.status === "PAID_FULL").length;
-    const totalRevenue = orders
-      .filter((o) => o.status === "PAID_DP" || o.status === "PAID_FULL")
-      .reduce((acc, curr) => acc + (curr.totalAmount || 0), 0);
-
-    return {
-      totalOrders,
-      submittedCount,
-      confirmedCount,
-      totalRevenue,
-    };
-  }
+function hasPendingProof(order: AdminOrderData): boolean {
+  return order.payments.some((p) => p.status === "PENDING");
 }
+
+function matchesTab(order: AdminOrderData, tab: OrderTab): boolean {
+  if (tab === "all") return true;
+  if (tab === "proof") return hasPendingProof(order);
+  return ORDER_TAB_STATUSES[tab].includes(order.status as OrderStatusValue);
+}
+
+function matchesSearch(order: AdminOrderData, query: string): boolean {
+  const q = query.toLowerCase().trim();
+  if (!q) return true;
+  return [order.orderCode, order.customerName, order.customerPhone, order.customerAddress].some((field) =>
+    field.toLowerCase().includes(q)
+  );
+}
+
+export const DashboardService = {
+  hasPendingProof,
+
+  filterOrders(orders: AdminOrderData[], tab: OrderTab, query: string): AdminOrderData[] {
+    return orders.filter((order) => matchesTab(order, tab) && matchesSearch(order, query));
+  },
+
+  countByTab(orders: AdminOrderData[]): Record<OrderTab, number> {
+    const tabs: OrderTab[] = ["proof", "shipping", "payment", "active", "archived", "all"];
+    return Object.fromEntries(
+      tabs.map((tab) => [tab, orders.filter((order) => matchesTab(order, tab)).length])
+    ) as Record<OrderTab, number>;
+  },
+};
