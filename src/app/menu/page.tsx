@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function MenuPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-[#1A1F22] font-text text-white">
+    <div className="flex min-h-screen flex-col bg-ink font-text text-white">
       <Navbar overlay />
 
       <main id="main-content" className="flex-1">
@@ -28,8 +28,8 @@ export default function MenuPage() {
             sizes="100vw"
             className="-z-20 object-cover"
           />
-          <div className="absolute inset-0 -z-10 bg-[#1A1F22]/50" aria-hidden="true" />
-          <div className="absolute inset-x-0 bottom-0 -z-10 h-2/3 bg-gradient-to-t from-[#1A1F22] to-transparent" aria-hidden="true" />
+          <div className="absolute inset-0 -z-10 bg-ink/50" aria-hidden="true" />
+          <div className="absolute inset-x-0 bottom-0 -z-10 h-2/3 bg-gradient-to-t from-ink to-transparent" aria-hidden="true" />
 
           <div className={`${CONTAINER} pb-16 lg:pb-20`}>
             <Eyebrow>Rotasi Senin sampai Sabtu</Eyebrow>

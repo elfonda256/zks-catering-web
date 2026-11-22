@@ -36,8 +36,8 @@ function StockBar({ item }: { item: Ingredient }) {
   const percent = Math.min(100, (item.stock / (item.minStock * 2)) * 100);
   const low = stockLevel(item) !== "aman";
   return (
-    <div className="h-1.5 w-24 rounded-full bg-slate-100" aria-hidden="true">
-      <div className={`h-1.5 rounded-full ${low ? "bg-amber-500" : "bg-slate-700"}`} style={{ width: `${percent}%` }} />
+    <div className="h-1.5 w-24 rounded-full bg-stone-100" aria-hidden="true">
+      <div className={`h-1.5 rounded-full ${low ? "bg-amber-500" : "bg-stone-700"}`} style={{ width: `${percent}%` }} />
     </div>
   );
 }
@@ -50,8 +50,8 @@ const COLUMNS: DataColumn<Ingredient>[] = [
     mobile: "title",
     cell: (item) => (
       <>
-        <span className="font-medium text-slate-900">{item.name}</span>
-        <span className="block font-mono text-[12px] font-normal text-slate-500">{item.code}</span>
+        <span className="font-medium text-stone-900">{item.name}</span>
+        <span className="block font-mono text-[12px] font-normal text-stone-500">{item.code}</span>
       </>
     ),
   },
@@ -65,7 +65,7 @@ const COLUMNS: DataColumn<Ingredient>[] = [
     cell: (item) => (
       <div className="flex items-center gap-3">
         <StockBar item={item} />
-        <span className="text-[12px] text-slate-500">{formatQty(item.minStock, item.unit)}</span>
+        <span className="text-[12px] text-stone-500">{formatQty(item.minStock, item.unit)}</span>
       </div>
     ),
   },
@@ -120,8 +120,8 @@ export function StockOverviewView() {
 
       <KpiGrid label="Ringkasan stok" columns={4}>
         <KpiCard label="Jenis bahan" value={INGREDIENTS.length} subtext={`${CATEGORIES.length} kategori`} />
-        <KpiCard label="Perlu dibeli" value={counts.beli} subtext="Di bawah stok minimum" />
-        <KpiCard label="Segera kedaluwarsa" value={counts.kedaluwarsa} subtext={`Dalam ${EXPIRY_WARNING_DAYS} hari`} />
+        <KpiCard label="Perlu dibeli" tone="warning" value={counts.beli} subtext="Di bawah stok minimum" />
+        <KpiCard label="Segera kedaluwarsa" tone="danger" value={counts.kedaluwarsa} subtext={`Dalam ${EXPIRY_WARNING_DAYS} hari`} />
         <KpiCard label="Nilai stok" value={formatRupiahShort(counts.nilai)} subtext="Harga beli terakhir" />
       </KpiGrid>
 
@@ -143,10 +143,10 @@ export function StockOverviewView() {
       ) : (
         groups.map(({ category, items }) => (
           <section key={category.id} aria-labelledby={`cat-${category.id}`} className="space-y-3">
-            <h2 id={`cat-${category.id}`} className="flex items-center gap-3 text-[15px] font-semibold text-slate-900">
+            <h2 id={`cat-${category.id}`} className="flex items-center gap-3 text-[15px] font-semibold text-stone-900">
               <CategoryIcon category={category.id} />
               <span>
-                {category.name} <span className="font-normal text-slate-500">· {items.length} bahan</span>
+                {category.name} <span className="font-normal text-stone-500">· {items.length} bahan</span>
               </span>
             </h2>
             <DataList rows={items} columns={COLUMNS} rowKey={(item) => item.code} fixed />

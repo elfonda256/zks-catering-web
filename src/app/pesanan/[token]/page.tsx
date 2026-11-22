@@ -14,6 +14,7 @@ import PaymentUploadClient from "./PaymentUploadClient";
 import { CopyButton } from "./CopyButton";
 import { OrderProgress, hasProgress } from "./OrderProgress";
 import { getAmountDue, getPaidAmount, getPaymentDueAt } from "./payment-due";
+import { getBankAccounts } from "@/modules/settings/services/settings.repository";
 
 type StatusTone = "pending" | "action" | "success" | "danger" | "neutral";
 
@@ -167,6 +168,7 @@ async function OrderDetailContent({ params }: OrderDetailPageProps) {
   const statusInfo = ORDER_STATUS_INFO[order.status] ?? { label: order.status, tone: "neutral", desc: "Status pesanan saat ini." };
   const pendingPayment = order.payments.find((p) => p.status === "PENDING");
   const amountDue = getAmountDue(order);
+  const bankAccounts = amountDue ? await getBankAccounts() : [];
   const paidAmount = getPaidAmount(order);
   const remaining = order.totalAmount !== null ? Math.max(order.totalAmount - paidAmount, 0) : null;
 
@@ -207,9 +209,9 @@ async function OrderDetailContent({ params }: OrderDetailPageProps) {
         </header>
 
         {pendingPayment ? (
-          <section aria-labelledby="verify-title" className="space-y-5 rounded-[10px] bg-[#232A2E] p-6 sm:p-8">
+          <section aria-labelledby="verify-title" className="space-y-5 rounded-[10px] bg-ink-soft p-6 sm:p-8">
             <div className="space-y-1">
-              <span className="font-heading text-sm font-bold uppercase text-[#E07A35]">Bukti bayar terkirim</span>
+              <span className="font-heading text-sm font-bold uppercase text-brand-300">Bukti bayar terkirim</span>
               <h2 id="verify-title" className={`${HEADING} text-[1.75rem]`}>
                 Sedang diverifikasi
               </h2>
@@ -226,7 +228,7 @@ async function OrderDetailContent({ params }: OrderDetailPageProps) {
               <dl className="grid flex-1 grid-cols-2 gap-4">
                 <div>
                   <dt className={LABEL}>Nominal</dt>
-                  <dd className="mt-1 font-heading text-xl font-extrabold tabular-nums text-[#E07A35]">
+                  <dd className="mt-1 font-heading text-xl font-extrabold tabular-nums text-brand-300">
                     {formatRupiah(pendingPayment.amount)}
                   </dd>
                 </div>
@@ -242,9 +244,9 @@ async function OrderDetailContent({ params }: OrderDetailPageProps) {
             </p>
           </section>
         ) : amountDue ? (
-          <PaymentUploadClient rawToken={token} orderCode={order.orderCode} due={amountDue} dueAt={dueAt} />
+          <PaymentUploadClient rawToken={token} orderCode={order.orderCode} due={amountDue} dueAt={dueAt} accounts={bankAccounts} />
         ) : order.status === "WAITING_ADMIN_CONFIRMATION" ? (
-          <section className="flex flex-col gap-5 rounded-[10px] bg-[#232A2E] p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+          <section className="flex flex-col gap-5 rounded-[10px] bg-ink-soft p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
             <p className="max-w-md text-[15px] leading-relaxed text-white/80">
               Belum perlu membayar. Total tagihan dan pilihan pembayaran muncul di halaman ini setelah ongkir ditetapkan.
             </p>
@@ -252,7 +254,7 @@ async function OrderDetailContent({ params }: OrderDetailPageProps) {
               href={`https://wa.me/${COMPANY_PROFILE.mainWhatsApp}?text=${waConfirmText}`}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border-2 border-white/80 px-5 font-heading text-sm font-bold uppercase text-white transition-colors hover:bg-white hover:text-[#1A1F22]"
+              className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border-2 border-white/80 px-5 font-heading text-sm font-bold uppercase text-white transition-colors hover:bg-white hover:text-ink"
             >
               Tanya via WhatsApp
               <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
@@ -287,7 +289,7 @@ async function OrderDetailContent({ params }: OrderDetailPageProps) {
       </div>
 
       <aside aria-labelledby="bill-title" className="space-y-6 lg:sticky lg:top-24 lg:self-start">
-        <div className="space-y-5 rounded-[10px] bg-[#232A2E] p-6 sm:p-8">
+        <div className="space-y-5 rounded-[10px] bg-ink-soft p-6 sm:p-8">
           <h2 id="bill-title" className="font-heading text-xl font-extrabold uppercase">
             Rincian tagihan
           </h2>
@@ -299,7 +301,7 @@ async function OrderDetailContent({ params }: OrderDetailPageProps) {
                   <p className="text-sm text-white/65">
                     {item.quantity} porsi × {formatRupiah(item.unitPrice)}
                   </p>
-                  {item.notes && <p className="mt-1 text-sm text-[#E07A35]">{item.notes}</p>}
+                  {item.notes && <p className="mt-1 text-sm text-brand-300">{item.notes}</p>}
                 </div>
                 <span className="font-semibold tabular-nums">{formatRupiah(item.subtotal)}</span>
               </li>
@@ -332,7 +334,7 @@ async function OrderDetailContent({ params }: OrderDetailPageProps) {
             {paidAmount > 0 && remaining !== null && remaining > 0 && (
               <div className="flex justify-between gap-4">
                 <dt className="font-semibold text-white">Sisa tagihan</dt>
-                <dd className="font-semibold tabular-nums text-[#E07A35]">{formatRupiah(remaining)}</dd>
+                <dd className="font-semibold tabular-nums text-brand-300">{formatRupiah(remaining)}</dd>
               </div>
             )}
           </dl>
@@ -354,7 +356,7 @@ async function OrderDetailContent({ params }: OrderDetailPageProps) {
 
 export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   return (
-    <div className="flex min-h-screen flex-col bg-[#1A1F22] font-text text-white">
+    <div className="flex min-h-screen flex-col bg-ink font-text text-white">
       <Navbar />
 
       <main id="main-content" className="flex-1 pb-24 pt-16 lg:pb-32 lg:pt-24">

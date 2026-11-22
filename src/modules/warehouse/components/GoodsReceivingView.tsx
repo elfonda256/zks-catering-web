@@ -37,7 +37,7 @@ export function GoodsReceivingView() {
         <button
           type="button"
           onClick={() => setSelected(r)}
-          className="whitespace-nowrap font-mono font-medium text-slate-900 underline decoration-slate-300 underline-offset-4 hover:decoration-slate-900 cursor-pointer"
+          className="whitespace-nowrap font-mono font-medium text-stone-900 underline decoration-stone-300 underline-offset-4 hover:decoration-stone-900 cursor-pointer"
         >
           {r.id}
         </button>
@@ -68,9 +68,9 @@ export function GoodsReceivingView() {
       <SampleDataNotice />
 
       <KpiGrid label="Ringkasan penerimaan" columns={3}>
-        <KpiCard label="PO menunggu barang" value={awaiting.length} subtext={awaiting.map((po) => po.id).join(", ") || "Tidak ada"} />
+        <KpiCard label="PO menunggu barang" tone="brand" value={awaiting.length} subtext={awaiting.map((po) => po.id).join(", ") || "Tidak ada"} />
         <KpiCard label="Penerimaan tercatat" value={GOODS_RECEIPTS.length} subtext="Termasuk hasil cek kualitas" />
-        <KpiCard label="Ada barang ditolak" value={GOODS_RECEIPTS.filter(hasRejection).length} subtext="Gagal cek kualitas" />
+        <KpiCard label="Ada barang ditolak" tone="danger" value={GOODS_RECEIPTS.filter(hasRejection).length} subtext="Gagal cek kualitas" />
       </KpiGrid>
 
       <DataList rows={GOODS_RECEIPTS} columns={columns} rowKey={(r) => r.id} />
@@ -109,7 +109,7 @@ export function GoodsReceivingView() {
                 return (
                   <TableRow key={line.code}>
                     <TableCell>
-                      <span className="font-medium text-slate-900">{item.name}</span>
+                      <span className="font-medium text-stone-900">{item.name}</span>
                       {line.note && <span className="block text-[12px] text-rose-700">{line.note}</span>}
                     </TableCell>
                     <TableCell align="right" isNumeric>

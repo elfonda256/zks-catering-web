@@ -27,7 +27,7 @@ interface OrderCardProps {
   onAction: (order: AdminOrderData, action: OrderCardAction) => void;
 }
 
-const LABEL = "text-[11px] font-semibold uppercase tracking-wider text-slate-500";
+const LABEL = "text-[11px] font-semibold uppercase tracking-wider text-stone-500";
 
 function whatsappHref(phone: string): string {
   return `https://wa.me/${phone.replace(/[^0-9]/g, "")}`;
@@ -44,10 +44,10 @@ export function OrderCard({ order, disabled, onAction }: OrderCardProps) {
   const nextStatus = NEXT_OPERATIONAL_STATUS[status];
 
   return (
-    <article className="bg-white border border-slate-200 rounded-[12px]">
-      <header className="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-slate-100">
+    <article className="bg-white border border-stone-200 rounded-[12px]">
+      <header className="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-stone-100">
         <div className="flex flex-wrap items-center gap-3">
-          <h3 className="font-mono text-[16px] font-semibold text-slate-900 tabular-nums">{order.orderCode}</h3>
+          <h3 className="font-mono text-[16px] font-semibold text-stone-900 tabular-nums">{order.orderCode}</h3>
           <Badge variant={statusMeta.variant} dot>
             {statusMeta.label}
           </Badge>
@@ -57,29 +57,29 @@ export function OrderCard({ order, disabled, onAction }: OrderCardProps) {
             </Badge>
           )}
         </div>
-        <p className="text-[12px] text-slate-500">Dipesan {formatDateTime(order.createdAt)}</p>
+        <p className="text-[12px] text-stone-500">Dipesan {formatDateTime(order.createdAt)}</p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-6 py-5 text-[14px]">
         <section className="space-y-2">
           <h4 className={LABEL}>Pemesan</h4>
-          <p className="font-semibold text-slate-900">{order.customerName}</p>
+          <p className="font-semibold text-stone-900">{order.customerName}</p>
           <a
             href={whatsappHref(order.customerPhone)}
             target="_blank"
             rel="noreferrer"
-            className="text-[13px] font-mono text-slate-700 underline decoration-slate-300 underline-offset-4 hover:text-slate-900"
+            className="text-[13px] font-mono text-stone-700 underline decoration-stone-300 underline-offset-4 hover:text-stone-900"
           >
             {order.customerPhone}
           </a>
-          <p className="text-[13px] leading-relaxed text-slate-600">{order.customerAddress}</p>
+          <p className="text-[13px] leading-relaxed text-stone-600">{order.customerAddress}</p>
         </section>
 
         <section className="space-y-2">
           <h4 className={LABEL}>Acara</h4>
-          <p className="font-semibold text-slate-900">{formatDate(order.eventDate)}</p>
-          <p className="text-[13px] text-slate-600">{order.totalPcs} porsi</p>
-          <ul className="text-[13px] text-slate-600 space-y-1">
+          <p className="font-semibold text-stone-900">{formatDate(order.eventDate)}</p>
+          <p className="text-[13px] text-stone-600">{order.totalPcs} porsi</p>
+          <ul className="text-[13px] text-stone-600 space-y-1">
             {order.items.map((item) => (
               <li key={item.id}>
                 {item.menuItemName} × {item.quantity}
@@ -87,7 +87,7 @@ export function OrderCard({ order, disabled, onAction }: OrderCardProps) {
             ))}
           </ul>
           {order.notes && (
-            <p className="text-[13px] text-slate-700 bg-slate-50 border border-slate-200 rounded-[8px] px-3 py-2">
+            <p className="text-[13px] text-stone-700 bg-stone-50 border border-stone-200 rounded-[8px] px-3 py-2">
               {order.notes}
             </p>
           )}
@@ -97,31 +97,31 @@ export function OrderCard({ order, disabled, onAction }: OrderCardProps) {
           <h4 className={LABEL}>Tagihan</h4>
           <dl className="space-y-1 text-[13px]">
             <div className="flex justify-between gap-4">
-              <dt className="text-slate-600">Makanan</dt>
-              <dd className="font-mono tabular-nums text-slate-900">{formatRupiah(order.subtotal)}</dd>
+              <dt className="text-stone-600">Makanan</dt>
+              <dd className="tabular-nums text-stone-900">{formatRupiah(order.subtotal)}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-slate-600">Ongkir</dt>
-              <dd className="font-mono tabular-nums text-slate-900">
+              <dt className="text-stone-600">Ongkir</dt>
+              <dd className="tabular-nums text-stone-900">
                 {order.shippingFee !== null ? formatRupiah(order.shippingFee) : "Belum ditentukan"}
               </dd>
             </div>
-            <div className="flex justify-between gap-4 pt-2 border-t border-slate-200">
-              <dt className="font-semibold text-slate-900">Total</dt>
-              <dd className="font-mono tabular-nums font-semibold text-slate-900">
+            <div className="flex justify-between gap-4 pt-2 border-t border-stone-200">
+              <dt className="font-semibold text-stone-900">Total</dt>
+              <dd className="tabular-nums font-semibold text-stone-900">
                 {order.totalAmount !== null ? formatRupiah(order.totalAmount) : "—"}
               </dd>
             </div>
             {paidAmount > 0 && (
               <div className="flex justify-between gap-4">
-                <dt className="text-slate-600">Sudah dibayar</dt>
-                <dd className="font-mono tabular-nums text-slate-900">{formatRupiah(paidAmount)}</dd>
+                <dt className="text-stone-600">Sudah dibayar</dt>
+                <dd className="tabular-nums text-stone-900">{formatRupiah(paidAmount)}</dd>
               </div>
             )}
             {paidAmount > 0 && remaining !== null && remaining > 0 && (
               <div className="flex justify-between gap-4">
                 <dt className="font-semibold text-amber-900">Sisa tagihan</dt>
-                <dd className="font-mono tabular-nums font-semibold text-amber-900">{formatRupiah(remaining)}</dd>
+                <dd className="tabular-nums font-semibold text-amber-900">{formatRupiah(remaining)}</dd>
               </div>
             )}
           </dl>
@@ -138,11 +138,11 @@ export function OrderCard({ order, disabled, onAction }: OrderCardProps) {
               className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white border border-amber-200 rounded-[8px] px-4 py-3"
             >
               <div className="text-[13px]">
-                <p className="font-semibold text-slate-900">
+                <p className="font-semibold text-stone-900">
                   {PAYMENT_TYPE_LABELS[payment.paymentType] ?? payment.paymentType} ·{" "}
-                  <span className="font-mono tabular-nums">{formatRupiah(payment.amount)}</span>
+                  <span className="tabular-nums">{formatRupiah(payment.amount)}</span>
                 </p>
-                <p className="text-[12px] text-slate-500">
+                <p className="text-[12px] text-stone-500">
                   {payment.paymentChannel || "Transfer bank"} · {formatDateTime(payment.createdAt)}
                 </p>
               </div>
@@ -174,13 +174,13 @@ export function OrderCard({ order, disabled, onAction }: OrderCardProps) {
         </section>
       )}
 
-      <footer className="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-t border-slate-100">
+      <footer className="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-t border-stone-100">
         <div className="flex flex-wrap items-center gap-2">
           <a
             href={whatsappHref(order.customerPhone)}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex h-8 items-center gap-2 rounded-[8px] border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+            className="inline-flex h-8 items-center gap-2 rounded-[8px] border border-stone-200 bg-white px-3 text-xs font-medium text-stone-700 hover:bg-stone-50 transition-colors"
           >
             WhatsApp <span aria-hidden="true">↗</span>
           </a>

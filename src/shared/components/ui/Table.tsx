@@ -8,7 +8,7 @@ import { cn } from "@/shared/utils/cn";
 
 export function Table({ className, children, ...props }: TableHTMLAttributes<HTMLTableElement>) {
   return (
-    <div className="w-full overflow-x-auto rounded-[12px] border border-slate-200 bg-white shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+    <div className="w-full overflow-x-auto rounded-[12px] border border-stone-200 bg-white shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
       <table className={cn("w-full text-left text-[14px] border-collapse", className)} {...props}>
         {children}
       </table>
@@ -20,7 +20,7 @@ export function TableHeader({ className, children, ...props }: HTMLAttributes<HT
   return (
     <thead
       className={cn(
-        "bg-slate-50/95 backdrop-blur-xs border-b border-slate-200 text-[11px] font-semibold uppercase tracking-wider text-slate-500 sticky top-0 z-10 select-none",
+        "bg-stone-50/95 backdrop-blur-xs border-b border-stone-200 text-[11px] font-semibold uppercase tracking-wider text-stone-500 sticky top-0 z-10 select-none",
         className
       )}
       {...props}
@@ -32,7 +32,7 @@ export function TableHeader({ className, children, ...props }: HTMLAttributes<HT
 
 export function TableBody({ className, children, ...props }: HTMLAttributes<HTMLTableSectionElement>) {
   return (
-    <tbody className={cn("divide-y divide-slate-100 bg-white", className)} {...props}>
+    <tbody className={cn("divide-y divide-stone-100 bg-white", className)} {...props}>
       {children}
     </tbody>
   );
@@ -47,7 +47,7 @@ export function TableRow({
   return (
     <tr
       className={cn(
-        "hover:bg-slate-50/80 transition-colors duration-150 ease-out group focus-within:bg-slate-50/90",
+        "hover:bg-stone-50/80 transition-colors duration-150 ease-out group focus-within:bg-stone-50/90",
         isSelected && "bg-blue-50/40 hover:bg-blue-50/60",
         className
       )}
@@ -86,7 +86,7 @@ export function TableHead({
     return (
       <th
         className={cn(
-          "py-3 px-4 font-semibold text-slate-700 whitespace-nowrap cursor-pointer hover:bg-slate-100/70 transition-colors",
+          "py-3 px-4 font-semibold text-stone-700 whitespace-nowrap cursor-pointer hover:bg-stone-100/70 transition-colors",
           alignClass,
           isCheckbox && "w-10 px-3",
           className
@@ -101,7 +101,7 @@ export function TableHead({
           )}
         >
           <span>{children}</span>
-          <span className="text-slate-400 text-xs">
+          <span className="text-stone-400 text-xs">
             {sortDirection === "asc" ? "▲" : sortDirection === "desc" ? "▼" : "⇅"}
           </span>
         </div>
@@ -112,7 +112,7 @@ export function TableHead({
   return (
     <th
       className={cn(
-        "py-3 px-4 font-semibold text-slate-700 whitespace-nowrap",
+        "py-3 px-4 font-semibold text-stone-700 whitespace-nowrap",
         alignClass,
         isCheckbox && "w-10 px-3",
         className
@@ -147,9 +147,9 @@ export function TableCell({
   return (
     <td
       className={cn(
-        "py-3.5 px-4 text-slate-700 align-middle",
+        "py-3.5 px-4 text-stone-700 align-middle",
         alignClass,
-        isNumeric && "font-mono tabular-nums text-slate-900",
+        isNumeric && "tabular-nums text-stone-900",
         isCheckbox && "w-10 px-3",
         className
       )}
@@ -173,8 +173,8 @@ export function TableEmptyRow({
     <tr>
       <td colSpan={colSpan} className="py-12 px-4 text-center">
         <div className="flex flex-col items-center justify-center space-y-1">
-          <p className="text-[14px] font-medium text-slate-700">{message}</p>
-          <p className="text-[12px] text-slate-400 max-w-sm">{subMessage}</p>
+          <p className="text-[14px] font-medium text-stone-700">{message}</p>
+          <p className="text-[12px] text-stone-400 max-w-sm">{subMessage}</p>
         </div>
       </td>
     </tr>
@@ -191,9 +191,9 @@ export function TableLoadingRow({
   return (
     <>
       {Array.from({ length: rows }).map((_, idx) => (
-        <tr key={idx} className="border-b border-slate-100 last:border-0">
+        <tr key={idx} className="border-b border-stone-100 last:border-0">
           <td colSpan={colSpan} className="py-4 px-4">
-            <div className="h-4 bg-slate-100 rounded-[6px] w-full relative overflow-hidden after:absolute after:inset-0 after:-translate-x-full after:animate-enterprise-shimmer after:bg-gradient-to-r after:from-transparent after:via-slate-200/50 after:to-transparent" />
+            <div className="h-4 bg-stone-100 rounded-[6px] w-full relative overflow-hidden after:absolute after:inset-0 after:-transtone-x-full after:animate-enterprise-shimmer after:bg-gradient-to-r after:from-transparent after:via-stone-200/50 after:to-transparent" />
           </td>
         </tr>
       ))}

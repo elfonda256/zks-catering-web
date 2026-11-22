@@ -24,7 +24,7 @@ export function PurchaseOrdersView() {
         <button
           type="button"
           onClick={() => setSelected(po)}
-          className="whitespace-nowrap font-mono font-medium text-slate-900 underline decoration-slate-300 underline-offset-4 hover:decoration-slate-900 cursor-pointer"
+          className="whitespace-nowrap font-mono font-medium text-stone-900 underline decoration-stone-300 underline-offset-4 hover:decoration-stone-900 cursor-pointer"
         >
           {po.id}
         </button>
@@ -50,7 +50,7 @@ export function PurchaseOrdersView() {
       <SampleDataNotice />
 
       <KpiGrid label="Ringkasan pembelian" columns={3}>
-        <KpiCard label="PO berjalan" value={open.length} subtext="Belum diterima penuh" />
+        <KpiCard label="PO berjalan" tone="brand" value={open.length} subtext="Belum diterima penuh" />
         <KpiCard label="Nilai PO berjalan" value={formatRupiahShort(open.reduce((s, po) => s + lineTotal(po.lines), 0))} subtext="Sebelum ongkir supplier" />
         <KpiCard label="Total nilai PO" value={formatRupiahShort(PURCHASE_ORDERS.reduce((s, po) => s + lineTotal(po.lines), 0))} subtext="Minggu ini" />
       </KpiGrid>

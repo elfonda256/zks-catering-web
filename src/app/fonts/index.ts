@@ -23,3 +23,25 @@ export const bodyFont = localFont({
   variable: "--font-barlow",
   display: "swap",
 });
+
+/**
+ * Admin-console typefaces, self-hosted variable fonts (SIL OFL 1.1).
+ * Plus Jakarta Sans for the interface, JetBrains Mono for order codes and figures.
+ * Not preloaded: the public pages never use them, and the browser only
+ * downloads a face once an element inside `.admin-theme` asks for it.
+ */
+export const adminSansFont = localFont({
+  src: "./plus-jakarta-sans-latin-wght-normal.woff2",
+  weight: "200 800",
+  variable: "--font-jakarta",
+  display: "swap",
+  preload: false,
+});
+
+export const adminMonoFont = localFont({
+  src: "./jetbrains-mono-latin-wght-normal.woff2",
+  weight: "100 800",
+  variable: "--font-jetbrains",
+  display: "swap",
+  preload: false,
+});

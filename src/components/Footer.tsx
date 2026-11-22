@@ -17,7 +17,7 @@ const SITE_LINKS = [
 
 export default function Footer() {
   return (
-    <footer className="bg-[#C85A17] font-text text-white">
+    <footer className="bg-brand-600 font-text text-white">
       <div className="mx-auto max-w-[90rem] px-6 pb-10 pt-20 sm:px-10 lg:px-[6.25rem]">
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-12 lg:gap-8">
           <div className="lg:col-span-4">

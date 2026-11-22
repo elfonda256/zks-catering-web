@@ -37,9 +37,9 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
     };
 
     const iconSizes = {
-      sm: "w-3.5 h-3.5 left-2.5",
-      md: "w-4 h-4 left-3",
-      lg: "w-4.5 h-4.5 left-3.5",
+      sm: "left-2.5 [&>svg]:w-3.5 [&>svg]:h-3.5",
+      md: "left-3 [&>svg]:w-4 [&>svg]:h-4",
+      lg: "left-3.5 [&>svg]:w-4.5 [&>svg]:h-4.5",
     };
 
     const hasValue = Boolean(value && value.length > 0);
@@ -53,11 +53,11 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
       <div className={cn("relative w-full", className)}>
         <div
           className={cn(
-            "absolute inset-y-0 flex items-center pointer-events-none text-slate-400",
+            "absolute inset-y-0 flex items-center pointer-events-none text-stone-400",
             iconSizes[size]
           )}
         >
-          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-full h-full">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -75,9 +75,9 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
           onChange={(e) => onChange?.(e.target.value)}
           placeholder={placeholder}
           className={cn(
-            "w-full bg-slate-50 border border-slate-200 rounded-[8px] text-slate-900 placeholder:text-slate-400",
-            "focus:bg-white focus:border-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900 transition-all duration-150 ease-out",
-            "disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed",
+            "w-full bg-stone-50 border border-stone-200 rounded-[8px] text-stone-900 placeholder:text-stone-400",
+            "focus:bg-white focus:border-brand-500 focus:outline-none focus:ring-3 focus:ring-brand-500/15 transition-all duration-150 ease-out",
+            "disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed",
             sizeStyles[size]
           )}
           {...props}
@@ -88,8 +88,9 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
             <button
               type="button"
               onClick={handleClear}
-              className="text-slate-400 hover:text-slate-600 p-0.5 rounded cursor-pointer transition-colors"
-              title="Clear search"
+              className="text-stone-400 hover:text-stone-600 p-0.5 rounded cursor-pointer transition-colors"
+              title="Hapus pencarian"
+              aria-label="Hapus pencarian"
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -98,7 +99,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
           )}
 
           {shortcut && !hasValue && (
-            <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-medium text-slate-400 bg-white border border-slate-200 rounded-[6px]">
+            <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-medium text-stone-400 bg-white border border-stone-200 rounded-[6px]">
               {shortcut}
             </kbd>
           )}

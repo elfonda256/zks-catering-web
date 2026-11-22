@@ -29,7 +29,7 @@ const COLUMNS: DataColumn<StockMovement>[] = [
     key: "item",
     header: "Bahan",
     mobile: "title",
-    cell: (m) => <span className="font-medium text-slate-900">{getIngredient(m.code).name}</span>,
+    cell: (m) => <span className="font-medium text-stone-900">{getIngredient(m.code).name}</span>,
   },
   { key: "time", header: "Waktu", mobile: "subtitle", cell: (m) => <span className="whitespace-nowrap">{relativeDay(m.day)}, {m.time}</span> },
   {
@@ -46,7 +46,7 @@ const COLUMNS: DataColumn<StockMovement>[] = [
     cell: (m) => formatMovementQty(m.type, m.qty, getIngredient(m.code).unit),
   },
   { key: "ref", header: "Referensi", cell: (m) => <span className="font-mono text-[13px]">{m.reference}</span> },
-  { key: "note", header: "Keterangan", wide: true, cell: (m) => <span className="text-slate-600">{m.note}</span> },
+  { key: "note", header: "Keterangan", wide: true, cell: (m) => <span className="text-stone-600">{m.note}</span> },
 ];
 
 export function StockMovementsView() {

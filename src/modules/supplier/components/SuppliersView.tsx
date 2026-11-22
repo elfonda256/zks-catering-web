@@ -38,11 +38,11 @@ export function SuppliersView() {
           {<button
           type="button"
           onClick={() => setSelected(s)}
-          className="text-left font-medium text-slate-900 underline decoration-slate-300 underline-offset-4 hover:decoration-slate-900 cursor-pointer"
+          className="text-left font-medium text-stone-900 underline decoration-stone-300 underline-offset-4 hover:decoration-stone-900 cursor-pointer"
         >
           {s.name}
         </button>}
-          <span className="block text-[12px] font-normal text-slate-500">{s.area}</span>
+          <span className="block text-[12px] font-normal text-stone-500">{s.area}</span>
         </>
       ),
     },
@@ -60,7 +60,7 @@ export function SuppliersView() {
       cell: (s) => (
         <>
           {s.contact}
-          <span className="block font-mono text-[12px] text-slate-500">{s.phone}</span>
+          <span className="block font-mono text-[12px] text-stone-500">{s.phone}</span>
         </>
       ),
     },
@@ -134,16 +134,16 @@ function SupplierDialog({ supplier, onClose }: { supplier: Supplier; onClose: ()
         ]}
       />
       <section className="space-y-2">
-        <h3 className="text-[13px] font-semibold text-slate-900">Pembelian terakhir</h3>
+        <h3 className="text-[13px] font-semibold text-stone-900">Pembelian terakhir</h3>
         {orders.length === 0 ? (
-          <p className="text-[13px] text-slate-600">Belum ada PO dalam data contoh.</p>
+          <p className="text-[13px] text-stone-600">Belum ada PO dalam data contoh.</p>
         ) : (
-          <ul className="divide-y divide-slate-100 rounded-[8px] border border-slate-200 text-[13px]">
+          <ul className="divide-y divide-stone-100 rounded-[8px] border border-stone-200 text-[13px]">
             {orders.map((po) => (
               <li key={po.id} className="flex flex-wrap items-center justify-between gap-3 px-3 py-2">
-                <span className="font-mono text-slate-900">{po.id}</span>
-                <span className="text-slate-600">{relativeDay(po.day)}</span>
-                <span className="font-mono tabular-nums text-slate-900">{formatRupiah(lineTotal(po.lines))}</span>
+                <span className="font-mono text-stone-900">{po.id}</span>
+                <span className="text-stone-600">{relativeDay(po.day)}</span>
+                <span className="tabular-nums text-stone-900">{formatRupiah(lineTotal(po.lines))}</span>
                 <Badge variant={PO_STATUS[po.status].variant}>{PO_STATUS[po.status].label}</Badge>
               </li>
             ))}

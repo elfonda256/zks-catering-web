@@ -30,15 +30,15 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-150 ease-out active:scale-[0.98] select-none disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2 cursor-pointer";
+      "inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-150 ease-out active:scale-[0.98] select-none disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 cursor-pointer";
 
     const variantStyles: Record<ButtonVariant, string> = {
-      primary: "bg-slate-900 hover:bg-slate-800 text-white shadow-xs border border-transparent",
-      secondary: "bg-white hover:bg-slate-50 text-slate-700 border border-slate-200/90 shadow-xs",
-      outline: "bg-white hover:bg-slate-50 text-slate-700 border border-slate-200/90 shadow-xs",
-      ghost: "bg-transparent hover:bg-slate-100 text-slate-600 hover:text-slate-900 border border-transparent",
+      primary: "bg-brand-600 hover:bg-brand-700 text-white shadow-xs border border-transparent",
+      secondary: "bg-white hover:bg-stone-50 text-stone-700 border border-stone-200/90 shadow-xs",
+      outline: "bg-white hover:bg-stone-50 text-stone-700 border border-stone-200/90 shadow-xs",
+      ghost: "bg-transparent hover:bg-stone-100 text-stone-600 hover:text-stone-900 border border-transparent",
       danger: "bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 shadow-xs",
-      icon: "bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200/90 shadow-xs",
+      icon: "bg-white hover:bg-stone-100 text-stone-600 hover:text-stone-900 border border-stone-200/90 shadow-xs",
     };
 
     const sizeStyles: Record<ButtonSize, string> = {

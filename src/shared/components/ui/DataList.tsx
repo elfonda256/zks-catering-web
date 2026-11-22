@@ -64,12 +64,12 @@ export function DataList<T>({ rows, columns, rowKey, fixed = false }: DataListPr
 
       <ul className="space-y-3 md:hidden">
         {rows.map((row) => (
-          <li key={rowKey(row)} className="rounded-[12px] border border-slate-200 bg-white p-4 text-[14px]">
+          <li key={rowKey(row)} className="rounded-[12px] border border-stone-200 bg-white p-4 text-[14px]">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0 space-y-1">
-                {title && <div className="font-medium text-slate-900">{title.cell(row)}</div>}
+                {title && <div className="font-medium text-stone-900">{title.cell(row)}</div>}
                 {subtitles.map((c) => (
-                  <div key={c.key} className="text-[13px] text-slate-600">
+                  <div key={c.key} className="text-[13px] text-stone-600">
                     {c.cell(row)}
                   </div>
                 ))}
@@ -81,11 +81,11 @@ export function DataList<T>({ rows, columns, rowKey, fixed = false }: DataListPr
               ))}
             </div>
             {details.length > 0 && (
-              <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-slate-100 pt-3">
+              <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-stone-100 pt-3">
                 {details.map((c) => (
                   <div key={c.key} className={c.wide ? "col-span-2 min-w-0" : "min-w-0"}>
-                    <dt className="text-[11px] font-medium uppercase tracking-wider text-slate-500">{c.header}</dt>
-                    <dd className={`mt-1 text-slate-800 ${c.isNumeric ? "font-mono tabular-nums" : ""}`}>{c.cell(row)}</dd>
+                    <dt className="text-[11px] font-medium uppercase tracking-wider text-stone-500">{c.header}</dt>
+                    <dd className={`mt-1 text-stone-800 ${c.isNumeric ? "tabular-nums" : ""}`}>{c.cell(row)}</dd>
                   </div>
                 ))}
               </dl>

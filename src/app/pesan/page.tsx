@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function OrderPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-[#1A1F22] pb-24 font-text text-white lg:pb-0">
+    <div className="flex min-h-screen flex-col bg-ink pb-24 font-text text-white lg:pb-0">
       <Navbar />
 
       <main id="main-content" className="flex-1 pb-16 pt-16 lg:pb-32 lg:pt-24">

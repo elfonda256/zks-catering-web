@@ -66,7 +66,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               )}
             >
               <div className="space-y-1">
-                <div className="text-xs font-bold font-mono uppercase tracking-wider">{toast.title}</div>
+                <div className="text-[13px] font-semibold">{toast.title}</div>
                 {toast.description && (
                   <div className="text-xs text-[#626058]">{toast.description}</div>
                 )}

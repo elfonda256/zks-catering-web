@@ -37,7 +37,7 @@ type Dialog =
   | { type: "rejectProof"; order: AdminOrderData; payment: AdminOrderPayment };
 
 const TEXTAREA =
-  "w-full rounded-[12px] border border-slate-200 bg-white p-3 text-[14px] text-slate-900 placeholder:text-slate-400 focus:border-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900";
+  "w-full rounded-[12px] border border-stone-200 bg-white p-3 text-[14px] text-stone-900 placeholder:text-stone-400 focus:border-brand-500 focus:outline-none focus:ring-3 focus:ring-brand-500/15";
 
 export default function AdminDashboardView({ orders }: AdminDashboardViewProps) {
   const { counts, tab, setTab, query, setQuery, filteredOrders } = useDashboard(orders);
@@ -125,10 +125,10 @@ export default function AdminDashboardView({ orders }: AdminDashboardViewProps) 
   return (
     <div className="space-y-6">
       <section aria-label="Ringkasan pesanan" className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard label="Bukti bayar" value={counts.proof} subtext="Menunggu verifikasi" />
-        <KpiCard label="Perlu ongkir" value={counts.shipping} subtext="Menunggu konfirmasi admin" />
+        <KpiCard label="Bukti bayar" tone="warning" value={counts.proof} subtext="Menunggu verifikasi" />
+        <KpiCard label="Perlu ongkir" tone="brand" value={counts.shipping} subtext="Menunggu konfirmasi admin" />
         <KpiCard label="Menunggu bayar" value={counts.payment} subtext="Tagihan sudah dikirim" />
-        <KpiCard label="Berjalan" value={counts.active} subtext="Dibayar, dimasak, atau dikirim" />
+        <KpiCard label="Berjalan" tone="success" value={counts.active} subtext="Dibayar, dimasak, atau dikirim" />
       </section>
 
       <section aria-label="Daftar pesanan" className="space-y-4">
@@ -212,7 +212,7 @@ export default function AdminDashboardView({ orders }: AdminDashboardViewProps) 
             onSubmit={(e) => handleReason(e, (text) => rejectOrderAction(dialog.order.id, text))}
             className="space-y-2"
           >
-            <label htmlFor="reject-reason" className="block text-[14px] font-medium text-slate-700">
+            <label htmlFor="reject-reason" className="block text-[14px] font-medium text-stone-700">
               Alasan penolakan
             </label>
             <textarea
@@ -225,7 +225,7 @@ export default function AdminDashboardView({ orders }: AdminDashboardViewProps) 
               placeholder="Contoh: kapasitas dapur pada tanggal itu sudah penuh"
               className={TEXTAREA}
             />
-            <p className="text-[12px] text-slate-500">Alasan ini dikirim ke pelanggan.</p>
+            <p className="text-[12px] text-stone-500">Alasan ini dikirim ke pelanggan.</p>
             {dialogErrorNode}
           </form>
         </Modal>
@@ -241,7 +241,7 @@ export default function AdminDashboardView({ orders }: AdminDashboardViewProps) 
             onConfirm: () => run(() => updateOrderStatusAction(dialog.order.id, dialog.next)),
           })}
         >
-          <p className="text-[14px] text-slate-700">
+          <p className="text-[14px] text-stone-700">
             Status berubah dari{" "}
             <strong>{ORDER_STATUS_LABELS[dialog.order.status as OrderStatusValue]?.label ?? dialog.order.status}</strong>{" "}
             menjadi <strong>{ORDER_STATUS_LABELS[dialog.next].label}</strong>. Pelanggan menerima pemberitahuan
@@ -261,9 +261,9 @@ export default function AdminDashboardView({ orders }: AdminDashboardViewProps) 
             onConfirm: () => run(() => approvePaymentAction(dialog.payment.id, dialog.order.id)),
           })}
         >
-          <p className="text-[14px] text-slate-700">
+          <p className="text-[14px] text-stone-700">
             {PAYMENT_TYPE_LABELS[dialog.payment.paymentType] ?? dialog.payment.paymentType} sebesar{" "}
-            <strong className="font-mono tabular-nums">{formatRupiah(dialog.payment.amount)}</strong> dicatat sebagai
+            <strong className="tabular-nums">{formatRupiah(dialog.payment.amount)}</strong> dicatat sebagai
             diterima. Pastikan dana sudah masuk ke rekening.
           </p>
           {dialogErrorNode}
@@ -285,7 +285,7 @@ export default function AdminDashboardView({ orders }: AdminDashboardViewProps) 
             }
             className="space-y-2"
           >
-            <label htmlFor="reject-proof-reason" className="block text-[14px] font-medium text-slate-700">
+            <label htmlFor="reject-proof-reason" className="block text-[14px] font-medium text-stone-700">
               Alasan penolakan
             </label>
             <textarea
@@ -327,14 +327,14 @@ export default function AdminDashboardView({ orders }: AdminDashboardViewProps) 
         >
           {trackingUrl ? (
             <div className="space-y-3">
-              <p className="text-[14px] text-slate-700">Tautan baru sudah dikirim ke WhatsApp pelanggan.</p>
+              <p className="text-[14px] text-stone-700">Tautan baru sudah dikirim ke WhatsApp pelanggan.</p>
               <input
                 type="text"
                 readOnly
                 value={trackingUrl}
                 aria-label="Tautan pelanggan"
                 onFocus={(e) => e.currentTarget.select()}
-                className="w-full font-mono text-[12px] bg-slate-50 border border-slate-200 rounded-[8px] px-3 py-2 text-slate-800"
+                className="w-full font-mono text-[12px] bg-stone-50 border border-stone-200 rounded-[8px] px-3 py-2 text-stone-800"
               />
               <div className="flex flex-wrap gap-2">
                 <Button
@@ -353,14 +353,14 @@ export default function AdminDashboardView({ orders }: AdminDashboardViewProps) 
                   href={trackingUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex h-8 items-center gap-2 rounded-[8px] border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+                  className="inline-flex h-8 items-center gap-2 rounded-[8px] border border-stone-200 bg-white px-3 text-xs font-medium text-stone-700 hover:bg-stone-50 transition-colors"
                 >
                   Buka tautan <span aria-hidden="true">↗</span>
                 </a>
               </div>
             </div>
           ) : (
-            <p className="text-[14px] text-slate-700">
+            <p className="text-[14px] text-stone-700">
               Tautan lama langsung tidak berlaku. Tautan baru dikirim otomatis ke WhatsApp pelanggan.
             </p>
           )}
@@ -376,7 +376,7 @@ export default function AdminDashboardView({ orders }: AdminDashboardViewProps) 
           subtitle={`${dialog.order.orderCode} · ${formatRupiah(dialog.payment.amount)}`}
           maxWidth="2xl"
         >
-          <div className="relative aspect-[4/3] w-full bg-slate-100 rounded-[8px] overflow-hidden border border-slate-200">
+          <div className="relative aspect-[4/3] w-full bg-stone-100 rounded-[8px] overflow-hidden border border-stone-200">
             <Image
               src={dialog.payment.paymentUrl}
               alt={`Bukti bayar ${dialog.order.orderCode}`}
@@ -389,7 +389,7 @@ export default function AdminDashboardView({ orders }: AdminDashboardViewProps) 
             href={dialog.payment.paymentUrl}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex text-[13px] font-medium text-slate-700 underline decoration-slate-300 underline-offset-4 hover:text-slate-900"
+            className="inline-flex text-[13px] font-medium text-stone-700 underline decoration-stone-300 underline-offset-4 hover:text-stone-900"
           >
             Buka ukuran asli <span aria-hidden="true">↗</span>
           </a>

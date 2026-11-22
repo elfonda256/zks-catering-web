@@ -12,7 +12,7 @@
 This ERP is an enterprise operational platform designed for teams working **8–10 hours daily**. It is built on strict utility and clarity:
 * **Less decoration. More information.**
 * **Less cards. More hierarchy.**
-* **Less colors. More clarity.**
+* **Colour carries meaning, never decoration.**
 * **Less effects. More usability.**
 
 ### Inspired by World-Class Enterprise Engineering:
@@ -65,51 +65,23 @@ All layout paddings, gaps, and margins strictly adhere to multiples of 8:
 
 * **One Radius Only**: `12px` (`rounded-[12px]`) across all cards, modals, tables, inputs, and buttons.
 * **Subtle Elevation Levels**:
-  * **Level 0 (Flat)**: `border border-slate-200`
-  * **Level 1 (Cards & Tables)**: `border border-slate-200 shadow-[0_1px_2px_rgba(0,0,0,0.04)]`
-  * **Level 2 (Modals & Menus)**: `border border-slate-200 shadow-[0_4px_12px_rgba(0,0,0,0.08)]`
+  * **Level 0 (Flat)**: `border border-stone-200`
+  * **Level 1 (Cards & Tables)**: `border border-stone-200 shadow-[0_1px_2px_rgba(0,0,0,0.04)]`
+  * **Level 2 (Modals & Menus)**: `border border-stone-200 shadow-[0_4px_12px_rgba(0,0,0,0.08)]`
 
 ---
 
-## 5. STANDARDIZED COLOR SYSTEM
+## 5. COLOR SYSTEM
 
-* **Canvas Background**: White (`#FFFFFF`)
-* **Secondary Background**: Slate 50 (`#F8FAFC`)
-* **Text Primary**: Slate 900 (`#0F172A`)
-* **Text Secondary**: Slate 600 (`#475569`)
-* **Borders**: Slate 200 (`#E2E8F0`)
-* **Primary Brand**: Blue 600 (`#2563EB`) — hover `#1D4ED8`
-* **Semantic Colors**:
-  * **Success**: Green / Emerald (`#16A34A` / bg `#F0FDF4`, border `#BBF7D0`)
-  * **Warning**: Orange / Amber (`#D97706` / bg `#FFFBEB`, border `#FDE68A`)
-  * **Danger**: Red (`#DC2626` / bg `#FEF2F2`, border `#FECACA`)
-  * **Info**: Blue (`#2563EB` / bg `#EFF6FF`, border `#BFDBFE`)
-
----
-
-## 6. STANDARDIZED STATUS BADGES
-
-All modules use the canonical `Badge` component with 13 standard operational states:
-1. `draft`: Gray (`bg-slate-100 text-slate-700 border-slate-200`)
-2. `pending`: Amber (`bg-amber-50 text-amber-800 border-amber-200`)
-3. `approved`: Blue (`bg-blue-50 text-blue-800 border-blue-200`)
-4. `rejected`: Red (`bg-red-50 text-red-800 border-red-200`)
-5. `completed`: Emerald (`bg-emerald-50 text-emerald-800 border-emerald-200`)
-6. `cancelled`: Red (`bg-red-50 text-red-800 border-red-200`)
-7. `processing`: Sky (`bg-sky-50 text-sky-800 border-sky-200`)
-8. `low_stock`: Amber (`bg-amber-50 text-amber-800 border-amber-200`)
-9. `critical`: Red (`bg-red-50 text-red-800 border-red-200`)
-10. `expired`: Rose (`bg-rose-50 text-rose-800 border-rose-200`)
-11. `reserved`: Indigo (`bg-indigo-50 text-indigo-800 border-indigo-200`)
-12. `consumed`: Slate (`bg-slate-100 text-slate-600 border-slate-200`)
-13. `delivered`: Teal (`bg-teal-50 text-teal-800 border-teal-200`)
+Moved. The admin palette "Dapur Rempah" (frame, canvas, brand and status colours, badges and
+contrast) is defined once in `DESIGN_MASTERBOOK.md`, section "Admin console colour".
 
 ---
 
 ## 7. BUTTON & FORM SYSTEM
 
 ### Button System:
-- **Variants**: `Primary` (Blue-600), `Secondary` (White/Slate-200), `Ghost` (Transparent hover), `Danger` (Red-50), `Icon Button` (Square).
+- **Variants**: `Primary` (brand-600), `Secondary` (white / stone border), `Ghost` (Transparent hover), `Danger` (Red-50), `Icon Button` (Square).
 - **Sizes**: `sm` (32px), `md` (36px), `lg` (44px).
 - **Behavior**: Cursor pointer, focus-visible ring, disabled opacity, loading indicator with inline spin.
 

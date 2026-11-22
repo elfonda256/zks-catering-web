@@ -24,7 +24,7 @@ function StepList({ steps }: { steps: { title: string }[] }) {
     <ol className="grid gap-x-6 gap-y-2 sm:grid-cols-2">
       {steps.map((step, index) => (
         <li key={step.title} className="flex gap-3 font-heading text-[15px] font-bold uppercase">
-          <span className="w-6 shrink-0 text-[#E07A35]">{String(index + 1).padStart(2, "0")}</span>
+          <span className="w-6 shrink-0 text-brand-300">{String(index + 1).padStart(2, "0")}</span>
           {step.title}
         </li>
       ))}
@@ -34,7 +34,7 @@ function StepList({ steps }: { steps: { title: string }[] }) {
 
 export default function HomePage() {
   return (
-    <div className="flex min-h-screen flex-col bg-[#1A1F22] font-text">
+    <div className="flex min-h-screen flex-col bg-ink font-text">
       <BusinessJsonLd />
       <Navbar overlay />
 
