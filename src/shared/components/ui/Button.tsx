@@ -34,11 +34,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variantStyles: Record<ButtonVariant, string> = {
       primary: "bg-brand-600 hover:bg-brand-700 text-white shadow-xs border border-transparent",
-      secondary: "bg-white hover:bg-slate-50 text-slate-700 border border-slate-200/90 shadow-xs",
-      outline: "bg-white hover:bg-slate-50 text-slate-700 border border-slate-200/90 shadow-xs",
-      ghost: "bg-transparent hover:bg-slate-100 text-slate-600 hover:text-slate-900 border border-transparent",
+      secondary: "bg-white hover:bg-stone-50 text-stone-700 border border-stone-200/90 shadow-xs",
+      outline: "bg-white hover:bg-stone-50 text-stone-700 border border-stone-200/90 shadow-xs",
+      ghost: "bg-transparent hover:bg-stone-100 text-stone-600 hover:text-stone-900 border border-transparent",
       danger: "bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 shadow-xs",
-      icon: "bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200/90 shadow-xs",
+      icon: "bg-white hover:bg-stone-100 text-stone-600 hover:text-stone-900 border border-stone-200/90 shadow-xs",
     };
 
     const sizeStyles: Record<ButtonSize, string> = {

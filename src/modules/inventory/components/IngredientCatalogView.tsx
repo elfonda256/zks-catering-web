@@ -54,11 +54,11 @@ export function IngredientCatalogView() {
           <button
             type="button"
             onClick={() => setSelected(item)}
-            className="text-left font-medium text-slate-900 underline decoration-slate-300 underline-offset-4 hover:decoration-slate-900 cursor-pointer"
+            className="text-left font-medium text-stone-900 underline decoration-stone-300 underline-offset-4 hover:decoration-stone-900 cursor-pointer"
           >
             {item.name}
           </button>
-          <span className="block font-mono text-[12px] font-normal text-slate-500">{item.code}</span>
+          <span className="block font-mono text-[12px] font-normal text-stone-500">{item.code}</span>
         </>
       ),
     },
@@ -73,7 +73,7 @@ export function IngredientCatalogView() {
       <SampleDataNotice />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <p className="text-[13px] text-slate-600">
+        <p className="text-[13px] text-stone-600">
           {INGREDIENTS.length} bahan dalam {CATEGORIES.length} kategori. Klik nama bahan untuk detail.
         </p>
         <SearchInput
@@ -91,13 +91,13 @@ export function IngredientCatalogView() {
         groups.map(({ category, items }) => (
           <section key={category.id} aria-labelledby={`catalog-${category.id}`} className="space-y-3">
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-              <h2 id={`catalog-${category.id}`} className="flex items-center gap-3 text-[15px] font-semibold text-slate-900">
+              <h2 id={`catalog-${category.id}`} className="flex items-center gap-3 text-[15px] font-semibold text-stone-900">
                 <CategoryIcon category={category.id} />
                 {category.name}
               </h2>
               <ul className="flex flex-wrap gap-2" aria-label={`Jenis ${category.name}`}>
                 {category.types.map((type) => (
-                  <li key={type} className="rounded-full border border-slate-200 bg-white px-3 py-1 text-[12px] text-slate-600">
+                  <li key={type} className="rounded-full border border-stone-200 bg-white px-3 py-1 text-[12px] text-stone-600">
                     {type}
                   </li>
                 ))}
@@ -140,24 +140,24 @@ function IngredientDialog({ item, onClose }: { item: Ingredient; onClose: () => 
       />
 
       <section className="space-y-2">
-        <h3 className="text-[13px] font-semibold text-slate-900">Dipakai di resep</h3>
-        <p className="text-[13px] text-slate-600">
+        <h3 className="text-[13px] font-semibold text-stone-900">Dipakai di resep</h3>
+        <p className="text-[13px] text-stone-600">
           {usedIn.length > 0 ? usedIn.map((r) => r.name).join(", ") : "Belum dipakai di resep paket."}
         </p>
       </section>
 
       <section className="space-y-2">
-        <h3 className="text-[13px] font-semibold text-slate-900">Mutasi terakhir</h3>
+        <h3 className="text-[13px] font-semibold text-stone-900">Mutasi terakhir</h3>
         {movements.length === 0 ? (
-          <p className="text-[13px] text-slate-600">Belum ada mutasi tercatat.</p>
+          <p className="text-[13px] text-stone-600">Belum ada mutasi tercatat.</p>
         ) : (
-          <ul className="divide-y divide-slate-100 rounded-[8px] border border-slate-200 text-[13px]">
+          <ul className="divide-y divide-stone-100 rounded-[8px] border border-stone-200 text-[13px]">
             {movements.map((m) => (
               <li key={m.id} className="flex items-center justify-between gap-4 px-3 py-2">
-                <span className="text-slate-700">
+                <span className="text-stone-700">
                   {relativeDay(m.day)}, {m.time} · {m.note}
                 </span>
-                <span className="tabular-nums text-slate-900">
+                <span className="tabular-nums text-stone-900">
                   {formatMovementQty(m.type, m.qty, item.unit)}
                 </span>
               </li>

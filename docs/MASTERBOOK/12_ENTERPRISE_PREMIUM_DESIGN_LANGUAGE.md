@@ -13,7 +13,7 @@ Aplikasi ERP katering industri ZKS bukan sekadar dashboard statistik; ini adalah
 
 Prinsip Utama:
 - **Single Font Family**: Menggunakan SATU keluarga font (`Inter` / Apple / Stripe / Linear style) di seluruh Public Website dan ERP Admin. Tidak ada pencampuran font.
-- **Low Fatigue**: Mengurangi kelelahan mata operator melalui palet 95% monokrom netral (Slate) dan kontras tajam.
+- **Low Fatigue**: Mengurangi kelelahan mata operator melalui bingkai charcoal, kanvas kertas hangat, dan warna yang selalu punya arti.
 - **Scannable Information**: Data numerik dan status dapat diidentifikasi dalam hitungan detik dengan tabular numbers (`font-mono tabular-nums`).
 - **Zero Decoration**: Tidak ada ilustrasi kartun, gradien pelangi, atau border radius acak.
 - **Predictable Geometry**: Mengikuti 8pt grid matematis, border radius 8px (kontrol) / 12px (kontainer), dan elevasi berbasis border hairlines.
@@ -56,32 +56,20 @@ Hanya nilai-nilai kelipatan 8 (dengan toleransi half-step 4px untuk elemen mikro
 
 ---
 
-## 4. COLOR SYSTEM (95% Monochrome + 5% Semantic Accent)
+## 4. COLOR SYSTEM
 
-### 95% Monochrome Palette (Low Eye Strain):
-- **Canvas / Background**: White (`#FFFFFF`) & Slate-50 (`#F8FAFC`)
-- **Card Surface**: White (`#FFFFFF`)
-- **Border**: Slate-200 (`#E2E8F0`) hairline border
-- **Subtle Border**: Slate-100 (`#F1F5F9`)
-- **Text Primary**: Slate-900 (`#0F172A`)
-- **Text Secondary**: Slate-600 (`#475569`)
-- **Text Muted**: Slate-500 (`#64748B`)
-
-### 5% Semantic Accents Only:
-- **Primary Action**: Blue-600 (`#2563EB`, hover `#1D4ED8`)
-- **Success / Healthy**: Emerald-700 (`#15803D`, bg `#F0FDF4`, border `#BBF7D0`)
-- **Warning / Review**: Amber-700 (`#B45309`, bg `#FFFBEB`, border `#FDE68A`)
-- **Danger / Critical**: Red-700 (`#B91C1C`, bg `#FEF2F2`, border `#FECACA`)
+Diganti 2026-11-22. Palet admin "Dapur Rempah" ditetapkan satu kali di `DESIGN_MASTERBOOK.md`,
+bagian "Admin console colour".
 
 ---
 
 ## 5. ENTERPRISE CHART DESIGN SYSTEM
 
 Seluruh visualisasi data wajib mematuhi standar desain industri catering:
-1. **Ultra-thin Grid**: Garis panduan horisontal tipis `border-b border-slate-100` dengan label angka di sebelah kiri.
+1. **Ultra-thin Grid**: Garis panduan horisontal tipis `border-b border-stone-100` dengan label angka di sebelah kiri.
 2. **Rounded Bar Caps**: Bar grafik memiliki sudut melengkung 4px di bagian atas (`rounded-t-[4px]`).
-3. **Restrained Color**: Warna default bar adalah Slate-400 netral, berubah menjadi Blue-600 hanya saat di-hover oleh kursor.
-4. **Interactive Floating Tooltips**: Tooltip hitam minimalis (`bg-slate-900 text-white text-[11px]`) muncul presisi di atas bar dengan data `tabular-nums`.
+3. **Restrained Color**: Bar memakai `brand-500`; satu bar yang disorot boleh memakai warna status.
+4. **Interactive Floating Tooltips**: Tooltip gelap (`bg-ink text-white text-[11px]`) muncul presisi di atas bar dengan data `tabular-nums`.
 5. **Purposeful Metrics**: Setiap grafik wajib menjawab pertanyaan operasional nyata:
    - *Berapa persen kapasitas kompor dan oven dapur sentral yang terpakai hari ini?*
    - *Berapa rasio pengiriman bahan baku on-time vendor bulan ini?*
@@ -95,11 +83,11 @@ Animasi hanya diizinkan untuk memberikan **umpan balik fisika dan kejelasan fung
 - **Easing Curve**: `cubic-bezier(0.16, 1, 0.3, 1)` (snappy enterprise deceleration).
 - **Interaksi Mikro yang Didukung**:
   1. *Sidebar Collapse/Expand*: `200ms ease-in-out`
-  2. *Card Hover*: `transition-all duration-200 ease-out hover:border-slate-300`
+  2. *Card Hover*: `transition-all duration-200 ease-out hover:border-stone-300`
   3. *Button Press*: `150ms ease-out active:scale-[0.98]`
-  4. *Table Row Hover*: `150ms ease-out bg-slate-50/70`
+  4. *Table Row Hover*: `150ms ease-out bg-stone-50/70`
   5. *Live Status Dot*: `animate-pulse` lembut untuk pesanan baru / bukti transfer
-  6. *Skeleton Shimmer*: `animate-pulse` monokrom Slate-100 pengganti spinner liar
+  6. *Skeleton Shimmer*: `animate-pulse` monokrom Stone-100 pengganti spinner liar
   7. *Modal & Dialog Fade*: `150ms ease-out animate-in fade-in zoom-in-95`
 
 ---
@@ -108,11 +96,11 @@ Animasi hanya diizinkan untuk memberikan **umpan balik fisika dan kejelasan fung
 
 - **Radius Tunggal**: `12px` (`rounded-[12px]`) seragam di seluruh card, modal, input, tabel, dan tombol.
 - **Border-First Elevation**:
-  - `Level 0`: `border border-slate-200/80` (flat, no shadow)
-  - `Level 1`: `border border-slate-200/80 shadow-[0_1px_2px_rgba(0,0,0,0.03)]` (card standar)
-  - `Level 2`: `border border-slate-200 shadow-[0_4px_16px_rgba(0,0,0,0.06)]` (modal & popover)
+  - `Level 0`: `border border-stone-200/80` (flat, no shadow)
+  - `Level 1`: `border border-stone-200/80 shadow-[0_1px_2px_rgba(0,0,0,0.03)]` (card standar)
+  - `Level 2`: `border border-stone-200 shadow-[0_4px_16px_rgba(0,0,0,0.06)]` (modal & popover)
 - **Struktur Konten**:
-  - `CardHeader`: Judul 16px font-medium + action slot terpisah oleh garis tipis `border-slate-100`.
+  - `CardHeader`: Judul 16px font-medium + action slot terpisah oleh garis tipis `border-stone-100`.
   - `CardContent`: Padding 24px (`p-6`) atau compact 16px (`p-4`).
   - `CardFooter`: Garis pemisah bawah tipis dengan tombol aksi di pojok kanan.
 
@@ -121,13 +109,13 @@ Animasi hanya diizinkan untuk memberikan **umpan balik fisika dan kejelasan fung
 ## 8. TABLE EXPERIENCE
 
 Tabel adalah komponen inti ERP yang paling sering dipandang operator:
-1. **Sticky Header**: `sticky top-0 bg-slate-50 z-10 border-b border-slate-200` menjamin judul kolom tetap terlihat saat scroll panjang.
+1. **Sticky Header**: `sticky top-0 bg-stone-50 z-10 border-b border-stone-200` menjamin judul kolom tetap terlihat saat scroll panjang.
 2. **Tabular Alignment**:
    - Teks deskriptif $\rightarrow$ Rata Kiri (`text-left`)
    - Tanggal & Status $\rightarrow$ Rata Tengah (`text-center`)
    - Angka stok, berat kg, harga Rp $\rightarrow$ Rata Kanan (`text-right font-mono tabular-nums`)
-3. **Hover Experience**: Background baris berubah halus ke `bg-slate-50/70` dengan cursor pointer jika baris dapat diklik.
-4. **Clean Sorting Indicators**: Indikator panah sorting (`▲`, `▼`, `⇅`) berwarna Slate-400 yang rapi.
+3. **Hover Experience**: Background baris berubah halus ke `bg-stone-50/70` dengan cursor pointer jika baris dapat diklik.
+4. **Clean Sorting Indicators**: Indikator panah sorting (`▲`, `▼`, `⇅`) berwarna Stone-400 yang rapi.
 5. **Integrated Empty & Loading Rows**: `TableLoadingRow` dengan skeleton loading dan `TableEmptyRow` dengan pesan panduan operasional.
 
 ---
@@ -136,7 +124,7 @@ Tabel adalah komponen inti ERP yang paling sering dipandang operator:
 
 - **Iconography**: Seluruh ikon menggunakan SVG seragam `18x18px` dengan ketebalan garis `strokeWidth 1.75`.
 - **Active State**: Item aktif ditandai dengan latar `bg-blue-50 text-blue-700 font-semibold border border-blue-200/80` pada mode expanded, dan indikator garis biru vertikal pada mode collapsed.
-- **Section Headers**: Teks kategori huruf kapital `text-[10px] uppercase tracking-wider text-slate-400` dengan accordion chevron yang dapat dilipat.
+- **Section Headers**: Teks kategori huruf kapital `text-[10.5px] uppercase tracking-[0.08em] text-white/50` di bingkai gelap, dengan accordion chevron yang dapat dilipat.
 - **Memory Persistence**: Status lipatan disimpan secara instan di `localStorage` menggunakan hook `useSyncExternalStore` tanpa hydration flicker.
 
 ---

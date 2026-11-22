@@ -32,8 +32,8 @@ const paymentColumns = (timeField: "settledAt" | "createdAt"): DataColumn<Paymen
     mobile: "title",
     cell: (p) => (
       <>
-        <span className="font-medium text-slate-900">{p.customerName}</span>
-        <span className="block font-mono text-[12px] font-normal text-slate-500">{p.orderCode}</span>
+        <span className="font-medium text-stone-900">{p.customerName}</span>
+        <span className="block font-mono text-[12px] font-normal text-stone-500">{p.orderCode}</span>
       </>
     ),
   },
@@ -50,8 +50,8 @@ const receivableColumns: DataColumn<ReceivableRow>[] = [
     mobile: "title",
     cell: (r) => (
       <>
-        <span className="font-medium text-slate-900">{r.customerName}</span>
-        <span className="block font-mono text-[12px] font-normal text-slate-500">
+        <span className="font-medium text-stone-900">{r.customerName}</span>
+        <span className="block font-mono text-[12px] font-normal text-stone-500">
           {r.orderCode} · {r.customerPhone}
         </span>
       </>
@@ -78,8 +78,8 @@ const refundColumns: DataColumn<RefundRow>[] = [
     mobile: "title",
     cell: (r) => (
       <>
-        <span className="font-medium text-slate-900">{r.customerName}</span>
-        <span className="block font-mono text-[12px] font-normal text-slate-500">{r.orderCode}</span>
+        <span className="font-medium text-stone-900">{r.customerName}</span>
+        <span className="block font-mono text-[12px] font-normal text-stone-500">{r.orderCode}</span>
       </>
     ),
   },
@@ -121,7 +121,7 @@ export function FinanceView({ summary, months }: FinanceViewProps) {
         </div>
         <a
           href={`/admin/finance/export?month=${summary.month}`}
-          className="inline-flex h-9 items-center justify-center rounded-[8px] border border-slate-200 bg-white px-4 text-[13px] font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+          className="inline-flex h-9 items-center justify-center rounded-[8px] border border-stone-200 bg-white px-4 text-[13px] font-medium text-stone-700 hover:bg-stone-50 transition-colors"
         >
           Unduh CSV {monthLabel}
         </a>
@@ -160,7 +160,7 @@ export function FinanceView({ summary, months }: FinanceViewProps) {
           <EmptyState title="Tidak ada bukti menunggu" description="Semua bukti transfer sudah diverifikasi." />
         ) : (
           <>
-            <p className="text-[13px] text-slate-600">Setujui atau tolak bukti transfer dari halaman Pesanan.</p>
+            <p className="text-[13px] text-stone-600">Setujui atau tolak bukti transfer dari halaman Pesanan.</p>
             <DataList rows={summary.pending} columns={paymentColumns("createdAt")} rowKey={(p) => String(p.id)} />
           </>
         ))}

@@ -86,7 +86,8 @@ Avoid changing background colors every section. A background changes only when t
 
 - **Public site** (updated 2026-11-19): one charcoal canvas `#1A1F22` throughout. Brand orange
   `#C85A17` is reserved for the proposal block and the footer.
-- **Admin ERP and the order pages**: keep the continuous paper canvas (`#FAF9F5`).
+- **Admin console**: a charcoal frame around a warm paper canvas, see "Admin console colour" below.
+- **Order pages for customers** follow the public site.
 
 See the chapter "Public Site Visual Language" below for the full specification.
 
@@ -175,6 +176,44 @@ The admin ERP keeps its own design system.
 - **Banner + block**: a full-width photo with an orange block overlapping its lower edge, inset from the
   left, 50px rounded bottom-left corner.
 - **Footer**: solid `#C85A17`, logo, link columns in small uppercase heading type.
+
+### Admin console colour: "Dapur Rempah" (2026-11-22)
+Replaces every earlier admin colour rule (monochrome slate, blue primary, paper canvas). The
+admin console is a kitchen's control room: a charcoal frame you stop noticing, a warm paper desk
+where the work happens, and the ZKS brick orange only where something is yours to act on.
+Tokens live in `src/app/globals.css` (`@theme`).
+
+| Role | Token | Value | Where |
+|---|---|---|---|
+| Frame | `ink` | `#1A1F22` | Header bar, sidebar, login backdrop |
+| Frame text | white 70% / 50% | | Nav items / section titles; active item white |
+| Desk (canvas) | `canvas` | `#F4F0E8` | Behind every page |
+| Surface | white | `#FFFFFF` | Cards, tables, dialogs |
+| Neutrals | Tailwind `stone` | | Borders, secondary text, table headers (warm, never `slate`) |
+| Brand action | `brand-600` / hover `brand-700` | `#A4460E` / `#87390B` | Primary buttons, links that act |
+| Brand accent | `brand-500` | `#C85A17` | Active-nav bar, active tab, focus rings, avatar, bars in charts |
+| Brand on dark | `brand-300` | `#E07A35` | Active nav icon, "Panel admin" label |
+| Brand tint | `brand-50` / `brand-100` | `#FDF4EE` / `#FAE3D3` | Quiet highlights (delivery stop number) |
+
+Status colours are named after the spice rack and keep Tailwind hues so badges stay familiar:
+
+| Meaning | Name | Tailwind | Examples |
+|---|---|---|---|
+| Done, money in, healthy | Daun (leaf) | `emerald` | Lunas, Diterima, Berjalan |
+| Needs a look, waiting | Kunyit (turmeric) | `amber` | Bukti bayar, Belum lunas, Menunggu |
+| Problem, money out | Cabai (chili) | `rose` | Refund, Ditolak, Bahan kurang |
+| In progress, informative | Telang (butterfly pea) | `sky` | Dimasak, Diproses |
+| The thing to do next | Bata (brick) | `brand` | Perlu ongkir, Titik antar, Piutang |
+
+Rules of use
+- **KPI cards** carry their meaning on a 3px top edge (`KpiCard tone`): `success`, `warning`,
+  `danger`, `brand` or `neutral` (stone). One colour per card, never a coloured background.
+- **Badges** are pills (`rounded-full`) with a tinted background and dark text of the same hue.
+- **Orange is for action and "you are here"**, not decoration: one primary button per area.
+- **Contrast**: white on `brand-600` 6.1:1, `brand-600` on white 6.1:1, `brand-300` on `ink` 5.5:1,
+  white 70% on `ink` above 9:1. Never put `brand-500` text on white (4.3:1).
+- **Type**: Plus Jakarta Sans for the interface, JetBrains Mono only for codes (`ZKS-…`, PO numbers);
+  amounts use the interface face with `tabular-nums`.
 
 ---
 

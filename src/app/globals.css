@@ -16,15 +16,19 @@
   --color-zks-haccp: #16A34A;
   --color-zks-alert: #DC2626;
 
-  /* Admin console: ZKS industrial orange and charcoal. White text on brand-600
-     and brand-600 text on white both pass WCAG AA (6.1:1). */
+  /* Admin console palette "Dapur Rempah" (see DESIGN_MASTERBOOK.md, Admin console colour).
+     A charcoal frame, a warm paper canvas and the ZKS brick orange; status colours stay
+     Tailwind emerald (daun), amber (kunyit), rose (cabai) and sky (telang) on stone neutrals.
+     White on brand-600 and brand-600 on white pass WCAG AA (6.1:1); brand-300 on ink 5.5:1. */
   --color-brand-50: #FDF4EE;
   --color-brand-100: #FAE3D3;
+  --color-brand-300: #E07A35;
   --color-brand-500: #C85A17;
   --color-brand-600: #A4460E;
   --color-brand-700: #87390B;
   --color-ink: #1A1F22;
-  --color-canvas: #F5F4F0;
+  --color-ink-soft: #232A2E;
+  --color-canvas: #F4F0E8;
 
   --font-serif: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "SF Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;

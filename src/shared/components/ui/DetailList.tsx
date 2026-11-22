@@ -10,8 +10,8 @@ export function DetailList({ items }: DetailListProps) {
     <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-[14px]">
       {items.map((item) => (
         <div key={item.label}>
-          <dt className="text-[12px] font-medium text-slate-500">{item.label}</dt>
-          <dd className="mt-1 text-slate-900">{item.value}</dd>
+          <dt className="text-[12px] font-medium text-stone-500">{item.label}</dt>
+          <dd className="mt-1 text-stone-900">{item.value}</dd>
         </div>
       ))}
     </dl>

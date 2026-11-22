@@ -27,12 +27,12 @@ export function ErpHeader({
   const sidebarLabel = isSidebarCollapsed ? "Buka sidebar" : "Perkecil sidebar";
 
   return (
-    <header className="sticky top-0 z-30 h-14 bg-white border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-30 h-14 bg-ink border-b border-white/10 px-4 sm:px-6 flex items-center justify-between gap-4">
       <div className="flex items-center gap-3">
         <button
           type="button"
           onClick={onToggleSidebarMobile}
-          className="md:hidden p-1.5 rounded-[8px] text-slate-600 hover:bg-slate-100 cursor-pointer"
+          className="md:hidden p-1.5 rounded-[8px] text-white/70 hover:text-white hover:bg-white/10 cursor-pointer"
           aria-label="Buka menu"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -44,7 +44,7 @@ export function ErpHeader({
           <button
             type="button"
             onClick={onToggleSidebarDesktop}
-            className="hidden md:flex p-1.5 rounded-[8px] text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
+            className="hidden md:flex p-1.5 rounded-[8px] text-white/60 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
             aria-label={sidebarLabel}
             title={sidebarLabel}
           >
@@ -62,8 +62,8 @@ export function ErpHeader({
           {/* Served unoptimized: the emblem file is already sized for 2x displays */}
           <Image src="/images/zks-emblem.png" alt="" width={38} height={24} unoptimized priority />
           <span className="flex flex-col leading-none">
-            <span className="text-[15px] font-bold tracking-tight text-ink">ZKS Catering</span>
-            <span className="text-[11px] font-medium text-brand-600 mt-1">Panel admin</span>
+            <span className="text-[15px] font-bold tracking-tight text-white">ZKS Catering</span>
+            <span className="text-[11px] font-medium text-brand-300 mt-1">Panel admin</span>
           </span>
         </Link>
       </div>

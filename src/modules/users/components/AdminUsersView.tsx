@@ -60,7 +60,7 @@ export function AdminUsersView({ admins, currentAdminId }: AdminUsersViewProps) 
       header: "Username",
       mobile: "title",
       cell: (a) => (
-        <span className="flex items-center gap-2 font-medium text-slate-900">
+        <span className="flex items-center gap-2 font-medium text-stone-900">
           {a.username}
           {a.id === currentAdminId && <Badge variant="info">Anda</Badge>}
         </span>
@@ -114,7 +114,7 @@ export function AdminUsersView({ admins, currentAdminId }: AdminUsersViewProps) 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <p className="text-[13px] text-slate-600">Semua admin punya akses penuh ke panel ini.</p>
+        <p className="text-[13px] text-stone-600">Semua admin punya akses penuh ke panel ini.</p>
         <Button onClick={() => open({ type: "create" })}>Tambah admin</Button>
       </div>
 
@@ -172,7 +172,7 @@ export function AdminUsersView({ admins, currentAdminId }: AdminUsersViewProps) 
             </>
           }
         >
-          <p className="text-[14px] text-slate-700">
+          <p className="text-[14px] text-stone-700">
             Akun <strong>{dialog.admin.username}</strong> langsung tidak bisa dipakai lagi, termasuk sesi yang sedang terbuka. Tindakan ini
             tidak bisa dibatalkan.
           </p>

@@ -14,7 +14,7 @@ interface MonthlyReportViewProps {
   months: { key: string; label: string }[];
 }
 
-const PANEL = "rounded-[12px] border border-slate-200 bg-white p-5 space-y-4";
+const PANEL = "rounded-[12px] border border-stone-200 bg-white p-5 space-y-4";
 
 export function MonthlyReportView({ report, month, months }: MonthlyReportViewProps) {
   const router = useRouter();
@@ -33,7 +33,7 @@ export function MonthlyReportView({ report, month, months }: MonthlyReportViewPr
             ))}
           </SelectField>
         </div>
-        <p className="text-[13px] text-slate-600 sm:max-w-md sm:text-right">
+        <p className="text-[13px] text-stone-600 sm:max-w-md sm:text-right">
           Pesanan dihitung pada bulan acaranya. Uang diterima dihitung pada bulan pembayaran disetujui.
         </p>
       </div>
@@ -55,39 +55,39 @@ export function MonthlyReportView({ report, month, months }: MonthlyReportViewPr
       ) : (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <section className={PANEL} aria-labelledby="pkg-title">
-            <h2 id="pkg-title" className="text-[15px] font-semibold text-slate-900">
+            <h2 id="pkg-title" className="text-[15px] font-semibold text-stone-900">
               Porsi per paket
             </h2>
             <ul className="space-y-4">
               {report.packages.map((pkg) => (
                 <li key={pkg.name} className="space-y-2 text-[14px]">
                   <div className="flex justify-between gap-4">
-                    <span className="text-slate-800">{pkg.name}</span>
-                    <span className="tabular-nums text-slate-900">{pkg.portions.toLocaleString("id-ID")} porsi</span>
+                    <span className="text-stone-800">{pkg.name}</span>
+                    <span className="tabular-nums text-stone-900">{pkg.portions.toLocaleString("id-ID")} porsi</span>
                   </div>
-                  <div className="h-2 rounded-full bg-slate-100" aria-hidden="true">
+                  <div className="h-2 rounded-full bg-stone-100" aria-hidden="true">
                     <div className="h-2 rounded-full bg-brand-500" style={{ width: `${(pkg.portions / maxPortions) * 100}%` }} />
                   </div>
-                  <p className="text-[12px] text-slate-500">{formatRupiah(pkg.value)}</p>
+                  <p className="text-[12px] text-stone-500">{formatRupiah(pkg.value)}</p>
                 </li>
               ))}
             </ul>
           </section>
 
           <section className={PANEL} aria-labelledby="cust-title">
-            <h2 id="cust-title" className="text-[15px] font-semibold text-slate-900">
+            <h2 id="cust-title" className="text-[15px] font-semibold text-stone-900">
               Pelanggan terbesar
             </h2>
-            <ol className="divide-y divide-slate-100 text-[14px]">
+            <ol className="divide-y divide-stone-100 text-[14px]">
               {report.topCustomers.map((customer, index) => (
                 <li key={customer.name} className="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0">
                   <span className="flex items-center gap-3">
-                    <span className="font-mono text-[12px] text-slate-400">{index + 1}</span>
-                    <span className="text-slate-800">{customer.name}</span>
+                    <span className="font-mono text-[12px] text-stone-400">{index + 1}</span>
+                    <span className="text-stone-800">{customer.name}</span>
                   </span>
                   <span className="text-right">
-                    <span className="block tabular-nums text-slate-900">{formatRupiah(customer.value)}</span>
-                    <span className="text-[12px] text-slate-500">{customer.orders} pesanan</span>
+                    <span className="block tabular-nums text-stone-900">{formatRupiah(customer.value)}</span>
+                    <span className="text-[12px] text-stone-500">{customer.orders} pesanan</span>
                   </span>
                 </li>
               ))}

@@ -27,13 +27,13 @@ export function RecipesView() {
         <button
           type="button"
           onClick={() => setSelected(recipe)}
-          className="text-left font-medium text-slate-900 underline decoration-slate-300 underline-offset-4 hover:decoration-slate-900 cursor-pointer"
+          className="text-left font-medium text-stone-900 underline decoration-stone-300 underline-offset-4 hover:decoration-stone-900 cursor-pointer"
         >
           {recipe.name}
         </button>
       ),
     },
-    { key: "menu", header: "Menu minggu ini", mobile: "subtitle", width: "max-w-sm", cell: (recipe) => <span className="text-slate-600">{recipe.menu}</span> },
+    { key: "menu", header: "Menu minggu ini", mobile: "subtitle", width: "max-w-sm", cell: (recipe) => <span className="text-stone-600">{recipe.menu}</span> },
     { key: "price", header: "Harga jual", align: "right", isNumeric: true, cell: (recipe) => formatRupiah(recipe.packagePrice) },
     { key: "cost", header: "Biaya bahan", align: "right", isNumeric: true, cell: (recipe) => formatRupiah(Math.round(costPerPortion(recipe))) },
     {
@@ -53,7 +53,7 @@ export function RecipesView() {
       <SampleDataNotice />
 
       <DataList rows={RECIPES} columns={columns} rowKey={(r) => r.id} />
-      <p className="text-[13px] text-slate-600">
+      <p className="text-[13px] text-stone-600">
         Food cost = biaya bahan per porsi dibagi harga jual. Target di bawah {Math.round(FOOD_COST_TARGET * 100)}%.
       </p>
 
@@ -105,7 +105,7 @@ function RecipeDialog({ recipe, onClose }: { recipe: Recipe; onClose: () => void
             const total = valid ? line.qty * portions : 0;
             return (
               <TableRow key={line.code}>
-                <TableCell className="font-medium text-slate-900">{item.name}</TableCell>
+                <TableCell className="font-medium text-stone-900">{item.name}</TableCell>
                 <TableCell align="right" isNumeric>
                   {formatQty(line.qty, item.unit)}
                 </TableCell>
@@ -119,7 +119,7 @@ function RecipeDialog({ recipe, onClose }: { recipe: Recipe; onClose: () => void
             );
           })}
           <TableRow>
-            <TableCell colSpan={3} className="font-semibold text-slate-900">
+            <TableCell colSpan={3} className="font-semibold text-stone-900">
               Total biaya bahan
             </TableCell>
             <TableCell align="right" isNumeric className="font-semibold">

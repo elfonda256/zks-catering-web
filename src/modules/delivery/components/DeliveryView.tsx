@@ -23,7 +23,7 @@ interface DeliveryViewProps {
 const DELIVERY_STEPS: OrderStatusValue[] = ["IN_DELIVERY", "COMPLETED"];
 
 const LINK_BUTTON =
-  "inline-flex h-8 items-center gap-2 rounded-[8px] border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors";
+  "inline-flex h-8 items-center gap-2 rounded-[8px] border border-stone-200 bg-white px-3 text-xs font-medium text-stone-700 hover:bg-stone-50 transition-colors";
 
 function timeOf(iso: string): string {
   return new Intl.DateTimeFormat("id-ID", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Jakarta" }).format(new Date(iso));
@@ -78,16 +78,16 @@ export function DeliveryView({ stops, days }: DeliveryViewProps) {
             const remaining = stop.totalAmount !== null ? stop.totalAmount - stop.paidAmount : 0;
             const meta = ORDER_STATUS_LABELS[status] ?? { label: stop.status, variant: "neutral" as const };
             return (
-              <li key={stop.orderId} className="rounded-[12px] border border-slate-200 bg-white">
-                <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 px-5 py-4">
+              <li key={stop.orderId} className="rounded-[12px] border border-stone-200 bg-white">
+                <div className="flex flex-wrap items-start justify-between gap-3 border-b border-stone-100 px-5 py-4">
                   <div className="flex items-start gap-4">
                     <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-700 ring-1 ring-brand-100 font-mono text-[13px] font-semibold">
                       {index + 1}
                     </span>
                     <div>
-                      <p className="text-[18px] font-bold tabular-nums text-slate-900">{timeOf(stop.eventDate)}</p>
-                      <p className="font-medium text-slate-900">{stop.customerName}</p>
-                      <p className="font-mono text-[12px] text-slate-500">{stop.orderCode}</p>
+                      <p className="text-[18px] font-bold tabular-nums text-stone-900">{timeOf(stop.eventDate)}</p>
+                      <p className="font-medium text-stone-900">{stop.customerName}</p>
+                      <p className="font-mono text-[12px] text-stone-500">{stop.orderCode}</p>
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -104,18 +104,18 @@ export function DeliveryView({ stops, days }: DeliveryViewProps) {
                 </div>
                 <div className="grid grid-cols-1 gap-4 px-5 py-4 text-[14px] md:grid-cols-2">
                   <div className="space-y-1">
-                    <p className="text-[12px] font-medium text-slate-500">Alamat</p>
-                    <p className="text-slate-800">{stop.customerAddress}</p>
+                    <p className="text-[12px] font-medium text-stone-500">Alamat</p>
+                    <p className="text-stone-800">{stop.customerAddress}</p>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-[12px] font-medium text-slate-500">Muatan</p>
-                    <p className="text-slate-800">
+                    <p className="text-[12px] font-medium text-stone-500">Muatan</p>
+                    <p className="text-stone-800">
                       {stop.totalPcs} porsi · {stop.packages}
                     </p>
                     {stop.notes && <p className="text-[13px] text-amber-900">Catatan: {stop.notes}</p>}
                   </div>
                 </div>
-                <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 px-5 py-3">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-t border-stone-100 px-5 py-3">
                   <div className="flex flex-wrap gap-2">
                     <a
                       href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(stop.customerAddress)}`}
@@ -138,7 +138,7 @@ export function DeliveryView({ stops, days }: DeliveryViewProps) {
                     </Button>
                   )}
                   {!canAct && status !== "COMPLETED" && (
-                    <p className="text-[12px] text-slate-500">Mulai dikirim setelah dapur memulai masak.</p>
+                    <p className="text-[12px] text-stone-500">Mulai dikirim setelah dapur memulai masak.</p>
                   )}
                 </div>
               </li>
@@ -164,7 +164,7 @@ export function DeliveryView({ stops, days }: DeliveryViewProps) {
             </>
           }
         >
-          <p className="text-[14px] text-slate-700">
+          <p className="text-[14px] text-stone-700">
             Status menjadi <strong>{ORDER_STATUS_LABELS[confirming.next].label}</strong>. Pelanggan menerima pemberitahuan
             WhatsApp.
           </p>

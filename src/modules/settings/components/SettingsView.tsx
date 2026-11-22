@@ -22,12 +22,12 @@ export function SettingsView({ accounts }: { accounts: BankAccount[] }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <section aria-labelledby="bank-title" className="rounded-[12px] border border-slate-200 bg-white p-5 sm:p-6 space-y-5">
+      <section aria-labelledby="bank-title" className="rounded-[12px] border border-stone-200 bg-white p-5 sm:p-6 space-y-5">
         <div className="space-y-1">
-          <h2 id="bank-title" className="text-[15px] font-semibold text-slate-900">
+          <h2 id="bank-title" className="text-[15px] font-semibold text-stone-900">
             Rekening pembayaran
           </h2>
-          <p className="text-[13px] text-slate-600">
+          <p className="text-[13px] text-stone-600">
             Tampil di halaman pembayaran pelanggan dan di pesan WhatsApp tagihan. Kosongkan satu baris untuk menghapusnya.
           </p>
         </div>
@@ -41,7 +41,7 @@ export function SettingsView({ accounts }: { accounts: BankAccount[] }) {
         {Array.from({ length: MAX_BANK_ACCOUNTS }, (_, i) => {
           const account = accounts[i];
           return (
-            <fieldset key={i} className="grid grid-cols-1 gap-4 border-t border-slate-100 pt-5 first-of-type:border-t-0 first-of-type:pt-0 sm:grid-cols-3">
+            <fieldset key={i} className="grid grid-cols-1 gap-4 border-t border-stone-100 pt-5 first-of-type:border-t-0 first-of-type:pt-0 sm:grid-cols-3">
               <legend className="sr-only">Rekening {i + 1}</legend>
               <Input id={`bank-${i}`} name={`bank-${i}`} label={`Bank ${i + 1}`} defaultValue={account?.bank} placeholder="BCA" />
               <Input id={`number-${i}`} name={`number-${i}`} label="Nomor rekening" inputMode="numeric" defaultValue={account?.number} />

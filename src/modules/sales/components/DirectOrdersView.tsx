@@ -24,14 +24,14 @@ const COLUMNS: DataColumn<DirectOrder>[] = [
     mobile: "title",
     cell: (o) => (
       <>
-        <span className="font-medium text-slate-900">{o.customer}</span>
-        <span className="block text-[12px] font-normal text-slate-500">
+        <span className="font-medium text-stone-900">{o.customer}</span>
+        <span className="block text-[12px] font-normal text-stone-500">
           {o.id} · {o.contact} · {o.channel}
         </span>
       </>
     ),
   },
-  { key: "note", header: "Catatan", mobile: "subtitle", width: "max-w-xs", cell: (o) => <span className="text-[13px] text-slate-600">{o.note}</span> },
+  { key: "note", header: "Catatan", mobile: "subtitle", width: "max-w-xs", cell: (o) => <span className="text-[13px] text-stone-600">{o.note}</span> },
   { key: "event", header: "Acara", cell: (o) => <span className="whitespace-nowrap">{relativeDay(o.day)}, {o.deliveryTime}</span> },
   { key: "recipe", header: "Paket", cell: (o) => getRecipe(o.recipeId).name },
   { key: "portions", header: "Porsi", align: "right", isNumeric: true, cell: (o) => o.portions },

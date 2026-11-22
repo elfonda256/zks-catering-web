@@ -24,7 +24,7 @@ export function PurchaseRequestsView() {
         <button
           type="button"
           onClick={() => setSelected(pr)}
-          className="whitespace-nowrap font-mono font-medium text-slate-900 underline decoration-slate-300 underline-offset-4 hover:decoration-slate-900 cursor-pointer"
+          className="whitespace-nowrap font-mono font-medium text-stone-900 underline decoration-stone-300 underline-offset-4 hover:decoration-stone-900 cursor-pointer"
         >
           {pr.id}
         </button>
@@ -42,7 +42,7 @@ export function PurchaseRequestsView() {
       cell: (pr) => (
         <>
           {relativeDay(pr.day)}
-          <span className="block text-[12px] text-slate-500">{pr.requestedBy}</span>
+          <span className="block text-[12px] text-stone-500">{pr.requestedBy}</span>
         </>
       ),
     },
@@ -93,7 +93,7 @@ export function PurchaseRequestsView() {
               { label: "PO", value: selected.poId ?? "Belum dibuat" },
             ]}
           />
-          <p className="text-[12px] text-slate-500">Harga memakai harga beli terakhir sebagai perkiraan.</p>
+          <p className="text-[12px] text-stone-500">Harga memakai harga beli terakhir sebagai perkiraan.</p>
           <LinesTable lines={selected.lines} />
         </Modal>
       )}

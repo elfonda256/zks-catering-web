@@ -54,7 +54,7 @@ export function TabsList({ className, children }: { className?: string; children
       role="tablist"
       onKeyDown={handleArrowKeys}
       className={cn(
-        "flex items-center gap-1 border-b border-slate-200 pb-px bg-transparent",
+        "flex items-center gap-1 border-b border-stone-200 pb-px bg-transparent",
         className
       )}
     >
@@ -88,7 +88,7 @@ export function TabsTrigger({
         "px-4 py-2.5 text-sm font-medium transition-all duration-150 ease-out select-none border-b-2 -mb-px rounded-t-[8px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 cursor-pointer",
         isActive
           ? "border-brand-600 text-ink font-semibold"
-          : "border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300",
+          : "border-transparent text-stone-500 hover:text-stone-800 hover:border-stone-300",
         className
       )}
     >

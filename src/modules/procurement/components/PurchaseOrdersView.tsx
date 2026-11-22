@@ -24,7 +24,7 @@ export function PurchaseOrdersView() {
         <button
           type="button"
           onClick={() => setSelected(po)}
-          className="whitespace-nowrap font-mono font-medium text-slate-900 underline decoration-slate-300 underline-offset-4 hover:decoration-slate-900 cursor-pointer"
+          className="whitespace-nowrap font-mono font-medium text-stone-900 underline decoration-stone-300 underline-offset-4 hover:decoration-stone-900 cursor-pointer"
         >
           {po.id}
         </button>

@@ -28,14 +28,14 @@ const COLUMNS: DataColumn<StockTransfer>[] = [
           const item = getIngredient(line.code);
           return (
             <li key={line.code}>
-              {item.name} <span className="tabular-nums text-slate-500">{formatQty(line.qty, item.unit)}</span>
+              {item.name} <span className="tabular-nums text-stone-500">{formatQty(line.qty, item.unit)}</span>
             </li>
           );
         })}
       </ul>
     ),
   },
-  { key: "reason", header: "Alasan", wide: true, cell: (t) => <span className="text-slate-600">{t.reason}</span> },
+  { key: "reason", header: "Alasan", wide: true, cell: (t) => <span className="text-stone-600">{t.reason}</span> },
   {
     key: "status",
     header: "Status",

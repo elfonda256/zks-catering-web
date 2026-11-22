@@ -32,7 +32,7 @@ export function StockOpnameView() {
         <button
           type="button"
           onClick={() => setSelected(o)}
-          className="whitespace-nowrap font-mono font-medium text-slate-900 underline decoration-slate-300 underline-offset-4 hover:decoration-slate-900 cursor-pointer"
+          className="whitespace-nowrap font-mono font-medium text-stone-900 underline decoration-stone-300 underline-offset-4 hover:decoration-stone-900 cursor-pointer"
         >
           {o.id}
         </button>
@@ -93,8 +93,8 @@ export function StockOpnameView() {
                 return (
                   <TableRow key={line.code}>
                     <TableCell>
-                      <span className="font-medium text-slate-900">{item.name}</span>
-                      {line.note && <span className="block text-[12px] text-slate-500">{line.note}</span>}
+                      <span className="font-medium text-stone-900">{item.name}</span>
+                      {line.note && <span className="block text-[12px] text-stone-500">{line.note}</span>}
                     </TableCell>
                     <TableCell align="right" isNumeric>
                       {formatQty(line.systemQty, item.unit)}

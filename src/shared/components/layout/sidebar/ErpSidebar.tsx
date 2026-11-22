@@ -228,14 +228,14 @@ export function ErpSidebar({
               <button
                 type="button"
                 onClick={() => toggleSection(section.id)}
-                className="w-full flex items-center justify-between px-3 py-1 text-[10.5px] font-bold text-slate-400 hover:text-slate-700 tracking-[0.08em] uppercase transition-colors"
+                className="w-full flex items-center justify-between px-3 py-1 text-[10.5px] font-bold text-white/50 hover:text-white/80 tracking-[0.08em] uppercase transition-colors"
               >
-                <span className={cn(hasActiveChild && "text-brand-600")}>
+                <span className={cn(hasActiveChild && "text-brand-300")}>
                   {section.title}
                 </span>
                 <svg
                   className={cn(
-                    "w-3 h-3 text-slate-400 transition-transform duration-200",
+                    "w-3 h-3 text-white/40 transition-transform duration-200",
                     isSectionExpanded ? "rotate-90" : "rotate-0"
                   )}
                   fill="none"
@@ -271,9 +271,9 @@ export function ErpSidebar({
                       className={cn(
                         "group relative flex items-center gap-3 px-3 py-2 rounded-lg text-[13.5px] font-medium transition-colors duration-150 ease-out",
                         active
-                          ? "bg-brand-50 text-brand-700 font-semibold"
-                          : "text-slate-600 hover:text-ink hover:bg-slate-100/70",
-                        isRoadmap && "opacity-50 cursor-not-allowed hover:bg-transparent hover:text-slate-500",
+                          ? "bg-brand-500/[0.16] text-white font-semibold"
+                          : "text-white/70 hover:text-white hover:bg-white/[0.05]",
+                        isRoadmap && "opacity-50 cursor-not-allowed hover:bg-transparent hover:text-white/50",
                         collapsed && "justify-center px-0 py-2.5"
                       )}
                     >
@@ -281,7 +281,7 @@ export function ErpSidebar({
                       <span
                         className={cn(
                           "transition-colors duration-150",
-                          active ? "text-brand-600" : "text-slate-400 group-hover:text-slate-600"
+                          active ? "text-brand-300" : "text-white/45 group-hover:text-white/80"
                         )}
                       >
                         {getNavIcon(item.id)}
@@ -294,12 +294,12 @@ export function ErpSidebar({
                       {!collapsed && item.badge && (
                         <span
                           className={cn(
-                            "text-[10px] px-1.5 py-0.5 rounded-[6px] font-medium transition-colors",
+                            "text-[10px] px-1.5 py-0.5 rounded-full font-semibold transition-colors",
                             item.badgeVariant === "warning" && "bg-amber-100 text-amber-800",
                             item.badgeVariant === "danger" && "bg-rose-100 text-rose-800",
                             item.badgeVariant === "success" && "bg-emerald-100 text-emerald-800",
                             (!item.badgeVariant || item.badgeVariant === "neutral") &&
-                              "bg-slate-100 text-slate-500"
+                              "bg-white/10 text-white/70"
                           )}
                         >
                           {item.badge}
@@ -325,24 +325,24 @@ export function ErpSidebar({
       {/* Desktop Persistent Sidebar */}
       <aside
         className={cn(
-          "hidden md:flex flex-col bg-white border-r border-slate-200 shrink-0 transition-all duration-200 ease-in-out sticky top-14 h-[calc(100vh-3.5rem)] z-20",
+          "hidden md:flex flex-col bg-ink border-r border-white/10 shrink-0 transition-all duration-200 ease-in-out sticky top-14 h-[calc(100vh-3.5rem)] z-20",
           isCollapsed ? "w-16" : "w-64"
         )}
       >
         {renderNavContent(isCollapsed)}
 
         {/* Sidebar Footer with Collapse Toggle Button & Version */}
-        <div className="p-2.5 border-t border-slate-200 bg-slate-50/60 flex items-center justify-between text-[11px] text-slate-400">
+        <div className="p-2.5 border-t border-white/10 flex items-center justify-between text-[11px] text-white/50">
           {!isCollapsed && (
             <div className="flex items-center gap-1.5 pl-1">
-              <span className="text-[11px] font-medium text-slate-500">PT Zahdan Kamal Sentosa</span>
+              <span className="text-[11px] font-medium text-white/50">PT Zahdan Kamal Sentosa</span>
             </div>
           )}
           <button
             type="button"
             onClick={onToggleCollapse}
             className={cn(
-              "p-1.5 rounded-[8px] text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition-colors cursor-pointer",
+              "p-1.5 rounded-[8px] text-white/50 hover:text-white hover:bg-white/10 transition-colors cursor-pointer",
               isCollapsed && "mx-auto"
             )}
             title={isCollapsed ? "Buka sidebar" : "Perkecil sidebar"}
@@ -367,19 +367,19 @@ export function ErpSidebar({
       {isMobileOpen && (
         <div className="fixed inset-0 z-50 flex md:hidden">
           <div
-            className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs animate-enterprise-fade-in"
+            className="fixed inset-0 bg-stone-900/50 backdrop-blur-xs animate-enterprise-fade-in"
             onClick={onCloseMobile}
           />
-          <div className="relative w-72 max-w-[85vw] bg-white h-full shadow-2xl flex flex-col z-10 animate-enterprise-drawer">
-            <div className="flex items-center justify-between px-4 py-3.5 border-b border-slate-200">
+          <div className="admin-theme relative w-72 max-w-[85vw] bg-ink h-full shadow-2xl flex flex-col z-10 animate-enterprise-drawer">
+            <div className="flex items-center justify-between px-4 py-3.5 border-b border-white/10">
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-slate-900 text-[14px]">Menu admin</span>
+                <span className="font-semibold text-white text-[14px]">Menu admin</span>
               </div>
               <button
                 type="button"
                 onClick={onCloseMobile}
                 aria-label="Tutup menu"
-                className="p-1.5 rounded-[8px] text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
+                className="p-1.5 rounded-[8px] text-white/60 hover:text-white hover:bg-white/10 cursor-pointer"
               >
                 ✕
               </button>
