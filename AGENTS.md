@@ -11,7 +11,7 @@ Extends the Global Rules. May add stricter requirements, never weaken them.
   asking.
 - Not decided yet: payment provider, hosting. Propose options with trade-offs; do not choose.
 - Verified commands (run on 2026-10-12, exit code 0): `npm run lint`, `npm run build`.
-  `npm test` (node:test via tsx, files in tests/) verified on 2026-11-22: 41 tests pass.
+  `npm test` (node:test via tsx, files in tests/) verified on 2026-11-22: 67 tests pass. `npm run seed:inventory` then `npm run seed:starter` fill master data and the starter catalog (both safe to re-run).
   Do not invent others; add here only after they have been run and confirmed.
 - Installed versions (verified from npm ls): Next.js 16.4.0, React 19.3.0, TypeScript 5.9.3,
   Tailwind CSS 4.3.3, ESLint 9.39.5.
