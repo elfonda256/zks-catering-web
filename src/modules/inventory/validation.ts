@@ -119,3 +119,32 @@ export function parseMovementInput(form: FormData): Result<MovementInput> {
 
   return { ok: true, value: { ingredientId, type, quantity, fromLocationId, toLocationId, reference, note } };
 }
+
+export interface OpnameInput {
+  locationId: number;
+  note: string | null;
+  /** Physical counts entered by the admin; ingredients left blank are not counted. */
+  counts: { ingredientId: number; counted: number }[];
+}
+
+const COUNT_FIELD = /^count:(\d+)$/;
+
+/** Reads a count sheet: `locationId`, optional `note`, and one `count:<ingredientId>` field per row. */
+export function parseOpnameInput(form: FormData): Result<OpnameInput> {
+  const locationId = positiveInt(text(form, "locationId"));
+  const note = text(form, "note").slice(0, 200) || null;
+  if (!locationId) return { ok: false, error: "Pilih lokasi yang dihitung." };
+
+  const counts: OpnameInput["counts"] = [];
+  for (const [key, raw] of form.entries()) {
+    const match = COUNT_FIELD.exec(key);
+    const value = String(raw).trim();
+    if (!match || value === "") continue;
+    const counted = parseQuantity(value, { allowZero: true });
+    if (counted === null) return { ok: false, error: `Hasil hitung "${value}" tidak valid. Pakai angka, maksimal 3 desimal.` };
+    counts.push({ ingredientId: Number(match[1]), counted });
+  }
+
+  if (counts.length === 0) return { ok: false, error: "Isi hasil hitung fisik minimal satu bahan." };
+  return { ok: true, value: { locationId, note, counts } };
+}

@@ -14,13 +14,15 @@ interface MovementFormDialogProps {
   options: InventoryFormOptions;
   /** Pre-selects an ingredient when opened from its row. */
   initialItemId?: number;
+  /** Pre-selects the movement type, for example TRANSFER on the Transfer page. */
+  initialType?: MovementType;
   onClose: () => void;
 }
 
-export function MovementFormDialog({ items, options, initialItemId, onClose }: MovementFormDialogProps) {
+export function MovementFormDialog({ items, options, initialItemId, initialType = "IN", onClose }: MovementFormDialogProps) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  const [type, setType] = useState<MovementType>("IN");
+  const [type, setType] = useState<MovementType>(initialType);
   const [itemId, setItemId] = useState<number | "">(initialItemId ?? "");
   const selected = items.find((item) => item.id === itemId);
 

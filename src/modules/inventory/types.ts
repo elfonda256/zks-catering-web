@@ -52,3 +52,22 @@ export interface MovementRow {
   note: string | null;
   createdBy: string | null;
 }
+
+export interface LocationStock {
+  ingredientId: number;
+  locationId: number;
+  quantity: number;
+}
+
+export interface OpnameRecord {
+  /** OPN-... reference shared by every adjustment of one count. */
+  reference: string;
+  createdAt: string;
+  locationName: string;
+  createdBy: string | null;
+  note: string | null;
+  /** Only ingredients whose count differed; positive means more was found than recorded. */
+  lines: { ingredientName: string; unit: string; difference: number }[];
+  /** Difference valued at each ingredient's last purchase price, in rupiah. */
+  varianceValue: number;
+}
