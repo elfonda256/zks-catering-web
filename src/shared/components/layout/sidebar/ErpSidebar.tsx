@@ -230,7 +230,7 @@ export function ErpSidebar({
                 onClick={() => toggleSection(section.id)}
                 className="w-full flex items-center justify-between px-2.5 py-1 text-[10px] font-semibold text-slate-400 hover:text-slate-700 tracking-wider uppercase transition-colors"
               >
-                <span className={cn(hasActiveChild && "text-[#1B4332] font-bold")}>
+                <span className={cn(hasActiveChild && "text-slate-900 font-bold")}>
                   {section.title}
                 </span>
                 <svg
@@ -271,7 +271,7 @@ export function ErpSidebar({
                       className={cn(
                         "group relative flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 ease-out",
                         active
-                          ? "bg-slate-100 text-[#1B4332] font-semibold"
+                          ? "bg-slate-100 text-slate-900 font-semibold"
                           : "text-slate-600 hover:text-slate-900 hover:bg-slate-50",
                         isRoadmap && "opacity-50 cursor-not-allowed hover:bg-transparent hover:text-slate-500",
                         collapsed && "justify-center px-0 py-2.5"
@@ -281,7 +281,7 @@ export function ErpSidebar({
                       <span
                         className={cn(
                           "transition-colors duration-150",
-                          active ? "text-[#1B4332]" : "text-slate-400 group-hover:text-slate-600"
+                          active ? "text-slate-900" : "text-slate-400 group-hover:text-slate-600"
                         )}
                       >
                         {getNavIcon(item.id)}
@@ -308,7 +308,7 @@ export function ErpSidebar({
 
                       {/* Active indicator bar on collapsed */}
                       {collapsed && active && (
-                        <div className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-[#1B4332] rounded-r-full" />
+                        <div className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-slate-900 rounded-r-full" />
                       )}
                     </Link>
                   );

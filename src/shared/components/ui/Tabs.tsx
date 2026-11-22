@@ -34,12 +34,27 @@ export function Tabs({ defaultValue, value, onValueChange, className, children }
   );
 }
 
+/** Arrow keys, Home and End move between tabs, as in the WAI-ARIA tabs pattern. */
+function handleArrowKeys(e: React.KeyboardEvent<HTMLDivElement>) {
+  const keys = ["ArrowLeft", "ArrowRight", "Home", "End"];
+  if (!keys.includes(e.key)) return;
+  const tabs = Array.from(e.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+  const current = tabs.indexOf(document.activeElement as HTMLButtonElement);
+  if (current === -1) return;
+  e.preventDefault();
+  const next =
+    e.key === "Home" ? 0 : e.key === "End" ? tabs.length - 1 : (current + (e.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
+  tabs[next].focus();
+  tabs[next].click();
+}
+
 export function TabsList({ className, children }: { className?: string; children: ReactNode }) {
   return (
     <div
       role="tablist"
+      onKeyDown={handleArrowKeys}
       className={cn(
-        "flex flex-wrap items-center gap-1 border-b border-slate-200 pb-px bg-transparent",
+        "flex items-center gap-1 border-b border-slate-200 pb-px bg-transparent",
         className
       )}
     >
@@ -67,6 +82,7 @@ export function TabsTrigger({
       type="button"
       role="tab"
       aria-selected={isActive}
+      tabIndex={isActive ? 0 : -1}
       onClick={() => ctx.setValue(value)}
       className={cn(
         "px-4 py-2.5 text-sm font-medium transition-all duration-150 ease-out select-none border-b-2 -mb-px rounded-t-[8px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 cursor-pointer",

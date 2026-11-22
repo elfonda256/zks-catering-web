@@ -20,8 +20,7 @@ import { EmptyState } from "@/shared/components/ui/EmptyState";
 import { Input } from "@/shared/components/ui/Input";
 import { KpiCard } from "@/shared/components/ui/KpiCard";
 import { Modal } from "@/shared/components/ui/Modal";
-import { SearchInput } from "@/shared/components/ui/SearchInput";
-import { Tabs, TabsList, TabsTrigger } from "@/shared/components/ui/Tabs";
+import { ListToolbar } from "@/shared/components/ui/ListToolbar";
 import { formatRupiah } from "@/shared/utils/formatters";
 
 interface AdminDashboardViewProps {
@@ -133,24 +132,14 @@ export default function AdminDashboardView({ orders }: AdminDashboardViewProps) 
       </section>
 
       <section aria-label="Daftar pesanan" className="space-y-4">
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
-          <Tabs defaultValue={tab} value={tab} onValueChange={(v) => setTab(v as typeof tab)} className="overflow-x-auto">
-            <TabsList className="flex-nowrap">
-              {ORDER_TABS.map((t) => (
-                <TabsTrigger key={t.id} value={t.id} className="whitespace-nowrap">
-                  {t.label} <span className="ml-1 font-mono tabular-nums text-slate-400">{counts[t.id]}</span>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
-          <SearchInput
-            value={query}
-            onChange={setQuery}
-            placeholder="Cari kode, nama, telepon, alamat"
-            aria-label="Cari pesanan"
-            className="lg:max-w-xs"
-          />
-        </div>
+        <ListToolbar
+          tabs={ORDER_TABS.map((t) => ({ ...t, count: counts[t.id] }))}
+          tab={tab}
+          onTabChange={setTab}
+          query={query}
+          onQueryChange={setQuery}
+          searchPlaceholder="Cari kode, nama, telepon, alamat"
+        />
 
         {filteredOrders.length === 0 ? (
           <EmptyState

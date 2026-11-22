@@ -60,3 +60,14 @@ export function formatDateTime(dateInput: string | Date): string {
 export function formatRupiahCompact(amount: number): string {
   return `Rp${amount.toLocaleString("id-ID")}`;
 }
+
+/** Short rupiah for KPI tiles on narrow screens: Rp 17,8 jt / Rp 950 rb. */
+export function formatRupiahShort(amount: number): string {
+  if (Math.abs(amount) >= 1_000_000) {
+    return `Rp ${(amount / 1_000_000).toLocaleString("id-ID", { maximumFractionDigits: 1 })} jt`;
+  }
+  if (Math.abs(amount) >= 1_000) {
+    return `Rp ${Math.round(amount / 1_000).toLocaleString("id-ID")} rb`;
+  }
+  return formatRupiah(amount);
+}
