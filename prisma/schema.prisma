@@ -63,6 +63,8 @@ model Admin {
   productionOrders ProductionOrder[]
   foodSafetyChecks FoodSafetyCheck[]
   directOrders     Order[]
+  samplesStored    FoodSample[]      @relation("SampleStoredBy")
+  samplesDisposed  FoodSample[]      @relation("SampleDisposedBy")
 }
 
 model Setting {
@@ -460,6 +462,7 @@ model ProductionOrder {
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
   safetyChecks      FoodSafetyCheck[]
+  sample            FoodSample?
 
   @@index([productionDate])
   @@index([status])
@@ -473,6 +476,11 @@ model FoodSafetyCheck {
   reading           String
   limit             String
   ok                Boolean
+  // Kunci titik kendali baku (src/modules/production/control-points.ts); kosong untuk cek bebas
+  controlPoint      String?
+  value             Decimal?         @db.Decimal(6, 1)
+  // Wajib diisi bila hasil di luar batas
+  correctiveAction  String?
   checkedBy         String
   createdById       Int?
   createdBy         Admin?           @relation(fields: [createdById], references: [id], onDelete: Restrict)
@@ -500,4 +508,22 @@ model StockBatch {
   movements     StockMovement[]
 
   @@index([ingredientId, expiresAt])
+}
+
+// Sampel makanan per produksi, disimpan untuk pemeriksaan bila terjadi keracunan makanan.
+model FoodSample {
+  id                Int             @id @default(autoincrement())
+  productionOrderId Int             @unique
+  productionOrder   ProductionOrder @relation(fields: [productionOrderId], references: [id], onDelete: Restrict)
+  storageLocation   String
+  note              String?
+  storedAt          DateTime        @default(now())
+  keepUntil         DateTime
+  storedById        Int?
+  storedBy          Admin?          @relation("SampleStoredBy", fields: [storedById], references: [id], onDelete: Restrict)
+  disposedAt        DateTime?
+  disposedById      Int?
+  disposedBy        Admin?          @relation("SampleDisposedBy", fields: [disposedById], references: [id], onDelete: Restrict)
+
+  @@index([keepUntil])
 }

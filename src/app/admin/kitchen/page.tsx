@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AdminPage } from "@/app/admin/_components/AdminPage";
 import { startOfWibDay } from "@/lib/wib-date";
 import { KitchenBoardView } from "@/modules/kitchen/components/KitchenBoardView";
-import { getProductionOrders, getTodaySafetyChecks } from "@/modules/production/services/production.repository";
+import { getFoodSamples, getProductionOrders, getTodaySafetyChecks } from "@/modules/production/services/production.repository";
 
 export const metadata: Metadata = {
   title: "Layar dapur | Admin ZKS Catering",
@@ -11,13 +11,18 @@ export const metadata: Metadata = {
 
 /** Rendered inside AdminPage, so it only runs after the admin session is checked. */
 async function Content() {
-  const [orders, checks] = await Promise.all([getProductionOrders({ onlyDay: startOfWibDay(new Date()) }), getTodaySafetyChecks()]);
-  return <KitchenBoardView orders={orders} checks={checks} />;
+  const now = new Date();
+  const [orders, checks, samples] = await Promise.all([
+    getProductionOrders({ onlyDay: startOfWibDay(now) }),
+    getTodaySafetyChecks(),
+    getFoodSamples(),
+  ]);
+  return <KitchenBoardView orders={orders} checks={checks} samples={samples} now={now.toISOString()} />;
 }
 
 export default function Page() {
   return (
-    <AdminPage title="Layar dapur" description="Antrean masak hari ini dan cek keamanan pangan.">
+    <AdminPage title="Layar dapur" description="Antrean masak hari ini, cek titik kendali kritis, dan sampel makanan.">
       <Content />
     </AdminPage>
   );

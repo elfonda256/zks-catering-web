@@ -7,7 +7,8 @@ import { requireAdmin } from "@/lib/require-admin";
 import { lockIngredients, planWithdrawals } from "@/modules/inventory/services/stock-ledger";
 import { ensurePackageMenuItem } from "@/modules/menu/package-menu-item";
 import { materialRequirements, nextProductionStatus, productionCode } from "@/modules/production/rules";
-import { parseProductionInput, parseRecipeInput, parseSafetyCheckInput } from "@/modules/production/validation";
+import { SAMPLE_RETENTION_HOURS } from "@/modules/production/control-points";
+import { parseProductionInput, parseRecipeInput, parseSafetyCheckInput, parseSampleInput } from "@/modules/production/validation";
 
 export interface ProductionActionResult {
   error?: string;
@@ -196,3 +197,52 @@ export async function recordSafetyCheckAction(form: FormData): Promise<Productio
   }
 }
 
+
+/** Records the food sample kept from a production order, once cooking has started. */
+export async function recordSampleAction(productionOrderId: number, form: FormData): Promise<ProductionActionResult> {
+  try {
+    const admin = await requireAdmin();
+    const parsed = parseSampleInput(form);
+    if (!parsed.ok) return { error: parsed.error };
+
+    const order = await prisma.productionOrder.findUnique({ where: { id: productionOrderId }, select: { status: true } });
+    if (!order) return { error: "Perintah produksi tidak ditemukan. Muat ulang halaman." };
+    if (!["COOKING", "PACKING", "READY"].includes(order.status)) return { error: "Sampel diambil setelah masakan matang." };
+
+    const storedAt = new Date();
+    await prisma.foodSample.create({
+      data: {
+        ...parsed.value,
+        productionOrderId,
+        storedAt,
+        keepUntil: new Date(storedAt.getTime() + SAMPLE_RETENTION_HOURS * 60 * 60 * 1000),
+        storedById: Number(admin.id) || null,
+      },
+    });
+    revalidatePath("/admin/kitchen");
+    revalidatePath("/admin/production");
+    return { success: true };
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+      return { error: "Sampel untuk produksi ini sudah dicatat." };
+    }
+    return failure(err, "mencatat sampel makanan");
+  }
+}
+
+/** Marks a sample as disposed; refused before its retention period ends. */
+export async function disposeSampleAction(sampleId: number): Promise<ProductionActionResult> {
+  try {
+    const admin = await requireAdmin();
+    const now = new Date();
+    const { count } = await prisma.foodSample.updateMany({
+      where: { id: sampleId, disposedAt: null, keepUntil: { lte: now } },
+      data: { disposedAt: now, disposedById: Number(admin.id) || null },
+    });
+    if (count === 0) return { error: "Sampel belum boleh dimusnahkan atau sudah dimusnahkan." };
+    revalidatePath("/admin/kitchen");
+    return { success: true };
+  } catch (err) {
+    return failure(err, "mencatat pemusnahan sampel");
+  }
+}

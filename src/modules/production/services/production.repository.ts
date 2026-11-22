@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { startOfWibDay } from "@/lib/wib-date";
 import { getStockByLocation } from "@/modules/inventory/services/inventory.repository";
 import { materialRequirements, productionCode } from "../rules";
-import type { MaterialNeed, ProductionRow, RecipeRow, SafetyCheckRow, SchedulableOrder } from "../types";
+import type { FoodSampleRow, MaterialNeed, ProductionRow, RecipeRow, SafetyCheckRow, SchedulableOrder } from "../types";
 
 const PACKAGE_CATEGORY_SLUG = "paket-katering";
 const LIST_LIMIT = 200;
@@ -71,7 +71,11 @@ export async function getProductionOrders({ onlyDay }: { onlyDay?: Date } = {}):
       where,
       orderBy: [{ productionDate: "asc" }, { shift: "asc" }, { deliveryTime: "asc" }],
       take: LIST_LIMIT,
-      include: { menuItem: { select: { name: true, price: true } }, order: { select: { orderCode: true } } },
+      include: {
+        menuItem: { select: { name: true, price: true } },
+        order: { select: { orderCode: true } },
+        sample: { select: { storageLocation: true, storedAt: true, keepUntil: true, disposedAt: true } },
+      },
     }),
     recipeLinesByPrice(),
     getStockByLocation(),
@@ -138,6 +142,14 @@ export async function getProductionOrders({ onlyDay }: { onlyDay?: Date } = {}):
       orderCode: o.order?.orderCode ?? null,
       needs,
       issued: issuedByCode.get(productionCode(o.id)) ?? [],
+      sample: o.sample
+        ? {
+            storageLocation: o.sample.storageLocation,
+            storedAt: o.sample.storedAt.toISOString(),
+            keepUntil: o.sample.keepUntil.toISOString(),
+            disposedAt: o.sample.disposedAt?.toISOString() ?? null,
+          }
+        : null,
     };
   });
 }
@@ -182,11 +194,38 @@ export async function getTodaySafetyChecks(): Promise<SafetyCheckRow[]> {
       ok: true,
       checkedBy: true,
       productionOrderId: true,
+      correctiveAction: true,
     },
   });
   return rows.map(({ productionOrderId, createdAt, ...row }) => ({
     ...row,
     createdAt: createdAt.toISOString(),
     productionCode: productionOrderId ? productionCode(productionOrderId) : null,
+  }));
+}
+
+const DISPOSED_HISTORY_DAYS = 7;
+
+/** Samples still kept, plus those disposed in the last week, soonest-due first. */
+export async function getFoodSamples(): Promise<FoodSampleRow[]> {
+  const rows = await prisma.foodSample.findMany({
+    where: { OR: [{ disposedAt: null }, { disposedAt: { gte: startOfWibDay(new Date(), -DISPOSED_HISTORY_DAYS) } }] },
+    orderBy: [{ disposedAt: { sort: "desc", nulls: "first" } }, { keepUntil: "asc" }],
+    take: LIST_LIMIT,
+    include: {
+      productionOrder: { select: { id: true, menuItem: { select: { name: true } } } },
+      storedBy: { select: { username: true } },
+    },
+  });
+  return rows.map((s) => ({
+    id: s.id,
+    productionCode: productionCode(s.productionOrder.id),
+    packageName: s.productionOrder.menuItem.name,
+    storageLocation: s.storageLocation,
+    note: s.note,
+    storedAt: s.storedAt.toISOString(),
+    keepUntil: s.keepUntil.toISOString(),
+    storedBy: s.storedBy?.username ?? null,
+    disposedAt: s.disposedAt?.toISOString() ?? null,
   }));
 }
