@@ -1,16 +1,19 @@
 import type { BadgeVariant } from "@/shared/components/ui/Badge";
-import type { PoStatus, PrStatus } from "@/modules/sample-data";
+import type { OrderStatus, RequestStatus } from "./types";
 
-export const PR_STATUS: Record<PrStatus, { label: string; variant: BadgeVariant }> = {
-  menunggu: { label: "Menunggu persetujuan", variant: "pending" },
-  disetujui: { label: "Disetujui", variant: "approved" },
-  ditolak: { label: "Ditolak", variant: "rejected" },
-  selesai: { label: "Selesai", variant: "completed" },
+export const PR_STATUS: Record<RequestStatus, { label: string; variant: BadgeVariant }> = {
+  PENDING: { label: "Menunggu persetujuan", variant: "pending" },
+  APPROVED: { label: "Disetujui", variant: "approved" },
+  REJECTED: { label: "Ditolak", variant: "rejected" },
+  ORDERED: { label: "Sudah jadi PO", variant: "completed" },
 };
 
-export const PO_STATUS: Record<PoStatus, { label: string; variant: BadgeVariant }> = {
-  draf: { label: "Draf", variant: "draft" },
-  dikirim: { label: "Menunggu barang", variant: "processing" },
-  "diterima-sebagian": { label: "Diterima sebagian", variant: "low_stock" },
-  diterima: { label: "Diterima", variant: "completed" },
+export const PO_STATUS: Record<OrderStatus, { label: string; variant: BadgeVariant }> = {
+  SENT: { label: "Menunggu barang", variant: "processing" },
+  PARTIALLY_RECEIVED: { label: "Diterima sebagian", variant: "low_stock" },
+  RECEIVED: { label: "Diterima", variant: "completed" },
+  CANCELLED: { label: "Dibatalkan", variant: "cancelled" },
 };
+
+/** POs that can still receive goods. */
+export const OPEN_ORDER_STATUSES: OrderStatus[] = ["SENT", "PARTIALLY_RECEIVED"];

@@ -31,6 +31,8 @@ export interface CatalogItem {
   isActive: boolean;
   /** Total across all locations: movements in minus movements out. */
   stock: number;
+  /** Earliest expiry among batches still in stock (ISO), or null when none is dated. */
+  nearestExpiry: string | null;
 }
 
 export interface InventoryFormOptions {
@@ -51,4 +53,36 @@ export interface MovementRow {
   reference: string | null;
   note: string | null;
   createdBy: string | null;
+  batchCode: string | null;
+}
+
+export interface BatchStockRow {
+  batchId: number;
+  batchCode: string;
+  expiresAt: string | null;
+  ingredientId: number;
+  ingredientName: string;
+  unit: string;
+  locationId: number;
+  locationName: string;
+  quantity: number;
+}
+
+export interface LocationStock {
+  ingredientId: number;
+  locationId: number;
+  quantity: number;
+}
+
+export interface OpnameRecord {
+  /** OPN-... reference shared by every adjustment of one count. */
+  reference: string;
+  createdAt: string;
+  locationName: string;
+  createdBy: string | null;
+  note: string | null;
+  /** Only ingredients whose count differed; positive means more was found than recorded. */
+  lines: { ingredientName: string; unit: string; difference: number }[];
+  /** Difference valued at each ingredient's last purchase price, in rupiah. */
+  varianceValue: number;
 }

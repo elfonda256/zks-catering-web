@@ -4,14 +4,22 @@ import { revalidatePath } from "next/cache";
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/require-admin";
-import { parseIngredientInput, parseMovementInput } from "@/modules/inventory/validation";
+import { lockIngredients, planWithdrawals, quantitiesAt } from "@/modules/inventory/services/stock-ledger";
+import { parseIngredientInput, parseMovementInput, parseOpnameInput } from "@/modules/inventory/validation";
+import { opnameAdjustments, opnameReference } from "@/modules/inventory/opname";
 
 export interface InventoryActionResult {
   error?: string;
   success?: boolean;
 }
 
-const INVENTORY_PATHS = ["/admin/inventory", "/admin/inventory/items", "/admin/inventory/movements"];
+const INVENTORY_PATHS = [
+  "/admin/inventory",
+  "/admin/inventory/items",
+  "/admin/inventory/movements",
+  "/admin/inventory/transfers",
+  "/admin/inventory/opname",
+];
 
 function revalidateInventory() {
   for (const path of INVENTORY_PATHS) revalidatePath(path);
@@ -64,25 +72,33 @@ export async function recordMovementAction(form: FormData): Promise<InventoryAct
     const movement = parsed.value;
     const createdById = Number(admin.id) || null;
 
+    const { batch, ...data } = movement;
     await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT pg_advisory_xact_lock(${movement.ingredientId})`;
+      await lockIngredients(tx, [data.ingredientId]);
 
-      if (movement.fromLocationId !== null) {
-        const [incoming, outgoing] = await Promise.all([
-          tx.stockMovement.aggregate({
-            where: { ingredientId: movement.ingredientId, toLocationId: movement.fromLocationId },
-            _sum: { quantity: true },
-          }),
-          tx.stockMovement.aggregate({
-            where: { ingredientId: movement.ingredientId, fromLocationId: movement.fromLocationId },
-            _sum: { quantity: true },
-          }),
-        ]);
-        const available = Number(incoming._sum.quantity ?? 0) - Number(outgoing._sum.quantity ?? 0);
-        if (movement.quantity > available + 1e-9) throw new InsufficientStockError(available);
+      // Stock leaving a location is taken batch by batch, earliest expiry first.
+      if (data.fromLocationId !== null) {
+        const { plans, shortages } = await planWithdrawals(tx, data.fromLocationId, [{ ingredientId: data.ingredientId, quantity: data.quantity }]);
+        if (shortages.length > 0) throw new InsufficientStockError(shortages[0].available);
+        await tx.stockMovement.createMany({
+          data: plans.get(data.ingredientId)!.map((a) => ({ ...data, quantity: a.quantity, batchId: a.batchId, createdById })),
+        });
+        return;
       }
 
-      await tx.stockMovement.create({ data: { ...movement, createdById } });
+      // Stock coming in from outside may carry a lot and expiry date.
+      const batchId = batch
+        ? (
+            await tx.stockBatch.create({
+              data: {
+                ingredientId: data.ingredientId,
+                batchCode: batch.code ?? data.reference ?? `MASUK-${Date.now().toString(36).toUpperCase()}`,
+                expiresAt: batch.expiresAt,
+              },
+            })
+          ).id
+        : null;
+      await tx.stockMovement.create({ data: { ...data, batchId, createdById } });
     });
 
     revalidateInventory();
@@ -98,5 +114,67 @@ export async function recordMovementAction(form: FormData): Promise<InventoryAct
     }
     console.error("Gagal mencatat mutasi stok:", err);
     return { error: "Mutasi belum tercatat karena kendala sistem. Silakan coba lagi." };
+  }
+}
+
+export interface OpnameActionResult extends InventoryActionResult {
+  /** Number of ingredients whose stock was corrected. */
+  adjusted?: number;
+  reference?: string;
+}
+
+/**
+ * Saves a physical count for one location. System stock is read under the same locks the
+ * other movements use, so the correction is exact even if stock moved while counting.
+ */
+export async function recordOpnameAction(form: FormData): Promise<OpnameActionResult> {
+  try {
+    const admin = await requireAdmin();
+    const parsed = parseOpnameInput(form);
+    if (!parsed.ok) return { error: parsed.error };
+    const { locationId, note, counts } = parsed.value;
+    const createdById = Number(admin.id) || null;
+
+    const location = await prisma.storageLocation.findUnique({ where: { id: locationId }, select: { code: true, name: true } });
+    if (!location) return { error: "Lokasi tidak ditemukan. Muat ulang halaman." };
+    const reference = opnameReference(new Date(), location.code);
+    const ingredientIds = counts.map((c) => c.ingredientId);
+
+    const adjusted = await prisma.$transaction(async (tx) => {
+      await lockIngredients(tx, ingredientIds);
+      const system = await quantitiesAt(tx, locationId, ingredientIds);
+      const adjustments = opnameAdjustments(counts, system);
+      if (adjustments.length === 0) return 0;
+
+      // A shortfall is taken from batches earliest-expiry first; a surplus has no known batch.
+      const minus = adjustments.filter((a) => a.direction === "minus");
+      const { plans } = await planWithdrawals(tx, locationId, minus.map((a) => ({ ingredientId: a.ingredientId, quantity: a.quantity })));
+      const base = { type: "ADJUSTMENT" as const, reference, note: note ?? `Stock opname ${location.name}`, createdById };
+
+      await tx.stockMovement.createMany({
+        data: adjustments.flatMap<Prisma.StockMovementCreateManyInput>((a) =>
+          a.direction === "plus"
+            ? [{ ...base, ingredientId: a.ingredientId, quantity: a.quantity, toLocationId: locationId, fromLocationId: null, batchId: null }]
+            : (plans.get(a.ingredientId) ?? []).map((part) => ({
+                ...base,
+                ingredientId: a.ingredientId,
+                quantity: part.quantity,
+                fromLocationId: locationId,
+                toLocationId: null,
+                batchId: part.batchId,
+              }))
+        ),
+      });
+      return adjustments.length;
+    });
+
+    revalidateInventory();
+    return { success: true, adjusted, reference: adjusted > 0 ? reference : undefined };
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2003") {
+      return { error: "Ada bahan yang tidak ditemukan. Muat ulang halaman." };
+    }
+    console.error("Gagal menyimpan stock opname:", err);
+    return { error: "Stock opname belum tersimpan karena kendala sistem. Silakan coba lagi." };
   }
 }

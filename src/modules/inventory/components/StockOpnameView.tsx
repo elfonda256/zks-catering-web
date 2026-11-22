@@ -1,75 +1,117 @@
 "use client";
 
 import { useState } from "react";
-import {
-  LOCATIONS,
-  STOCK_OPNAMES,
-  formatQty,
-  getIngredient,
-  relativeDay,
-  type StockOpname,
-} from "@/modules/sample-data";
 import { Badge } from "@/shared/components/ui/Badge";
 import { Button } from "@/shared/components/ui/Button";
-import { Modal } from "@/shared/components/ui/Modal";
-import { SampleDataNotice } from "@/shared/components/ui/SampleDataNotice";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/components/ui/Table";
 import { DataList, type DataColumn } from "@/shared/components/ui/DataList";
-import { formatRupiah } from "@/shared/utils/formatters";
+import { EmptyState } from "@/shared/components/ui/EmptyState";
+import { Modal } from "@/shared/components/ui/Modal";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/components/ui/Table";
+import { formatDateTime, formatRupiah } from "@/shared/utils/formatters";
+import type { CatalogItem, InventoryFormOptions, LocationStock, OpnameRecord } from "../types";
+import { formatQuantity } from "../stock";
+import { OpnameSheetDialog } from "./OpnameSheetDialog";
 
-function varianceValue(opname: StockOpname): number {
-  return opname.lines.reduce((sum, line) => {
-    if (line.countedQty === null) return sum;
-    return sum + (line.countedQty - line.systemQty) * getIngredient(line.code).price;
-  }, 0);
+interface StockOpnameViewProps {
+  items: CatalogItem[];
+  options: InventoryFormOptions;
+  stock: LocationStock[];
+  history: OpnameRecord[];
 }
 
-export function StockOpnameView() {
-  const [selected, setSelected] = useState<StockOpname | null>(null);
+function signedQuantity(qty: number, unit: string): string {
+  return `${qty > 0 ? "+" : "−"}${formatQuantity(Math.abs(qty), unit)}`;
+}
 
-  const columns: DataColumn<StockOpname>[] = [
-    { key: "id", header: "Nomor", mobile: "title", cell: (o) => (
+export function StockOpnameView({ items, options, stock, history }: StockOpnameViewProps) {
+  const [counting, setCounting] = useState(false);
+  const [selected, setSelected] = useState<OpnameRecord | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+
+  const columns: DataColumn<OpnameRecord>[] = [
+    {
+      key: "ref",
+      header: "Nomor",
+      mobile: "title",
+      cell: (o) => (
         <button
           type="button"
           onClick={() => setSelected(o)}
           className="whitespace-nowrap font-mono font-medium text-stone-900 underline decoration-stone-300 underline-offset-4 hover:decoration-stone-900 cursor-pointer"
         >
-          {o.id}
+          {o.reference}
         </button>
-      ) },
-    { key: "day", header: "Tanggal", mobile: "subtitle", cell: (o) => `${relativeDay(o.day)} · ${LOCATIONS[o.location].name}` },
-    { key: "count", header: "Bahan dihitung", align: "right", isNumeric: true, cell: (o) => o.lines.length },
+      ),
+    },
+    { key: "time", header: "Waktu", mobile: "subtitle", cell: (o) => `${formatDateTime(o.createdAt)} · ${o.locationName}` },
+    { key: "lines", header: "Bahan selisih", align: "right", isNumeric: true, cell: (o) => o.lines.length },
     {
-      key: "variance",
+      key: "value",
       header: "Nilai selisih",
       align: "right",
       isNumeric: true,
-      cell: (o) => (o.status === "selesai" ? formatRupiah(varianceValue(o)) : "—"),
-    },
-    {
-      key: "status",
-      header: "Status",
       mobile: "status",
       cell: (o) => (
-        <Badge variant={o.status === "selesai" ? "completed" : "pending"} dot>
-          {o.status === "selesai" ? "Selesai" : "Dijadwalkan"}
+        <Badge variant={o.varianceValue < 0 ? "critical" : "completed"}>
+          {o.varianceValue > 0 ? "+" : ""}
+          {formatRupiah(o.varianceValue)}
         </Badge>
       ),
     },
+    { key: "by", header: "Oleh", cell: (o) => o.createdBy ?? "—" },
   ];
+
+  const noMasterData = options.locations.length === 0 || items.length === 0;
 
   return (
     <div className="space-y-6">
-      <SampleDataNotice />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <p className="text-[13px] text-stone-600">
+          Hitung fisik per lokasi. Selisih dengan sistem langsung menjadi mutasi penyesuaian.
+        </p>
+        <Button onClick={() => setCounting(true)} disabled={noMasterData}>
+          Mulai stock opname
+        </Button>
+      </div>
 
-      <DataList rows={STOCK_OPNAMES} columns={columns} rowKey={(o) => o.id} />
+      {notice && (
+        <p role="status" className="text-[13px] text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-[8px] px-3 py-2">
+          {notice}
+        </p>
+      )}
+
+      {history.length === 0 ? (
+        <EmptyState
+          title="Belum ada stock opname dengan selisih"
+          description={
+            noMasterData
+              ? "Tambahkan bahan di Katalog bahan dulu, lalu hitung stoknya di sini."
+              : "Hitungan yang cocok dengan sistem tidak membuat catatan; yang berselisih muncul di sini."
+          }
+        />
+      ) : (
+        <DataList rows={history} columns={columns} rowKey={(o) => o.reference} />
+      )}
+
+      {counting && (
+        <OpnameSheetDialog
+          items={items}
+          options={options}
+          stock={stock}
+          onClose={() => setCounting(false)}
+          onSaved={(message) => {
+            setCounting(false);
+            setNotice(message);
+          }}
+        />
+      )}
 
       {selected && (
         <Modal
           isOpen
           onClose={() => setSelected(null)}
-          title={`Stock opname ${selected.id}`}
-          subtitle={`${LOCATIONS[selected.location].name} · ${relativeDay(selected.day)} · ${selected.countedBy}`}
+          title={`Stock opname ${selected.reference}`}
+          subtitle={`${selected.locationName} · ${formatDateTime(selected.createdAt)}${selected.createdBy ? ` · ${selected.createdBy}` : ""}`}
           maxWidth="2xl"
           footer={
             <Button variant="secondary" onClick={() => setSelected(null)}>
@@ -77,39 +119,28 @@ export function StockOpnameView() {
             </Button>
           }
         >
+          {selected.note && <p className="text-[13px] text-stone-600">{selected.note}</p>}
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Bahan</TableHead>
-                <TableHead align="right">Sistem</TableHead>
-                <TableHead align="right">Fisik</TableHead>
                 <TableHead align="right">Selisih</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {selected.lines.map((line) => {
-                const item = getIngredient(line.code);
-                const diff = line.countedQty === null ? null : line.countedQty - line.systemQty;
-                return (
-                  <TableRow key={line.code}>
-                    <TableCell>
-                      <span className="font-medium text-stone-900">{item.name}</span>
-                      {line.note && <span className="block text-[12px] text-stone-500">{line.note}</span>}
-                    </TableCell>
-                    <TableCell align="right" isNumeric>
-                      {formatQty(line.systemQty, item.unit)}
-                    </TableCell>
-                    <TableCell align="right" isNumeric>
-                      {line.countedQty === null ? "Belum dihitung" : formatQty(line.countedQty, item.unit)}
-                    </TableCell>
-                    <TableCell align="right" isNumeric className={diff && diff < 0 ? "text-rose-700" : undefined}>
-                      {diff === null ? "—" : formatQty(diff, item.unit)}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+              {selected.lines.map((line) => (
+                <TableRow key={line.ingredientName}>
+                  <TableCell>
+                    <span className="font-medium text-stone-900">{line.ingredientName}</span>
+                  </TableCell>
+                  <TableCell align="right" isNumeric className={line.difference < 0 ? "text-rose-700" : undefined}>
+                    {signedQuantity(line.difference, line.unit)}
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
+          <p className="text-[12px] text-stone-500">Nilai selisih dihitung dengan harga beli terakhir tiap bahan.</p>
         </Modal>
       )}
     </div>

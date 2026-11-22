@@ -33,7 +33,16 @@ const COLUMNS: DataColumn<MovementRow>[] = [
   },
   { key: "qty", header: "Jumlah", align: "right", isNumeric: true, cell: signedQuantity },
   { key: "route", header: "Lokasi", wide: true, cell: route },
-  { key: "ref", header: "Referensi", cell: (m) => <span className="font-mono text-[13px]">{m.reference ?? "—"}</span> },
+  {
+    key: "ref",
+    header: "Referensi",
+    cell: (m) => (
+      <span className="font-mono text-[13px]">
+        {m.reference ?? "—"}
+        {m.batchCode && m.batchCode !== m.reference && <span className="block text-[12px] text-stone-500">Batch {m.batchCode}</span>}
+      </span>
+    ),
+  },
   {
     key: "note",
     header: "Catatan",
@@ -56,7 +65,7 @@ export function StockMovementsView({ movements }: { movements: MovementRow[] }) 
     return movements.filter(
       (m) =>
         (tab === "semua" || m.type === tab) &&
-        (!q || [m.ingredientName, m.reference ?? "", m.note ?? ""].some((field) => field.toLowerCase().includes(q)))
+        (!q || [m.ingredientName, m.reference ?? "", m.note ?? "", m.batchCode ?? ""].some((field) => field.toLowerCase().includes(q)))
     );
   }, [movements, tab, query]);
 

@@ -14,13 +14,15 @@ interface MovementFormDialogProps {
   options: InventoryFormOptions;
   /** Pre-selects an ingredient when opened from its row. */
   initialItemId?: number;
+  /** Pre-selects the movement type, for example TRANSFER on the Transfer page. */
+  initialType?: MovementType;
   onClose: () => void;
 }
 
-export function MovementFormDialog({ items, options, initialItemId, onClose }: MovementFormDialogProps) {
+export function MovementFormDialog({ items, options, initialItemId, initialType = "IN", onClose }: MovementFormDialogProps) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  const [type, setType] = useState<MovementType>("IN");
+  const [type, setType] = useState<MovementType>(initialType);
   const [itemId, setItemId] = useState<number | "">(initialItemId ?? "");
   const selected = items.find((item) => item.id === itemId);
 
@@ -151,6 +153,13 @@ export function MovementFormDialog({ items, options, initialItemId, onClose }: M
             <option value="plus">Tambah stok (fisik lebih banyak)</option>
             <option value="minus">Kurangi stok (fisik lebih sedikit)</option>
           </SelectField>
+        )}
+
+        {type === "IN" && (
+          <>
+            <Input id="mv-batch" name="batchCode" label="Nomor lot / batch" maxLength={40} placeholder="Opsional, dari label supplier" />
+            <Input id="mv-exp" name="expiresAt" type="date" label="Kedaluwarsa" helperText="Isi untuk bahan segar agar FEFO berjalan." />
+          </>
         )}
 
         <Input id="mv-ref" name="reference" label="Referensi" placeholder="Nomor PO, nota, atau produksi" maxLength={40} />

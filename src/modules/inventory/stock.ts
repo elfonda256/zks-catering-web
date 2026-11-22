@@ -17,3 +17,6 @@ export const STOCK_LEVEL_BADGE: Record<StockLevel, { label: string; variant: Bad
 export function formatQuantity(qty: number, unit: string): string {
   return `${qty.toLocaleString("id-ID", { maximumFractionDigits: 3 })} ${unit}`;
 }
+
+/** Batches expiring within this many days are flagged as "segera kedaluwarsa". */
+export const EXPIRY_WARNING_DAYS = 2;

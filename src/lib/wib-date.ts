@@ -46,3 +46,14 @@ export function recentWibMonths(now: Date, count: number): { key: string; label:
     return { key, label };
   });
 }
+
+/** The instant a WIB calendar day starts, from "YYYY-MM-DD" (an <input type="date"> value). */
+export function wibDayStart(key: string): Date | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(key);
+  if (!match) return null;
+  const [year, month, day] = match.slice(1).map(Number);
+  const utc = Date.UTC(year, month - 1, day);
+  const check = new Date(utc);
+  if (check.getUTCMonth() !== month - 1 || check.getUTCDate() !== day) return null;
+  return new Date(utc - 7 * 60 * 60 * 1000);
+}

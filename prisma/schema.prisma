@@ -28,6 +28,13 @@ enum OrderStatus {
   REFUNDED
 }
 
+enum OrderSource {
+  ONLINE // form /pesan
+  PHONE
+  WHATSAPP
+  WALK_IN
+}
+
 enum PaymentType {
   DP
   SETTLEMENT
@@ -44,12 +51,20 @@ enum PaymentStatus {
 }
 
 model Admin {
-  id             Int             @id @default(autoincrement())
-  username       String          @unique
-  passwordHash   String
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  stockMovements StockMovement[]
+  id               Int               @id @default(autoincrement())
+  username         String            @unique
+  passwordHash     String
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  stockMovements   StockMovement[]
+  purchaseRequests PurchaseRequest[]
+  purchaseOrders   PurchaseOrder[]
+  goodsReceipts    GoodsReceipt[]
+  productionOrders ProductionOrder[]
+  foodSafetyChecks FoodSafetyCheck[]
+  directOrders     Order[]
+  samplesStored    FoodSample[]      @relation("SampleStoredBy")
+  samplesDisposed  FoodSample[]      @relation("SampleDisposedBy")
 }
 
 model Setting {
@@ -71,22 +86,24 @@ model Category {
 }
 
 model MenuItem {
-  id          Int         @id @default(autoincrement())
+  id          Int               @id @default(autoincrement())
   name        String
   description String?
   price       Int
   categoryId  Int
-  category    Category    @relation(fields: [categoryId], references: [id])
-  isActive    Boolean     @default(true)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  category    Category          @relation(fields: [categoryId], references: [id])
+  isActive    Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
   orderItems  OrderItem[]
+  recipeLines RecipeLine[]
+  production  ProductionOrder[]
 }
 
 model Order {
-  id                  Int         @id @default(autoincrement())
-  orderCode           String      @unique
-  accessTokenHash     String      @unique
+  id                  Int               @id @default(autoincrement())
+  orderCode           String            @unique
+  accessTokenHash     String            @unique
   customerName        String
   customerPhone       String
   customerAddress     String
@@ -99,7 +116,7 @@ model Order {
   shippingFee         Int?
   totalAmount         Int?
   dpAmount            Int?
-  status              OrderStatus @default(WAITING_ADMIN_CONFIRMATION)
+  status              OrderStatus       @default(WAITING_ADMIN_CONFIRMATION)
   termsAcceptedAt     DateTime?
   confirmedAt         DateTime?
   initialPaymentDueAt DateTime?
@@ -108,15 +125,21 @@ model Order {
   forfeitedAmount     Int?
   refundAmount        Int?
   refundedAt          DateTime?
-  isAnonymized        Boolean     @default(false)
+  // Pesanan dari telepon, WhatsApp, atau datang langsung dicatat admin
+  source              OrderSource       @default(ONLINE)
+  createdById         Int?
+  createdBy           Admin?            @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  isAnonymized        Boolean           @default(false)
   anonymizedAt        DateTime?
-  createdAt           DateTime    @default(now())
-  updatedAt           DateTime    @updatedAt
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
   items               OrderItem[]
   payments            Payment[]
+  production          ProductionOrder[]
 
   @@index([status])
   @@index([eventDate])
+  @@index([source])
 }
 
 model OrderItem {
@@ -199,6 +222,7 @@ model StorageLocation {
   name          String
   note          String?
   ingredients   Ingredient[]
+  receipts      GoodsReceipt[]
   movementsFrom StockMovement[] @relation("MovementFrom")
   movementsTo   StockMovement[] @relation("MovementTo")
 }
@@ -214,6 +238,7 @@ model Supplier {
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   ingredients  Ingredient[]
+  orders       PurchaseOrder[]
 }
 
 model Ingredient {
@@ -234,6 +259,11 @@ model Ingredient {
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
   movements         StockMovement[]
+  requestLines      PurchaseRequestLine[]
+  orderLines        PurchaseOrderLine[]
+  recipeLines       RecipeLine[]
+  batches           StockBatch[]
+  dishLines         DishLine[]
 
   @@index([typeId])
 }
@@ -253,8 +283,287 @@ model StockMovement {
   note           String?
   createdById    Int?
   createdBy      Admin?            @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  // Batch asal; kosong untuk stok lama atau penyesuaian tambah
+  batchId        Int?
+  batch          StockBatch?       @relation(fields: [batchId], references: [id], onDelete: Restrict)
   createdAt      DateTime          @default(now())
 
   @@index([ingredientId, createdAt])
   @@index([createdAt])
+  @@index([batchId])
+}
+
+// ---------------------------------------------------------------------------
+// Pengadaan: permintaan pembelian (PR), pesanan pembelian (PO), dan penerimaan barang.
+// Nomor tampilan (PR-0001, PO-0001, GRN-0001) diturunkan dari id, jadi tidak disimpan.
+// ---------------------------------------------------------------------------
+
+enum PurchaseRequestStatus {
+  PENDING // menunggu persetujuan
+  APPROVED // disetujui, belum jadi PO
+  REJECTED
+  ORDERED // sudah dibuatkan PO
+}
+
+enum PurchaseOrderStatus {
+  SENT // dikirim ke supplier, menunggu barang
+  PARTIALLY_RECEIVED
+  RECEIVED
+  CANCELLED
+}
+
+model PurchaseRequest {
+  id           Int                   @id @default(autoincrement())
+  requestedBy  String
+  reason       String
+  neededBy     DateTime
+  status       PurchaseRequestStatus @default(PENDING)
+  decisionNote String?
+  decidedAt    DateTime?
+  createdById  Int?
+  createdBy    Admin?                @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+  lines        PurchaseRequestLine[]
+  order        PurchaseOrder?
+
+  @@index([status])
+}
+
+model PurchaseRequestLine {
+  id           Int             @id @default(autoincrement())
+  requestId    Int
+  request      PurchaseRequest @relation(fields: [requestId], references: [id], onDelete: Restrict)
+  ingredientId Int
+  ingredient   Ingredient      @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+  quantity     Decimal         @db.Decimal(12, 3)
+
+  @@unique([requestId, ingredientId])
+}
+
+model PurchaseOrder {
+  id           Int                 @id @default(autoincrement())
+  supplierId   Int
+  supplier     Supplier            @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  requestId    Int?                @unique
+  request      PurchaseRequest?    @relation(fields: [requestId], references: [id], onDelete: Restrict)
+  status       PurchaseOrderStatus @default(SENT)
+  expectedDate DateTime?
+  note         String?
+  cancelledAt  DateTime?
+  createdById  Int?
+  createdBy    Admin?              @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  lines        PurchaseOrderLine[]
+  receipts     GoodsReceipt[]
+
+  @@index([status])
+  @@index([supplierId])
+}
+
+model PurchaseOrderLine {
+  id               Int                @id @default(autoincrement())
+  orderId          Int
+  order            PurchaseOrder      @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  ingredientId     Int
+  ingredient       Ingredient         @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+  quantity         Decimal            @db.Decimal(12, 3)
+  // Harga per satuan yang disepakati, dalam rupiah
+  unitPrice        Int
+  // Jumlah yang sudah diterima dan lolos cek kualitas
+  receivedQuantity Decimal            @default(0) @db.Decimal(12, 3)
+  receiptLines     GoodsReceiptLine[]
+
+  @@unique([orderId, ingredientId])
+}
+
+model GoodsReceipt {
+  id           Int                @id @default(autoincrement())
+  orderId      Int
+  order        PurchaseOrder      @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  locationId   Int
+  location     StorageLocation    @relation(fields: [locationId], references: [id], onDelete: Restrict)
+  note         String?
+  receivedById Int?
+  receivedBy   Admin?             @relation(fields: [receivedById], references: [id], onDelete: Restrict)
+  createdAt    DateTime           @default(now())
+  lines        GoodsReceiptLine[]
+
+  @@index([orderId])
+  @@index([createdAt])
+}
+
+model GoodsReceiptLine {
+  id               Int               @id @default(autoincrement())
+  receiptId        Int
+  receipt          GoodsReceipt      @relation(fields: [receiptId], references: [id], onDelete: Restrict)
+  orderLineId      Int
+  orderLine        PurchaseOrderLine @relation(fields: [orderLineId], references: [id], onDelete: Restrict)
+  // Lolos cek kualitas: masuk stok sebagai mutasi IN
+  acceptedQuantity Decimal           @db.Decimal(12, 3)
+  // Ditolak saat cek kualitas: tidak masuk stok
+  rejectedQuantity Decimal           @default(0) @db.Decimal(12, 3)
+  note             String?
+  batch            StockBatch?
+
+  @@index([receiptId])
+}
+
+// ---------------------------------------------------------------------------
+// Produksi: resep per paket, perintah produksi, dan cek keamanan pangan.
+// Bahan resep diambil dari stok (mutasi OUT) saat perintah produksi mulai dimasak.
+// ---------------------------------------------------------------------------
+
+enum ProductionStatus {
+  SCHEDULED
+  PREPARING
+  COOKING // bahan sudah diambil dari stok
+  PACKING
+  READY
+  CANCELLED
+}
+
+enum ProductionShift {
+  MORNING
+  AFTERNOON
+  NIGHT
+}
+
+model RecipeLine {
+  id                 Int        @id @default(autoincrement())
+  menuItemId         Int
+  menuItem           MenuItem   @relation(fields: [menuItemId], references: [id], onDelete: Restrict)
+  ingredientId       Int
+  ingredient         Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+  // Dalam satuan bahan, untuk satu porsi
+  quantityPerPortion Decimal    @db.Decimal(12, 3)
+
+  @@unique([menuItemId, ingredientId])
+}
+
+model ProductionOrder {
+  id                Int               @id @default(autoincrement())
+  menuItemId        Int
+  menuItem          MenuItem          @relation(fields: [menuItemId], references: [id], onDelete: Restrict)
+  orderId           Int?
+  order             Order?            @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  portions          Int
+  // Awal hari produksi dalam WIB
+  productionDate    DateTime
+  shift             ProductionShift
+  // Jam kirim "HH:MM" WIB
+  deliveryTime      String
+  destination       String
+  note              String?
+  // Variasi menu harian dari jadwal paket (1-based) untuk hari produksi; kosong = resep paket
+  menuVariation     Int?
+  status            ProductionStatus  @default(SCHEDULED)
+  materialsIssuedAt DateTime?
+  createdById       Int?
+  createdBy         Admin?            @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  safetyChecks      FoodSafetyCheck[]
+  sample            FoodSample?
+  dishes            ProductionOrderDish[]
+
+  @@index([productionDate])
+  @@index([status])
+}
+
+model FoodSafetyCheck {
+  id                Int              @id @default(autoincrement())
+  productionOrderId Int?
+  productionOrder   ProductionOrder? @relation(fields: [productionOrderId], references: [id], onDelete: Restrict)
+  point             String
+  reading           String
+  limit             String
+  ok                Boolean
+  // Kunci titik kendali baku (src/modules/production/control-points.ts); kosong untuk cek bebas
+  controlPoint      String?
+  value             Decimal?         @db.Decimal(6, 1)
+  // Wajib diisi bila hasil di luar batas
+  correctiveAction  String?
+  checkedBy         String
+  createdById       Int?
+  createdBy         Admin?           @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  createdAt         DateTime         @default(now())
+
+  @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Batch bahan: lot dan tanggal kedaluwarsa per penerimaan, dipakai untuk FEFO dan penelusuran.
+// Jumlah per batch per lokasi dihitung dari mutasi yang membawa batchId, sama seperti stok.
+// ---------------------------------------------------------------------------
+
+model StockBatch {
+  id            Int               @id @default(autoincrement())
+  ingredientId  Int
+  ingredient    Ingredient        @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+  // Nomor lot dari supplier, atau nomor penerimaan (GRN-xxxx) bila tidak ada
+  batchCode     String
+  // Awal hari kedaluwarsa (WIB); kosong untuk barang tahan lama
+  expiresAt     DateTime?
+  receiptLineId Int?              @unique
+  receiptLine   GoodsReceiptLine? @relation(fields: [receiptLineId], references: [id], onDelete: Restrict)
+  createdAt     DateTime          @default(now())
+  movements     StockMovement[]
+
+  @@index([ingredientId, expiresAt])
+}
+
+// Sampel makanan per produksi, disimpan untuk pemeriksaan bila terjadi keracunan makanan.
+model FoodSample {
+  id                Int             @id @default(autoincrement())
+  productionOrderId Int             @unique
+  productionOrder   ProductionOrder @relation(fields: [productionOrderId], references: [id], onDelete: Restrict)
+  storageLocation   String
+  note              String?
+  storedAt          DateTime        @default(now())
+  keepUntil         DateTime
+  storedById        Int?
+  storedBy          Admin?          @relation("SampleStoredBy", fields: [storedById], references: [id], onDelete: Restrict)
+  disposedAt        DateTime?
+  disposedById      Int?
+  disposedBy        Admin?          @relation("SampleDisposedBy", fields: [disposedById], references: [id], onDelete: Restrict)
+
+  @@index([keepUntil])
+}
+
+// ---------------------------------------------------------------------------
+// Menu harian: resep per hidangan (nama mengikuti jadwal menu situs publik) dan hidangan
+// yang dimasak per perintah produksi.
+// ---------------------------------------------------------------------------
+
+model Dish {
+  id         Int                   @id @default(autoincrement())
+  name       String                @unique
+  createdAt  DateTime              @default(now())
+  updatedAt  DateTime              @updatedAt
+  lines      DishLine[]
+  production ProductionOrderDish[]
+}
+
+model DishLine {
+  id                 Int        @id @default(autoincrement())
+  dishId             Int
+  dish               Dish       @relation(fields: [dishId], references: [id], onDelete: Restrict)
+  ingredientId       Int
+  ingredient         Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+  // Dalam satuan bahan, untuk satu porsi hidangan
+  quantityPerPortion Decimal    @db.Decimal(12, 3)
+
+  @@unique([dishId, ingredientId])
+}
+
+model ProductionOrderDish {
+  id                Int             @id @default(autoincrement())
+  productionOrderId Int
+  productionOrder   ProductionOrder @relation(fields: [productionOrderId], references: [id], onDelete: Restrict)
+  dishId            Int
+  dish              Dish            @relation(fields: [dishId], references: [id], onDelete: Restrict)
+
+  @@unique([productionOrderId, dishId])
 }
