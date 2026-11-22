@@ -3,12 +3,13 @@
 import { useState, useTransition } from "react";
 import { createProductionOrderAction } from "@/app/admin/production/actions";
 import { MENU_PACKAGES } from "@/data/catering-data";
-import { wibDateKey } from "@/lib/wib-date";
+import { wibDateKey, wibDayStart } from "@/lib/wib-date";
 import { Button } from "@/shared/components/ui/Button";
 import { Input } from "@/shared/components/ui/Input";
 import { Modal } from "@/shared/components/ui/Modal";
 import { SelectField } from "@/shared/components/ui/SelectField";
 import { formatDate } from "@/shared/utils/formatters";
+import { menuVariations, wibWeekday } from "../menu";
 import { SHIFT_LABELS } from "../rules";
 import type { ProductionShift, SchedulableOrder } from "../types";
 
@@ -19,6 +20,7 @@ interface FormState {
   portions: string;
   productionDate: string;
   destination: string;
+  menuVariation: string;
 }
 
 /** Schedules a production order, optionally copied from a paid customer order. */
@@ -27,7 +29,7 @@ export function ProductionFormDialog({ orders, onClose }: { orders: SchedulableO
   const [error, setError] = useState<string | null>(null);
   const today = wibDateKey(new Date());
   const [source, setSource] = useState("");
-  const [values, setValues] = useState<FormState>({ packagePrice: "", portions: "", productionDate: today, destination: "" });
+  const [values, setValues] = useState<FormState>({ packagePrice: "", portions: "", productionDate: today, destination: "", menuVariation: "" });
 
   function pickOrder(key: string) {
     setSource(key);
@@ -38,6 +40,7 @@ export function ProductionFormDialog({ orders, onClose }: { orders: SchedulableO
       portions: String(order.portions),
       productionDate: wibDateKey(new Date(order.eventDate)),
       destination: `${order.customerName}, ${order.customerAddress}`.slice(0, 120),
+      menuVariation: "",
     });
   }
 
@@ -52,8 +55,17 @@ export function ProductionFormDialog({ orders, onClose }: { orders: SchedulableO
     });
   }
 
+  // Changing the package or the day changes which daily menus exist, so the choice is reset.
   const set = (key: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
-    setValues((current) => ({ ...current, [key]: e.target.value }));
+    setValues((current) => ({
+      ...current,
+      [key]: e.target.value,
+      ...(key === "packagePrice" || key === "productionDate" ? { menuVariation: "" } : {}),
+    }));
+  const dayStart = wibDayStart(values.productionDate);
+  const weekday = dayStart ? wibWeekday(dayStart) : null;
+  const variations = weekday && values.packagePrice ? menuVariations(Number(values.packagePrice), weekday) : [];
+  const chosenDishes = values.menuVariation ? variations[Number(values.menuVariation) - 1] : undefined;
   const sourceOrder = orders.find((o) => `${o.orderId}:${o.packagePrice}` === source);
 
   return (
@@ -98,6 +110,30 @@ export function ProductionFormDialog({ orders, onClose }: { orders: SchedulableO
         </SelectField>
         <Input id="wo-portions" name="portions" label="Porsi" required inputMode="numeric" value={values.portions} onChange={set("portions")} placeholder="350" />
         <Input id="wo-date" name="productionDate" type="date" label="Tanggal produksi" required min={today} value={values.productionDate} onChange={set("productionDate")} />
+        <div className="sm:col-span-2">
+          <SelectField
+            name="menuVariation"
+            label={weekday ? `Menu harian (${weekday})` : "Menu harian"}
+            value={values.menuVariation}
+            onChange={set("menuVariation")}
+            disabled={variations.length === 0}
+            helperText={
+              !values.packagePrice
+                ? "Pilih paket dan tanggal dulu."
+                : variations.length === 0
+                  ? "Tidak ada menu harian untuk hari ini; bahan dihitung dari resep paket."
+                  : "Bahan dihitung dari resep tiap hidangan. Kosongkan untuk memakai resep paket."
+            }
+          >
+            <option value="">Tanpa menu harian (resep paket)</option>
+            {variations.map((dishes, index) => (
+              <option key={index} value={index + 1}>
+                Variasi {index + 1}: {dishes.slice(0, 3).join(", ")}…
+              </option>
+            ))}
+          </SelectField>
+          {chosenDishes && <p className="mt-2 text-[13px] text-stone-600">{chosenDishes.join(" · ")}</p>}
+        </div>
         <SelectField name="shift" label="Shift" required defaultValue="">
           <option value="" disabled>
             Pilih shift

@@ -263,6 +263,7 @@ model Ingredient {
   orderLines        PurchaseOrderLine[]
   recipeLines       RecipeLine[]
   batches           StockBatch[]
+  dishLines         DishLine[]
 
   @@index([typeId])
 }
@@ -455,6 +456,8 @@ model ProductionOrder {
   deliveryTime      String
   destination       String
   note              String?
+  // Variasi menu harian dari jadwal paket (1-based) untuk hari produksi; kosong = resep paket
+  menuVariation     Int?
   status            ProductionStatus  @default(SCHEDULED)
   materialsIssuedAt DateTime?
   createdById       Int?
@@ -463,6 +466,7 @@ model ProductionOrder {
   updatedAt         DateTime          @updatedAt
   safetyChecks      FoodSafetyCheck[]
   sample            FoodSample?
+  dishes            ProductionOrderDish[]
 
   @@index([productionDate])
   @@index([status])
@@ -526,4 +530,40 @@ model FoodSample {
   disposedBy        Admin?          @relation("SampleDisposedBy", fields: [disposedById], references: [id], onDelete: Restrict)
 
   @@index([keepUntil])
+}
+
+// ---------------------------------------------------------------------------
+// Menu harian: resep per hidangan (nama mengikuti jadwal menu situs publik) dan hidangan
+// yang dimasak per perintah produksi.
+// ---------------------------------------------------------------------------
+
+model Dish {
+  id         Int                   @id @default(autoincrement())
+  name       String                @unique
+  createdAt  DateTime              @default(now())
+  updatedAt  DateTime              @updatedAt
+  lines      DishLine[]
+  production ProductionOrderDish[]
+}
+
+model DishLine {
+  id                 Int        @id @default(autoincrement())
+  dishId             Int
+  dish               Dish       @relation(fields: [dishId], references: [id], onDelete: Restrict)
+  ingredientId       Int
+  ingredient         Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+  // Dalam satuan bahan, untuk satu porsi hidangan
+  quantityPerPortion Decimal    @db.Decimal(12, 3)
+
+  @@unique([dishId, ingredientId])
+}
+
+model ProductionOrderDish {
+  id                Int             @id @default(autoincrement())
+  productionOrderId Int
+  productionOrder   ProductionOrder @relation(fields: [productionOrderId], references: [id], onDelete: Restrict)
+  dishId            Int
+  dish              Dish            @relation(fields: [dishId], references: [id], onDelete: Restrict)
+
+  @@unique([productionOrderId, dishId])
 }

@@ -1,12 +1,13 @@
 import "./load-env";
-import { STARTER_INGREDIENTS, STARTER_RECIPES } from "../src/modules/inventory/starter-catalog";
+import { STARTER_DISHES, STARTER_INGREDIENTS, STARTER_RECIPES } from "../src/modules/inventory/starter-catalog";
 import { ensurePackageMenuItem } from "../src/modules/menu/package-menu-item";
 import { prisma } from "../src/lib/prisma";
 
 /**
- * Adds the starter ingredients and package recipes. Run `npm run seed:inventory` first.
- * Safe to run more than once: existing ingredients (by code) and packages that already have a
- * recipe are left exactly as the admin edited them. No stock is created.
+ * Adds the starter ingredients, package recipes, and common dish recipes. Run
+ * `npm run seed:inventory` first. Safe to run more than once: existing ingredients (by code) and
+ * packages or dishes that already have a recipe are left exactly as the admin edited them.
+ * No stock is created.
  */
 async function main() {
   const [types, locations] = await Promise.all([
@@ -49,7 +50,19 @@ async function main() {
     });
   }
 
-  console.log(`Selesai: ${created.count} bahan baru, ${recipes} resep paket baru.`);
+  let dishes = 0;
+  for (const [name, lines] of Object.entries(STARTER_DISHES)) {
+    await prisma.$transaction(async (tx) => {
+      const dish = await tx.dish.upsert({ where: { name }, update: {}, create: { name }, select: { id: true } });
+      if ((await tx.dishLine.count({ where: { dishId: dish.id } })) > 0) return;
+      await tx.dishLine.createMany({
+        data: lines.map((l) => ({ dishId: dish.id, ingredientId: ingredientId.get(l.code)!, quantityPerPortion: l.quantityPerPortion })),
+      });
+      dishes++;
+    });
+  }
+
+  console.log(`Selesai: ${created.count} bahan baru, ${recipes} resep paket baru, ${dishes} resep hidangan baru.`);
 }
 
 main()

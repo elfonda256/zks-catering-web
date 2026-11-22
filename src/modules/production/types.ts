@@ -34,6 +34,8 @@ export interface ProductionRow {
   status: ProductionStatus;
   materialsIssuedAt: string | null;
   orderCode: string | null;
+  /** Daily menu cooked for this order; null = package recipe. */
+  menu: { variation: number; dishes: string[]; missingRecipes: string[] } | null;
   needs: MaterialNeed[];
   sample: { storageLocation: string; storedAt: string; keepUntil: string; disposedAt: string | null } | null;
   /** What cooking actually took from stock, per batch, for traceability. */
@@ -74,4 +76,11 @@ export interface FoodSampleRow {
   keepUntil: string;
   storedBy: string | null;
   disposedAt: string | null;
+}
+
+export interface DishRow {
+  name: string;
+  lines: { ingredientId: number; ingredientName: string; unit: string; quantityPerPortion: number; lastPrice: number }[];
+  /** Where the dish appears in the public schedule, e.g. "Paket Hemat Industri · Senin #1". */
+  usedIn: string[];
 }

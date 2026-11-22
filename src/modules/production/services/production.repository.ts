@@ -4,11 +4,18 @@ import { MENU_PACKAGES } from "@/data/catering-data";
 import { prisma } from "@/lib/prisma";
 import { startOfWibDay } from "@/lib/wib-date";
 import { getStockByLocation } from "@/modules/inventory/services/inventory.repository";
+import { allScheduledDishes, combineRecipes } from "../menu";
 import { materialRequirements, productionCode } from "../rules";
-import type { FoodSampleRow, MaterialNeed, ProductionRow, RecipeRow, SafetyCheckRow, SchedulableOrder } from "../types";
+import type { DishRow, FoodSampleRow, MaterialNeed, ProductionRow, RecipeRow, SafetyCheckRow, SchedulableOrder } from "../types";
 
 const PACKAGE_CATEGORY_SLUG = "paket-katering";
 const LIST_LIMIT = 200;
+
+const RECIPE_LINE_SELECT = {
+  ingredientId: true,
+  quantityPerPortion: true,
+  ingredient: { select: { name: true, unit: true, lastPrice: true, defaultLocationId: true, defaultLocation: { select: { name: true } } } },
+} as const;
 
 interface RecipeLineData {
   ingredientId: number;
@@ -23,16 +30,7 @@ async function recipeLinesByPrice(): Promise<Map<number, { id: number; price: nu
     select: {
       id: true,
       price: true,
-      recipeLines: {
-        orderBy: { id: "asc" },
-        select: {
-          ingredientId: true,
-          quantityPerPortion: true,
-          ingredient: {
-            select: { name: true, unit: true, lastPrice: true, defaultLocationId: true, defaultLocation: { select: { name: true } } },
-          },
-        },
-      },
+      recipeLines: { orderBy: { id: "asc" }, select: RECIPE_LINE_SELECT },
     },
   });
   return new Map(items.map((item) => [item.price, item]));
@@ -75,6 +73,7 @@ export async function getProductionOrders({ onlyDay }: { onlyDay?: Date } = {}):
         menuItem: { select: { name: true, price: true } },
         order: { select: { orderCode: true } },
         sample: { select: { storageLocation: true, storedAt: true, keepUntil: true, disposedAt: true } },
+        dishes: { orderBy: { id: "asc" }, select: { dish: { select: { name: true, lines: { select: RECIPE_LINE_SELECT } } } } },
       },
     }),
     recipeLinesByPrice(),
@@ -110,10 +109,12 @@ export async function getProductionOrders({ onlyDay }: { onlyDay?: Date } = {}):
   }
 
   return orders.map((o) => {
-    const recipe: RecipeLineData[] = recipes.get(o.menuItem.price)?.recipeLines ?? [];
-    const lineById = new Map<number, RecipeLineData>(recipe.map((line) => [line.ingredientId, line]));
+    // A daily menu needs the sum of its dishes' recipes; otherwise the package recipe.
+    const dishes: { dish: { name: string; lines: RecipeLineData[] } }[] = o.dishes;
+    const recipeSets: RecipeLineData[][] = dishes.length > 0 ? dishes.map((d) => d.dish.lines) : [recipes.get(o.menuItem.price)?.recipeLines ?? []];
+    const lineById = new Map<number, RecipeLineData>(recipeSets.flat().map((line) => [line.ingredientId, line]));
     const needs: MaterialNeed[] = materialRequirements(
-      recipe.map((line) => ({ ingredientId: line.ingredientId, quantityPerPortion: Number(line.quantityPerPortion) })),
+      combineRecipes(recipeSets.map((r) => r.map((line) => ({ ingredientId: line.ingredientId, quantityPerPortion: Number(line.quantityPerPortion) })))),
       o.portions
     ).map((req) => {
       const line = lineById.get(req.ingredientId)!;
@@ -140,6 +141,14 @@ export async function getProductionOrders({ onlyDay }: { onlyDay?: Date } = {}):
       status: o.status,
       materialsIssuedAt: o.materialsIssuedAt?.toISOString() ?? null,
       orderCode: o.order?.orderCode ?? null,
+      menu:
+        dishes.length > 0 && o.menuVariation
+          ? {
+              variation: o.menuVariation,
+              dishes: dishes.map((d) => d.dish.name),
+              missingRecipes: dishes.filter((d) => d.dish.lines.length === 0).map((d) => d.dish.name),
+            }
+          : null,
       needs,
       issued: issuedByCode.get(productionCode(o.id)) ?? [],
       sample: o.sample
@@ -227,5 +236,35 @@ export async function getFoodSamples(): Promise<FoodSampleRow[]> {
     keepUntil: s.keepUntil.toISOString(),
     storedBy: s.storedBy?.username ?? null,
     disposedAt: s.disposedAt?.toISOString() ?? null,
+  }));
+}
+
+/** Every dish in the public schedule (plus any saved earlier), with its recipe and where it is served. */
+export async function getDishes(): Promise<DishRow[]> {
+  const saved = await prisma.dish.findMany({
+    select: { name: true, lines: { orderBy: { id: "asc" }, select: RECIPE_LINE_SELECT } },
+  });
+  const byName = new Map<string, { lines: RecipeLineData[] }>(saved.map((dish: { name: string; lines: RecipeLineData[] }) => [dish.name, dish]));
+
+  const usedIn = new Map<string, string[]>();
+  for (const pkg of Object.values(MENU_PACKAGES).sort((a, b) => a.price - b.price)) {
+    for (const [day, variations] of Object.entries(pkg.schedule)) {
+      variations.forEach((dishes, index) => {
+        for (const name of dishes) usedIn.set(name, [...(usedIn.get(name) ?? []), `${pkg.name} · ${day} #${index + 1}`]);
+      });
+    }
+  }
+
+  const names = [...new Set([...allScheduledDishes(), ...byName.keys()])].sort((a, b) => a.localeCompare(b, "id"));
+  return names.map((name) => ({
+    name,
+    usedIn: usedIn.get(name) ?? [],
+    lines: (byName.get(name)?.lines ?? []).map((line) => ({
+      ingredientId: line.ingredientId,
+      ingredientName: line.ingredient.name,
+      unit: line.ingredient.unit,
+      quantityPerPortion: Number(line.quantityPerPortion),
+      lastPrice: line.ingredient.lastPrice,
+    })),
   }));
 }

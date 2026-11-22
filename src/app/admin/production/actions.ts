@@ -6,9 +6,10 @@ import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/require-admin";
 import { lockIngredients, planWithdrawals } from "@/modules/inventory/services/stock-ledger";
 import { ensurePackageMenuItem } from "@/modules/menu/package-menu-item";
+import { combineRecipes } from "@/modules/production/menu";
 import { materialRequirements, nextProductionStatus, productionCode } from "@/modules/production/rules";
 import { SAMPLE_RETENTION_HOURS } from "@/modules/production/control-points";
-import { parseProductionInput, parseRecipeInput, parseSafetyCheckInput, parseSampleInput } from "@/modules/production/validation";
+import { parseDishRecipeInput, parseProductionInput, parseRecipeInput, parseSafetyCheckInput, parseSampleInput } from "@/modules/production/validation";
 
 export interface ProductionActionResult {
   error?: string;
@@ -17,8 +18,15 @@ export interface ProductionActionResult {
 
 interface RecipeIngredient {
   ingredientId: number;
+  quantityPerPortion: unknown;
   ingredient: { name: string; unit: string; defaultLocationId: number };
 }
+
+const RECIPE_LINE_SELECT = {
+  ingredientId: true,
+  quantityPerPortion: true,
+  ingredient: { select: { name: true, unit: true, defaultLocationId: true } },
+} as const;
 
 /** Thrown inside a transaction to roll it back and show the message to the admin. */
 class RejectedError extends Error {}
@@ -26,6 +34,7 @@ class RejectedError extends Error {}
 const PRODUCTION_PATHS = [
   "/admin/production",
   "/admin/production/recipes",
+  "/admin/production/dishes",
   "/admin/kitchen",
   "/admin/inventory",
   "/admin/inventory/items",
@@ -70,12 +79,21 @@ export async function createProductionOrderAction(form: FormData): Promise<Produ
     const admin = await requireAdmin();
     const parsed = parseProductionInput(form, new Date());
     if (!parsed.ok) return { error: parsed.error };
-    const { price, ...order } = parsed.value;
+    const { price, dishNames, ...order } = parsed.value;
 
     await prisma.$transaction(async (tx) => {
       const menuItem = await ensurePackageMenuItem(tx, price);
+      // Dishes of the chosen daily menu; recipes can be filled in later on the Hidangan page.
+      const dishes = await Promise.all(
+        (dishNames ?? []).map((name) => tx.dish.upsert({ where: { name }, update: {}, create: { name }, select: { id: true } }))
+      );
       await tx.productionOrder.create({
-        data: { ...order, menuItemId: menuItem.id, createdById: Number(admin.id) || null },
+        data: {
+          ...order,
+          menuItemId: menuItem.id,
+          createdById: Number(admin.id) || null,
+          dishes: { create: dishes.map((dish) => ({ dishId: dish.id })) },
+        },
       });
     });
     revalidateProduction();
@@ -99,18 +117,8 @@ export async function advanceProductionAction(productionOrderId: number): Promis
       const order = await tx.productionOrder.findUnique({
         where: { id: productionOrderId },
         include: {
-          menuItem: {
-            select: {
-              name: true,
-              recipeLines: {
-                select: {
-                  ingredientId: true,
-                  quantityPerPortion: true,
-                  ingredient: { select: { name: true, unit: true, defaultLocationId: true } },
-                },
-              },
-            },
-          },
+          menuItem: { select: { name: true, recipeLines: { select: RECIPE_LINE_SELECT } } },
+          dishes: { select: { dish: { select: { name: true, lines: { select: RECIPE_LINE_SELECT } } } } },
         },
       });
       if (!order) throw new RejectedError("Perintah produksi tidak ditemukan. Muat ulang halaman.");
@@ -118,14 +126,23 @@ export async function advanceProductionAction(productionOrderId: number): Promis
       if (!next) throw new RejectedError("Perintah produksi ini sudah selesai atau dibatalkan.");
 
       if (next === "COOKING") {
-        const recipe = order.menuItem.recipeLines;
-        if (recipe.length === 0) throw new RejectedError(`Resep ${order.menuItem.name} belum diisi. Lengkapi di Resep & bahan.`);
+        // A daily menu is cooked from its dishes' recipes; otherwise from the package recipe.
+        const dishes: { dish: { name: string; lines: RecipeIngredient[] } }[] = order.dishes;
+        let recipes: RecipeIngredient[][];
+        if (dishes.length > 0) {
+          const missing = dishes.filter((d) => d.dish.lines.length === 0).map((d) => d.dish.name);
+          if (missing.length > 0) throw new RejectedError(`Resep hidangan belum diisi: ${missing.join(", ")}. Lengkapi di Hidangan.`);
+          recipes = dishes.map((d) => d.dish.lines);
+        } else {
+          if (order.menuItem.recipeLines.length === 0) throw new RejectedError(`Resep ${order.menuItem.name} belum diisi. Lengkapi di Resep & bahan.`);
+          recipes = [order.menuItem.recipeLines];
+        }
 
         const needs = materialRequirements(
-          recipe.map((line) => ({ ingredientId: line.ingredientId, quantityPerPortion: Number(line.quantityPerPortion) })),
+          combineRecipes(recipes.map((r) => r.map((line) => ({ ingredientId: line.ingredientId, quantityPerPortion: Number(line.quantityPerPortion) })))),
           order.portions
         );
-        const lineById = new Map<number, RecipeIngredient>(recipe.map((line: RecipeIngredient) => [line.ingredientId, line]));
+        const lineById = new Map<number, RecipeIngredient>(recipes.flat().map((line) => [line.ingredientId, line]));
         await lockIngredients(tx, needs.map((need) => need.ingredientId));
 
         // Each ingredient is taken from its storage location, batch by batch, earliest expiry first.
@@ -244,5 +261,25 @@ export async function disposeSampleAction(sampleId: number): Promise<ProductionA
     return { success: true };
   } catch (err) {
     return failure(err, "mencatat pemusnahan sampel");
+  }
+}
+
+/** Replaces a dish's recipe; the dish is created the first time it gets one. */
+export async function saveDishRecipeAction(form: FormData): Promise<ProductionActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = parseDishRecipeInput(form);
+    if (!parsed.ok) return { error: parsed.error };
+    const { dishName, lines } = parsed.value;
+
+    await prisma.$transaction(async (tx) => {
+      const dish = await tx.dish.upsert({ where: { name: dishName }, update: {}, create: { name: dishName }, select: { id: true } });
+      await tx.dishLine.deleteMany({ where: { dishId: dish.id } });
+      await tx.dishLine.createMany({ data: lines.map((line) => ({ ...line, dishId: dish.id })) });
+    });
+    revalidateProduction();
+    return { success: true };
+  } catch (err) {
+    return failure(err, "menyimpan resep hidangan");
   }
 }

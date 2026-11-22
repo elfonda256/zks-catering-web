@@ -82,3 +82,39 @@ export const STARTER_RECIPES: Record<number, { code: string; quantityPerPortion:
     { code: "SMK-01", quantityPerPortion: 0.1 },
   ],
 };
+
+/**
+ * Starter recipes for the most common dishes of the daily menu, per portion. Quantities are
+ * typical catering portions (estimates): confirm with the client's kitchen.
+ */
+export const STARTER_DISHES: Record<string, { code: string; quantityPerPortion: number }[]> = {
+  "Nasi Putih": [{ code: "BRS-01", quantityPerPortion: 0.12 }],
+  Sambal: [
+    { code: "CBM-01", quantityPerPortion: 0.005 },
+    { code: "CBR-01", quantityPerPortion: 0.002 },
+    { code: "BWM-01", quantityPerPortion: 0.002 },
+    { code: "MYK-01", quantityPerPortion: 0.003 },
+  ],
+  Semangka: [{ code: "SMK-01", quantityPerPortion: 0.08 }],
+  Jeruk: [{ code: "JRK-01", quantityPerPortion: 0.08 }],
+  "Orek Tempe": [
+    { code: "TMP-01", quantityPerPortion: 0.05 },
+    { code: "KCP-01", quantityPerPortion: 0.005 },
+    { code: "BWM-01", quantityPerPortion: 0.002 },
+    { code: "MYK-01", quantityPerPortion: 0.005 },
+  ],
+  "Tempe Goreng": [
+    { code: "TMP-01", quantityPerPortion: 0.05 },
+    { code: "MYK-01", quantityPerPortion: 0.008 },
+  ],
+  "Tahu Goreng": [
+    { code: "THU-01", quantityPerPortion: 1 },
+    { code: "MYK-01", quantityPerPortion: 0.008 },
+  ],
+  "Telur Balado": [
+    { code: "TLR-01", quantityPerPortion: 0.06 },
+    { code: "CBM-01", quantityPerPortion: 0.008 },
+    { code: "BWM-01", quantityPerPortion: 0.003 },
+    { code: "MYK-01", quantityPerPortion: 0.005 },
+  ],
+};

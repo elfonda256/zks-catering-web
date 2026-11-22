@@ -2,7 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { MENU_PACKAGES } from "../src/data/catering-data.ts";
 import { CATEGORIES, LOCATIONS } from "../src/modules/inventory/master-data.ts";
-import { STARTER_INGREDIENTS, STARTER_RECIPES } from "../src/modules/inventory/starter-catalog.ts";
+import { STARTER_DISHES, STARTER_INGREDIENTS, STARTER_RECIPES } from "../src/modules/inventory/starter-catalog.ts";
+import { allScheduledDishes } from "../src/modules/production/menu.ts";
 import { INGREDIENT_UNITS, parseQuantity } from "../src/modules/inventory/validation.ts";
 
 test("setiap bahan awal memakai kategori, jenis, lokasi, dan satuan yang ada", () => {
@@ -36,5 +37,17 @@ test("food cost resep awal di bawah 50% harga jual", () => {
   for (const [price, lines] of Object.entries(STARTER_RECIPES)) {
     const cost = lines.reduce((sum, l) => sum + l.quantityPerPortion * priceOf.get(l.code)!, 0);
     assert.ok(cost / Number(price) < 0.5, `paket ${price}: food cost ${Math.round((cost / Number(price)) * 100)}%`);
+  }
+});
+
+test("resep hidangan awal hanya untuk hidangan di jadwal menu, memakai bahan awal", () => {
+  const codes = new Set(STARTER_INGREDIENTS.map((i) => i.code));
+  const scheduled = new Set(allScheduledDishes());
+  for (const [name, lines] of Object.entries(STARTER_DISHES)) {
+    assert.ok(scheduled.has(name), `hidangan ${name}`);
+    for (const line of lines) {
+      assert.ok(codes.has(line.code), `${name}: ${line.code}`);
+      assert.equal(parseQuantity(String(line.quantityPerPortion), { allowZero: false }), line.quantityPerPortion);
+    }
   }
 });

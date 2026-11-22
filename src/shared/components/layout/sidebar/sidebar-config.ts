@@ -59,6 +59,7 @@ export const erpNavSections: ErpNavSection[] = [
     items: [
       { id: "prod-dash", label: "Jadwal produksi", href: "/admin/production", exact: true },
       { id: "prod-recipe", label: "Resep & bahan", href: "/admin/production/recipes", exact: true },
+      { id: "prod-dish", label: "Hidangan", href: "/admin/production/dishes", exact: true },
       { id: "kitchen-dash", label: "Layar dapur", href: "/admin/kitchen", exact: true },
     ],
   },

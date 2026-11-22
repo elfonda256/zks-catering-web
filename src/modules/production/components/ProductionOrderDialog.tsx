@@ -61,9 +61,15 @@ export function ProductionOrderDialog({ order, onClose }: { order: ProductionRow
           { label: "Jadwal", value: `${formatDate(order.productionDate)}, shift ${SHIFT_LABELS[order.shift].toLowerCase()}` },
           { label: "Kirim", value: `${order.deliveryTime} WIB ke ${order.destination}` },
           { label: "Pesanan", value: order.orderCode ?? "Tanpa pesanan online" },
+          { label: "Menu", value: order.menu ? `Variasi ${order.menu.variation}: ${order.menu.dishes.join(", ")}` : "Resep paket" },
           ...(order.note ? [{ label: "Catatan", value: order.note }] : []),
         ]}
       />
+      {!taken && order.menu && order.menu.missingRecipes.length > 0 && (
+        <p role="status" className="text-[13px] text-amber-800 bg-amber-50 border border-amber-200 rounded-[8px] px-3 py-2">
+          Resep hidangan belum diisi: {order.menu.missingRecipes.join(", ")}. Lengkapi di Hidangan sebelum mulai masak.
+        </p>
+      )}
       {taken ? (
         <p className="text-[13px] text-stone-600">Bahan sudah diambil dari stok pada {formatDateTime(order.materialsIssuedAt!)}.</p>
       ) : order.status === "PREPARING" ? (
@@ -104,7 +110,9 @@ export function ProductionOrderDialog({ order, onClose }: { order: ProductionRow
         </section>
       )}
       {taken ? null : order.needs.length === 0 ? (
-        <p className="text-[13px] text-amber-800">Resep paket ini belum diisi, jadi kebutuhan bahan belum bisa dihitung.</p>
+        <p className="text-[13px] text-amber-800">
+          {order.menu ? "Resep hidangan menu ini belum diisi" : "Resep paket ini belum diisi"}, jadi kebutuhan bahan belum bisa dihitung.
+        </p>
       ) : (
         <Table>
           <TableHeader>

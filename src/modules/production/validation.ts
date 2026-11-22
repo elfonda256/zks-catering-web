@@ -4,6 +4,7 @@ import { MENU_PACKAGES } from "@/data/catering-data";
 import { startOfWibDay, wibDayStart } from "@/lib/wib-date";
 import { parseLines } from "@/modules/procurement/validation";
 import { getControlPoint, isWithinLimit, limitText } from "./control-points";
+import { allScheduledDishes, menuDishes, wibWeekday } from "./menu";
 import type { ProductionShift } from "./types";
 
 type Result<T> = { ok: true; value: T } | { ok: false; error: string };
@@ -34,6 +35,20 @@ export function parseRecipeInput(form: FormData): Result<RecipeInput> {
   return { ok: true, value: { price, lines: lines.value.map((l) => ({ ingredientId: l.ingredientId, quantityPerPortion: l.quantity })) } };
 }
 
+export interface DishRecipeInput {
+  dishName: string;
+  lines: { ingredientId: number; quantityPerPortion: number }[];
+}
+
+/** A dish recipe: one of the dishes in the public menu schedule, plus quantities per portion. */
+export function parseDishRecipeInput(form: FormData): Result<DishRecipeInput> {
+  const dishName = text(form, "dishName");
+  if (!allScheduledDishes().includes(dishName)) return { ok: false, error: "Hidangan tidak ada di jadwal menu. Muat ulang halaman." };
+  const lines = parseLines(form, { withPrice: false });
+  if (!lines.ok) return lines;
+  return { ok: true, value: { dishName, lines: lines.value.map((l) => ({ ingredientId: l.ingredientId, quantityPerPortion: l.quantity })) } };
+}
+
 export interface ProductionInput {
   price: number;
   orderId: number | null;
@@ -43,6 +58,9 @@ export interface ProductionInput {
   deliveryTime: string;
   destination: string;
   note: string | null;
+  /** Daily menu variation (1-based) and its dishes; null = cook from the package recipe. */
+  menuVariation: number | null;
+  dishNames: string[] | null;
 }
 
 export function parseProductionInput(form: FormData, now: Date): Result<ProductionInput> {
@@ -64,7 +82,16 @@ export function parseProductionInput(form: FormData, now: Date): Result<Producti
   if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(deliveryTime)) return { ok: false, error: "Jam kirim berformat JJ:MM, misalnya 11:30." };
   if (destination.length < 3 || destination.length > 120) return { ok: false, error: "Tujuan kirim 3–120 karakter." };
 
-  return { ok: true, value: { price, orderId, portions, productionDate, shift, deliveryTime, destination, note } };
+  const variationRaw = text(form, "menuVariation");
+  let menuVariation: number | null = null;
+  let dishNames: string[] | null = null;
+  if (variationRaw) {
+    menuVariation = Number(variationRaw);
+    dishNames = Number.isInteger(menuVariation) ? menuDishes(price, wibWeekday(productionDate), menuVariation) : null;
+    if (!dishNames) return { ok: false, error: "Variasi menu tidak ada untuk paket dan hari produksi ini." };
+  }
+
+  return { ok: true, value: { price, orderId, portions, productionDate, shift, deliveryTime, destination, note, menuVariation, dishNames } };
 }
 
 export interface SafetyCheckInput {
