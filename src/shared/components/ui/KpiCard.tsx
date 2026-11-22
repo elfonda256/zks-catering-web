@@ -135,7 +135,7 @@ export function KpiCard({
     <div
       onClick={onClick}
       className={cn(
-        "bg-white border border-slate-200/90 rounded-[12px] p-5 shadow-xs flex flex-col justify-between transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-sm select-none",
+        "bg-white border border-slate-200/90 rounded-[12px] p-4 sm:p-5 shadow-xs flex flex-col justify-between transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-sm select-none",
         onClick && "cursor-pointer",
         className
       )}
@@ -157,11 +157,11 @@ export function KpiCard({
 
       {/* Main Metric Display (Secondary Size: 26px/32px) */}
       <div className="my-1.5">
-        <div className="text-[24px] sm:text-[26px] leading-tight font-bold text-slate-900 tracking-tight font-mono tabular-nums">
+        <div className="text-[20px] sm:text-[26px] leading-tight font-bold text-slate-900 tracking-tight font-mono tabular-nums whitespace-nowrap">
           {animatedValue}
         </div>
         {subtext && (
-          <p className="text-[12px] text-slate-500 mt-1 leading-normal line-clamp-1">
+          <p className="text-[12px] text-slate-500 mt-1 leading-normal line-clamp-2 sm:line-clamp-1">
             {subtext}
           </p>
         )}

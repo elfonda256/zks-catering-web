@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useId, ReactNode, HTMLAttributes } from "react";
+import React, { useEffect, useId, useRef, useState, ReactNode, HTMLAttributes } from "react";
 import { cn } from "@/shared/utils/cn";
 
 export interface ModalProps {
@@ -13,6 +13,8 @@ export interface ModalProps {
   maxWidth?: "sm" | "md" | "lg" | "xl" | "2xl" | "4xl";
 }
 
+const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 export function Modal({
   isOpen,
   onClose,
@@ -23,10 +25,35 @@ export function Modal({
   maxWidth = "xl",
 }: ModalProps) {
   const titleId = useId();
+  const panelRef = useRef<HTMLDivElement>(null);
+  // Captured during the first render, before any autoFocus field inside the dialog takes focus.
+  const [opener] = useState<HTMLElement | null>(() =>
+    typeof document === "undefined" ? null : (document.activeElement as HTMLElement | null)
+  );
 
+  // Escape closes; Tab stays inside the dialog.
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (e.key !== "Tab" || !panelRef.current) return;
+      const focusable = panelRef.current.querySelectorAll<HTMLElement>(FOCUSABLE);
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+      if (active === panelRef.current || !panelRef.current.contains(active)) {
+        e.preventDefault();
+        (e.shiftKey ? last : first).focus();
+      } else if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     }
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -37,6 +64,19 @@ export function Modal({
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [isOpen, onClose]);
+
+  // Move focus into the dialog when it opens and give it back to the opener when it closes,
+  // unless a field inside already asked for focus (autoFocus).
+  useEffect(() => {
+    if (!isOpen) return;
+    if (!panelRef.current?.contains(document.activeElement)) {
+      panelRef.current?.focus();
+    }
+    // The opener may be gone after the action (e.g. an approved row); then focus stays on the page.
+    return () => {
+      if (opener?.isConnected) opener.focus();
+    };
+  }, [isOpen, opener]);
 
   if (!isOpen) return null;
 
@@ -63,8 +103,10 @@ export function Modal({
       />
 
       <div
+        ref={panelRef}
+        tabIndex={-1}
         className={cn(
-          "relative w-full bg-white border border-slate-200 rounded-[12px] shadow-xl overflow-hidden flex flex-col max-h-[90vh] z-10 animate-enterprise-modal",
+          "relative w-full bg-white border border-slate-200 rounded-[12px] focus:outline-none shadow-xl overflow-hidden flex flex-col max-h-[90vh] z-10 animate-enterprise-modal",
           widthClasses[maxWidth]
         )}
       >
