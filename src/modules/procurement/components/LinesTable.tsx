@@ -1,45 +1,49 @@
-import { formatQty, getIngredient } from "@/modules/sample-data";
-import { lineTotal, type PricedLine } from "../lines";
+import { formatQuantity } from "@/modules/inventory/stock";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/components/ui/Table";
 import { formatRupiah } from "@/shared/utils/formatters";
+import { lineTotal } from "../documents";
+import type { DocumentLine, OrderLineRow } from "../types";
 
 interface LinesTableProps {
-  lines: PricedLine[];
+  lines: (DocumentLine | OrderLineRow)[];
 }
 
-/** Ingredient lines with quantity, unit price and subtotal, for PR and PO dialogs. */
+/** Ingredient lines with quantity, unit price and subtotal; PO lines also show what has arrived. */
 export function LinesTable({ lines }: LinesTableProps) {
+  const showReceived = lines.some((line) => "receivedQuantity" in line);
   return (
     <Table>
       <TableHeader>
         <TableRow>
           <TableHead>Bahan</TableHead>
           <TableHead align="right">Jumlah</TableHead>
+          {showReceived && <TableHead align="right">Diterima</TableHead>}
           <TableHead align="right">Harga satuan</TableHead>
           <TableHead align="right">Subtotal</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {lines.map((line) => {
-          const item = getIngredient(line.code);
-          const price = line.price ?? item.price;
-          return (
-            <TableRow key={line.code}>
-              <TableCell className="font-medium text-stone-900">{item.name}</TableCell>
+        {lines.map((line) => (
+          <TableRow key={line.ingredientId}>
+            <TableCell className="font-medium text-stone-900">{line.ingredientName}</TableCell>
+            <TableCell align="right" isNumeric>
+              {formatQuantity(line.quantity, line.unit)}
+            </TableCell>
+            {showReceived && (
               <TableCell align="right" isNumeric>
-                {formatQty(line.qty, item.unit)}
+                {"receivedQuantity" in line ? formatQuantity(line.receivedQuantity, line.unit) : "—"}
               </TableCell>
-              <TableCell align="right" isNumeric>
-                {formatRupiah(price)}
-              </TableCell>
-              <TableCell align="right" isNumeric>
-                {formatRupiah(line.qty * price)}
-              </TableCell>
-            </TableRow>
-          );
-        })}
+            )}
+            <TableCell align="right" isNumeric>
+              {formatRupiah(line.unitPrice)}
+            </TableCell>
+            <TableCell align="right" isNumeric>
+              {formatRupiah(Math.round(line.quantity * line.unitPrice))}
+            </TableCell>
+          </TableRow>
+        ))}
         <TableRow>
-          <TableCell colSpan={3} className="font-semibold text-stone-900">
+          <TableCell colSpan={showReceived ? 4 : 3} className="font-semibold text-stone-900">
             Total
           </TableCell>
           <TableCell align="right" isNumeric className="font-semibold">

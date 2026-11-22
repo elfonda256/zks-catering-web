@@ -3,7 +3,11 @@
  * Recipes match the three public menu packages (see src/data/catering-data.ts).
  */
 
-import type { Line } from "./transactions";
+/** An ingredient code and quantity. */
+export interface Line {
+  code: string;
+  qty: number;
+}
 
 export interface Recipe {
   id: string;

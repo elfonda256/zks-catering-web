@@ -1,51 +1,53 @@
 "use client";
 
 import { useState } from "react";
-import {
-  GOODS_RECEIPTS,
-  LOCATIONS,
-  PURCHASE_ORDERS,
-  formatQty,
-  getIngredient,
-  getSupplier,
-  relativeDay,
-  type GoodsReceipt,
-} from "@/modules/sample-data";
+import { formatQuantity } from "@/modules/inventory/stock";
+import { OPEN_ORDER_STATUSES } from "@/modules/procurement/status";
+import type { OrderRow, ProcurementOptions, ReceiptRow } from "@/modules/procurement/types";
 import { Badge } from "@/shared/components/ui/Badge";
 import { Button } from "@/shared/components/ui/Button";
-import { DetailList } from "@/shared/components/ui/DetailList";
-import { KpiCard } from "@/shared/components/ui/KpiCard";
-import { Modal } from "@/shared/components/ui/Modal";
-import { SampleDataNotice } from "@/shared/components/ui/SampleDataNotice";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/components/ui/Table";
 import { DataList, type DataColumn } from "@/shared/components/ui/DataList";
+import { DetailList } from "@/shared/components/ui/DetailList";
+import { EmptyState } from "@/shared/components/ui/EmptyState";
+import { KpiCard } from "@/shared/components/ui/KpiCard";
 import { KpiGrid } from "@/shared/components/ui/KpiGrid";
+import { Modal } from "@/shared/components/ui/Modal";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/components/ui/Table";
+import { formatDateTime } from "@/shared/utils/formatters";
+import { ReceiveGoodsDialog } from "./ReceiveGoodsDialog";
 
-const hasRejection = (receipt: GoodsReceipt) => receipt.lines.some((line) => line.rejectedQty > 0);
+const hasRejection = (receipt: ReceiptRow) => receipt.lines.some((line) => line.rejected > 0);
 
-function supplierOf(receipt: GoodsReceipt) {
-  const po = PURCHASE_ORDERS.find((p) => p.id === receipt.poId);
-  return po ? getSupplier(po.supplierId).name : "—";
+interface GoodsReceivingViewProps {
+  receipts: ReceiptRow[];
+  orders: OrderRow[];
+  options: ProcurementOptions;
 }
 
-export function GoodsReceivingView() {
-  const [selected, setSelected] = useState<GoodsReceipt | null>(null);
-  const awaiting = PURCHASE_ORDERS.filter((po) => po.status === "dikirim");
+export function GoodsReceivingView({ receipts, orders, options }: GoodsReceivingViewProps) {
+  const [receiving, setReceiving] = useState(false);
+  const [selected, setSelected] = useState<ReceiptRow | null>(null);
+  const awaiting = orders.filter((o) => OPEN_ORDER_STATUSES.includes(o.status));
 
-  const columns: DataColumn<GoodsReceipt>[] = [
-    { key: "id", header: "Nomor", mobile: "title", cell: (r) => (
+  const columns: DataColumn<ReceiptRow>[] = [
+    {
+      key: "code",
+      header: "Nomor",
+      mobile: "title",
+      cell: (r) => (
         <button
           type="button"
           onClick={() => setSelected(r)}
           className="whitespace-nowrap font-mono font-medium text-stone-900 underline decoration-stone-300 underline-offset-4 hover:decoration-stone-900 cursor-pointer"
         >
-          {r.id}
+          {r.code}
         </button>
-      ) },
-    { key: "supplier", header: "Supplier", mobile: "subtitle", cell: (r) => supplierOf(r) },
-    { key: "day", header: "Tanggal", cell: (r) => relativeDay(r.day) },
-    { key: "po", header: "Dari PO", cell: (r) => <span className="font-mono text-[13px]">{r.poId}</span> },
-    { key: "location", header: "Masuk ke", cell: (r) => LOCATIONS[r.location].name },
+      ),
+    },
+    { key: "supplier", header: "Supplier", mobile: "subtitle", cell: (r) => r.supplierName },
+    { key: "time", header: "Waktu", cell: (r) => <span className="whitespace-nowrap">{formatDateTime(r.createdAt)}</span> },
+    { key: "po", header: "Dari PO", cell: (r) => <span className="font-mono text-[13px]">{r.orderCode}</span> },
+    { key: "location", header: "Masuk ke", cell: (r) => r.locationName },
     {
       key: "qc",
       header: "Cek kualitas",
@@ -65,22 +67,39 @@ export function GoodsReceivingView() {
 
   return (
     <div className="space-y-6">
-      <SampleDataNotice />
-
       <KpiGrid label="Ringkasan penerimaan" columns={3}>
-        <KpiCard label="PO menunggu barang" tone="brand" value={awaiting.length} subtext={awaiting.map((po) => po.id).join(", ") || "Tidak ada"} />
-        <KpiCard label="Penerimaan tercatat" value={GOODS_RECEIPTS.length} subtext="Termasuk hasil cek kualitas" />
-        <KpiCard label="Ada barang ditolak" tone="danger" value={GOODS_RECEIPTS.filter(hasRejection).length} subtext="Gagal cek kualitas" />
+        <KpiCard label="PO menunggu barang" tone="brand" value={awaiting.length} subtext={awaiting.map((o) => o.code).slice(0, 4).join(", ") || "Tidak ada"} />
+        <KpiCard label="Penerimaan tercatat" value={receipts.length} subtext="200 terbaru" />
+        <KpiCard label="Ada barang ditolak" tone="danger" value={receipts.filter(hasRejection).length} subtext="Gagal cek kualitas" />
       </KpiGrid>
 
-      <DataList rows={GOODS_RECEIPTS} columns={columns} rowKey={(r) => r.id} />
+      <div className="flex justify-end">
+        <Button onClick={() => setReceiving(true)} disabled={awaiting.length === 0}>
+          Terima barang
+        </Button>
+      </div>
+
+      {receipts.length === 0 ? (
+        <EmptyState
+          title="Belum ada penerimaan barang"
+          description={
+            awaiting.length === 0
+              ? "Penerimaan dicatat dari PO yang sudah dikirim ke supplier. Buat PO dulu di Pengadaan."
+              : "Saat barang datang, klik Terima barang, cek kualitasnya, lalu barang yang lolos langsung masuk stok."
+          }
+        />
+      ) : (
+        <DataList rows={receipts} columns={columns} rowKey={(r) => String(r.id)} />
+      )}
+
+      {receiving && <ReceiveGoodsDialog orders={awaiting} locations={options.locations} onClose={() => setReceiving(false)} />}
 
       {selected && (
         <Modal
           isOpen
           onClose={() => setSelected(null)}
-          title={`Penerimaan ${selected.id}`}
-          subtitle={`${supplierOf(selected)} · ${relativeDay(selected.day)}`}
+          title={`Penerimaan ${selected.code}`}
+          subtitle={`${selected.supplierName} · ${formatDateTime(selected.createdAt)}`}
           maxWidth="2xl"
           footer={
             <Button variant="secondary" onClick={() => setSelected(null)}>
@@ -90,9 +109,10 @@ export function GoodsReceivingView() {
         >
           <DetailList
             items={[
-              { label: "Dari PO", value: selected.poId },
-              { label: "Masuk ke", value: LOCATIONS[selected.location].name },
-              { label: "Diterima oleh", value: selected.receivedBy },
+              { label: "Dari PO", value: selected.orderCode },
+              { label: "Masuk ke", value: selected.locationName },
+              { label: "Diterima oleh", value: selected.receivedBy ?? "—" },
+              ...(selected.note ? [{ label: "Catatan", value: selected.note }] : []),
             ]}
           />
           <Table>
@@ -104,23 +124,20 @@ export function GoodsReceivingView() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {selected.lines.map((line) => {
-                const item = getIngredient(line.code);
-                return (
-                  <TableRow key={line.code}>
-                    <TableCell>
-                      <span className="font-medium text-stone-900">{item.name}</span>
-                      {line.note && <span className="block text-[12px] text-rose-700">{line.note}</span>}
-                    </TableCell>
-                    <TableCell align="right" isNumeric>
-                      {formatQty(line.qty, item.unit)}
-                    </TableCell>
-                    <TableCell align="right" isNumeric>
-                      {line.rejectedQty > 0 ? formatQty(line.rejectedQty, item.unit) : "—"}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+              {selected.lines.map((line) => (
+                <TableRow key={line.ingredientName}>
+                  <TableCell>
+                    <span className="font-medium text-stone-900">{line.ingredientName}</span>
+                    {line.note && <span className="block text-[12px] text-rose-700">{line.note}</span>}
+                  </TableCell>
+                  <TableCell align="right" isNumeric>
+                    {formatQuantity(line.accepted, line.unit)}
+                  </TableCell>
+                  <TableCell align="right" isNumeric>
+                    {line.rejected > 0 ? formatQuantity(line.rejected, line.unit) : "—"}
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </Modal>
