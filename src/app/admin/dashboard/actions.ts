@@ -9,11 +9,8 @@ import {
 } from "@/lib/order-logic";
 import type { OrderStatus } from "@/generated/prisma/enums";
 import { sendWhatsAppMessage, getAppBaseUrl } from "@/lib/whatsapp";
-import {
-  NEXT_OPERATIONAL_STATUS,
-  OPERATIONAL_STATUSES,
-  type OrderStatusValue,
-} from "@/modules/dashboard/constants";
+import type { OrderStatusValue } from "@/modules/dashboard/constants";
+import { canAdvanceStatus, statusAfterPaymentApproval } from "@/modules/dashboard/services/order-status";
 
 export interface AdminActionResult {
   success?: boolean;
@@ -24,15 +21,18 @@ export interface AdminActionResult {
 
 class StaleOrderError extends Error {}
 
-const STATUS_CHANGED_ERROR = "Status pesanan sudah berubah. Muat ulang halaman lalu coba lagi.";
+/** Parses a stored JSON object; anything else (null, invalid, array) becomes an empty object. */
+function parseJsonObject(value: string | null): Record<string, unknown> {
+  if (!value) return {};
+  try {
+    const parsed: unknown = JSON.parse(value);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? (parsed as Record<string, unknown>) : {};
+  } catch {
+    return {};
+  }
+}
 
-/** Order statuses in which a pending proof may still be approved. */
-const PAYABLE_STATUSES: readonly OrderStatusValue[] = [
-  "CONFIRMED_AWAITING_PAYMENT",
-  "DP_PAID",
-  "FULLY_PAID",
-  ...OPERATIONAL_STATUSES,
-];
+const STATUS_CHANGED_ERROR = "Status pesanan sudah berubah. Muat ulang halaman lalu coba lagi.";
 
 /**
  * Mengunci total tagihan pesanan oleh admin:
@@ -225,7 +225,7 @@ export async function updateOrderStatusAction(
       return { error: "Pesanan tidak ditemukan di basis data." };
     }
 
-    if (NEXT_OPERATIONAL_STATUS[order.status as OrderStatusValue] !== newStatus) {
+    if (!canAdvanceStatus(order.status as OrderStatusValue, newStatus as OrderStatusValue)) {
       return { error: STATUS_CHANGED_ERROR };
     }
 
@@ -374,21 +374,10 @@ export async function approvePaymentAction(
     }
 
     const currentStatus = payment.order.status as OrderStatusValue;
-    if (!PAYABLE_STATUSES.includes(currentStatus)) {
+    const newOrderStatus = statusAfterPaymentApproval(currentStatus, payment.paymentType);
+    if (!newOrderStatus) {
       return { error: "Pesanan ini sudah dibatalkan atau kedaluwarsa, pembayaran tidak dapat disetujui." };
     }
-
-    // Status hanya maju: pelunasan untuk pesanan yang sudah di dapur, atau DP pada pesanan
-    // yang sudah lunas, tidak memundurkan status pesanan.
-    const keepStatus =
-      OPERATIONAL_STATUSES.includes(currentStatus) ||
-      currentStatus === "FULLY_PAID" ||
-      (currentStatus === "DP_PAID" && payment.paymentType === "DP");
-    const newOrderStatus: OrderStatusValue = keepStatus
-      ? currentStatus
-      : payment.paymentType === "DP"
-        ? "DP_PAID"
-        : "FULLY_PAID";
 
     const applied = await prisma.$transaction(async (tx) => {
       const settled = await tx.payment.updateMany({
@@ -488,7 +477,9 @@ export async function rejectPaymentAction(
       where: { id: paymentId, status: "PENDING" },
       data: {
         status: "FAILED",
+        // Keep what the customer sent (bank, sender name, notes) next to the rejection.
         maskedResponse: JSON.stringify({
+          ...parseJsonObject(payment.maskedResponse),
           rejectedReason: cleanReason,
           rejectedAt: new Date().toISOString(),
         }),

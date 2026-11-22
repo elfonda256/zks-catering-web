@@ -10,9 +10,9 @@ Extends the Global Rules. May add stricter requirements, never weaken them.
   official documentation when scaffolding. Do not add other frameworks or libraries without
   asking.
 - Not decided yet: payment provider, hosting. Propose options with trade-offs; do not choose.
-- Verified commands (run on 2026-10-12, exit code 0): `npm run lint`, `npm run build`. No test
-  command is defined yet. Do not invent others; add here only after they have been run and
-  confirmed.
+- Verified commands (run on 2026-10-12, exit code 0): `npm run lint`, `npm run build`.
+  `npm test` (node:test via tsx, files in tests/) verified on 2026-11-22: 23 tests pass.
+  Do not invent others; add here only after they have been run and confirmed.
 - Installed versions (verified from npm ls): Next.js 16.4.0, React 19.3.0, TypeScript 5.9.3,
   Tailwind CSS 4.3.3, ESLint 9.39.5.
 - next.config.ts sets `agentRules: false` so that `next dev` does not write to this file. Do not
