@@ -15,6 +15,7 @@ import { CopyButton } from "./CopyButton";
 import { OrderProgress, hasProgress } from "./OrderProgress";
 import { getAmountDue, getPaidAmount, getPaymentDueAt } from "./payment-due";
 import { getBankAccounts } from "@/modules/settings/services/settings.repository";
+import { expireOverdueOrdersOnAccess } from "@/modules/dashboard/services/order-expiry.repository";
 
 type StatusTone = "pending" | "action" | "success" | "danger" | "neutral";
 
@@ -121,6 +122,8 @@ async function OrderDetailContent({ params }: OrderDetailPageProps) {
   }
 
   const tokenHash = hashAccessToken(token);
+  // Expire on access so a missed deadline shows at once, not only after the daily sweep.
+  await expireOverdueOrdersOnAccess({ accessTokenHash: tokenHash });
 
   const order = await prisma.order.findUnique({
     where: {

@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
+import { expireOverdueOrdersOnAccess } from "@/modules/dashboard/services/order-expiry.repository";
 import { requireAdmin } from "@/lib/require-admin";
 import { signOut } from "@/auth";
 import { prisma } from "@/lib/prisma";
@@ -30,6 +31,8 @@ async function DashboardContent() {
     "use server";
     await signOut({ redirectTo: "/admin/login" });
   }
+
+  await expireOverdueOrdersOnAccess();
 
   // Ambil seluruh pesanan beserta item menu dan pembayaran terkait
   const rawOrders = await prisma.order.findMany({

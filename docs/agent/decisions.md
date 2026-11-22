@@ -35,6 +35,7 @@ Dokumen tata kelola keputusan arsitektur teknis dan aturan operasional bisnis un
 - **Jalur (b) - Batal Sepihak oleh Admin Pasca-Bayar**: Status `CANCELLED_BY_ADMIN_REFUND_REQ` -> `REFUNDED` (uang pelanggan 100% dikembalikan penuh karena kendala operasional katering).
 - **Jalur (c) - Batal oleh Pelanggan Pra-Bayar**: Status `CANCELLED_BY_CUSTOMER` (pesanan ditutup tanpa denda).
 - **Jalur (d) - Batal oleh Pelanggan Pasca-DP / Lewat Batas H-1 23.59 WIB**: Status `CANCELLED_DP_FORFEITED` (Uang Muka/DP hangus sesuai syarat yang disetujui).
+  - *Pembaruan Nov 2026 (keputusan pemilik)*: pesanan yang baru dibayar DP boleh mulai dimasak dan sisanya dilunasi belakangan, termasuk saat serah terima. Karena itu DP **tidak** dihanguskan otomatis saat H-1 terlewat; jalur (d) hanya dijalankan admin secara manual.
 - **Jalur (e) - Batal oleh Pelanggan Pasca-Lunas Penuh**: Status `CANCELLED_FULL_REFUND_PENDING` -> `REFUNDED` (Nilai setara DP 20% hangus, sisa 80% dan ongkos kirim dikembalikan kepada pelanggan).
 
 ## 4. Keamanan Transaksi, Webhook Netral, & Mekanisme Batas Waktu
@@ -46,6 +47,7 @@ Dokumen tata kelola keputusan arsitektur teknis dan aturan operasional bisnis un
   - Menggunakan pola Hibrida: evaluasi aman saat akses berbalut transaksi database PostgreSQL idempoten, ditambah penyapu berkala.
   - Sebelum menghanguskan DP atau mengedaluwarsakan pesanan karena batas waktu, sistem WAJIB memeriksa terlebih dahulu apakah ada pembayaran `PENDING` dan memeriksa status resminya ke gateway (API server) menggunakan `settledAt`.
   - Diberikan masa tenggang (*grace period*) sebelum menetapkan status akhir; dilarang menghanguskan atau mengedaluwarsakan transaksi hanya karena waktu sistem lokal melewati batas.
+  - *Implementasi (Nov 2026)*: `src/lib/order-expiry.ts` (masa tenggang 2 jam) dan `expireOverdueOrders`. Dijalankan saat halaman status pesanan, unggah bukti, dan dashboard admin dibuka, ditambah Vercel Cron harian 02.00 WIB (`/api/cron/expire-orders`, butuh env `CRON_SECRET`). Yang otomatis hanya `EXPIRED_UNCONFIRMED_BY_ADMIN` dan `EXPIRED_PAYMENT_TIMEOUT`; pesanan dengan bukti bayar `PENDING` tidak pernah dikedaluwarsakan (admin yang memutuskan). Bukti yang ditolak admin setelah batas bayar membuat pesanan kedaluwarsa pada akses berikutnya.
 - **Retensi Data Pribadi & Penonaktifan Token**:
   - Data pribadi pelanggan (Nama, Telepon, Alamat, Email) disamarkan di database setelah 90 hari terhitung sejak tanggal acara (`eventDate`) atau sejak status akhir tercapai (`REJECTED_BY_ADMIN`, `CANCELLED_*`, `EXPIRED*`, `COMPLETED`), mana yang berlaku.
   - Data keuangan (nominal, tanggal transaksi, status pembayaran) dipertahankan permanen untuk keperluan pembukuan dan akuntansi.

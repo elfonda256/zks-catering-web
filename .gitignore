@@ -42,3 +42,6 @@ next-env.d.ts
 
 # prisma
 /src/generated/
+
+# Transfer proofs saved by `next dev` (production stores them in the database)
+/public/uploads/
