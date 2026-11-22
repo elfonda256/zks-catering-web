@@ -14,6 +14,7 @@ import PaymentUploadClient from "./PaymentUploadClient";
 import { CopyButton } from "./CopyButton";
 import { OrderProgress, hasProgress } from "./OrderProgress";
 import { getAmountDue, getPaidAmount, getPaymentDueAt } from "./payment-due";
+import { getBankAccounts } from "@/modules/settings/services/settings.repository";
 
 type StatusTone = "pending" | "action" | "success" | "danger" | "neutral";
 
@@ -167,6 +168,7 @@ async function OrderDetailContent({ params }: OrderDetailPageProps) {
   const statusInfo = ORDER_STATUS_INFO[order.status] ?? { label: order.status, tone: "neutral", desc: "Status pesanan saat ini." };
   const pendingPayment = order.payments.find((p) => p.status === "PENDING");
   const amountDue = getAmountDue(order);
+  const bankAccounts = amountDue ? await getBankAccounts() : [];
   const paidAmount = getPaidAmount(order);
   const remaining = order.totalAmount !== null ? Math.max(order.totalAmount - paidAmount, 0) : null;
 
@@ -242,7 +244,7 @@ async function OrderDetailContent({ params }: OrderDetailPageProps) {
             </p>
           </section>
         ) : amountDue ? (
-          <PaymentUploadClient rawToken={token} orderCode={order.orderCode} due={amountDue} dueAt={dueAt} />
+          <PaymentUploadClient rawToken={token} orderCode={order.orderCode} due={amountDue} dueAt={dueAt} accounts={bankAccounts} />
         ) : order.status === "WAITING_ADMIN_CONFIRMATION" ? (
           <section className="flex flex-col gap-5 rounded-[10px] bg-[#232A2E] p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
             <p className="max-w-md text-[15px] leading-relaxed text-white/80">

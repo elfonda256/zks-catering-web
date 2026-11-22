@@ -28,6 +28,9 @@ export function formatPercent(val: number, decimals: number = 1): string {
   return `${val.toFixed(decimals)}%`;
 }
 
+/** Dates are always shown in WIB, whatever time zone the server or browser runs in. */
+const BUSINESS_TIME_ZONE = "Asia/Jakarta";
+
 /**
  * Format ISO or Date string into Indonesian locale standard date (e.g. 21 Okt 2026).
  */
@@ -38,6 +41,7 @@ export function formatDate(dateInput: string | Date): string {
     day: "numeric",
     month: "short",
     year: "numeric",
+    timeZone: BUSINESS_TIME_ZONE,
   }).format(date);
 }
 
@@ -52,6 +56,7 @@ export function formatDateTime(dateInput: string | Date): string {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
+    timeZone: BUSINESS_TIME_ZONE,
   }).format(date);
   return `${dateStr}, ${timeStr} WIB`;
 }

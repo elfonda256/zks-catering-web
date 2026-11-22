@@ -6,6 +6,7 @@ import { HEADING } from "@/components/site/ui";
 import { FIELD_HINT, FIELD_INPUT, FIELD_LABEL } from "@/components/site/form";
 import { CopyButton } from "./CopyButton";
 import type { AmountDue } from "./payment-due";
+import type { BankAccount } from "@/modules/settings/bank-accounts";
 import { formatRupiahCompact as formatRupiah } from "@/shared/utils/formatters";
 
 const SENDER_BANKS = [
@@ -19,11 +20,6 @@ const SENDER_BANKS = [
   { value: "Lainnya", label: "Bank lainnya / dompet digital" },
 ];
 
-// TODO(owner): confirm these are the company's real accounts before go-live.
-const COMPANY_ACCOUNTS = [
-  { bank: "Bank Mandiri", number: "173-00-1122334-5" },
-  { bank: "Bank BCA", number: "109-8877-665" },
-];
 
 function OptionCard({
   value,
@@ -77,6 +73,8 @@ interface PaymentUploadClientProps {
   due: AmountDue;
   /** ISO time of the payment deadline, or null when it has passed. */
   dueAt: string | null;
+  /** Company accounts from Pengaturan; empty until the admin sets them up. */
+  accounts: BankAccount[];
 }
 
 function compressImage(file: File): Promise<File> {
@@ -126,7 +124,7 @@ function compressImage(file: File): Promise<File> {
   });
 }
 
-export default function PaymentUploadClient({ rawToken, orderCode, due, dueAt }: PaymentUploadClientProps) {
+export default function PaymentUploadClient({ rawToken, orderCode, due, dueAt, accounts }: PaymentUploadClientProps) {
   const dpAmount = due.kind === "initial" ? due.dpAmount : null;
   const [selectedType, setSelectedType] = useState<"DP" | "FULL">(dpAmount ? "DP" : "FULL");
   const amountToPay =
@@ -220,10 +218,18 @@ export default function PaymentUploadClient({ rawToken, orderCode, due, dueAt }:
             </div>
             <CopyButton value={String(amountToPay)} label="nominal transfer" />
           </li>
-          {COMPANY_ACCOUNTS.map((account) => (
-            <li key={account.bank} className="flex items-center justify-between gap-4 p-4">
+          {accounts.length === 0 && (
+            <li className="p-4 text-sm text-white/80">
+              Nomor rekening belum tersedia di halaman ini. Admin akan mengirimkannya lewat WhatsApp, jadi mohon tunggu
+              sebelum transfer.
+            </li>
+          )}
+          {accounts.map((account) => (
+            <li key={`${account.bank}-${account.number}`} className="flex items-center justify-between gap-4 p-4">
               <div>
-                <p className="text-sm text-white/60">{account.bank} · a.n. PT. Zahdan Kamal Sentosa</p>
+                <p className="text-sm text-white/60">
+                  {account.bank} · a.n. {account.holder}
+                </p>
                 <p className="font-mono text-lg font-bold tracking-wider text-white">{account.number}</p>
               </div>
               <CopyButton value={account.number.replace(/[^0-9]/g, "")} label={`nomor rekening ${account.bank}`} />

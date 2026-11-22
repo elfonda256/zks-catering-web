@@ -1,8 +1,8 @@
 import { ErpNavSection } from "./types";
 
 /**
- * Admin navigation. Pesanan runs on real data; the other modules still use the shared
- * sample data in src/modules/sample-data and say so on every page.
+ * Admin navigation. Penjualan, Distribusi, Keuangan, Laporan and Pengaturan run on real data;
+ * modules marked on their page as "Data contoh" still use src/modules/sample-data.
  */
 export const erpNavSections: ErpNavSection[] = [
   {
@@ -12,6 +12,21 @@ export const erpNavSections: ErpNavSection[] = [
     items: [
       { id: "sales-orders", label: "Pesanan", href: "/admin/dashboard", exact: true },
       { id: "sales-adhoc", label: "Pesanan langsung", href: "/admin/order-adhoc", exact: true },
+    ],
+  },
+  {
+    id: "delivery",
+    title: "DISTRIBUSI",
+    defaultExpanded: true,
+    items: [{ id: "deliv-dash", label: "Pengiriman", href: "/admin/distribution", exact: true }],
+  },
+  {
+    id: "finance",
+    title: "KEUANGAN",
+    defaultExpanded: true,
+    items: [
+      { id: "fin-settle", label: "Pembayaran & piutang", href: "/admin/finance", exact: true },
+      { id: "rep-exec", label: "Laporan bulanan", href: "/admin/reports", exact: true },
     ],
   },
   {
@@ -45,6 +60,15 @@ export const erpNavSections: ErpNavSection[] = [
       { id: "prod-dash", label: "Jadwal produksi", href: "/admin/production", exact: true },
       { id: "prod-recipe", label: "Resep & bahan", href: "/admin/production/recipes", exact: true },
       { id: "kitchen-dash", label: "Layar dapur", href: "/admin/kitchen", exact: true },
+    ],
+  },
+  {
+    id: "settings",
+    title: "PENGATURAN",
+    defaultExpanded: true,
+    items: [
+      { id: "admin-users", label: "Pengguna admin", href: "/admin/users", exact: true },
+      { id: "set-company", label: "Pengaturan usaha", href: "/admin/settings", exact: true },
     ],
   },
 ];
