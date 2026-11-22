@@ -10,6 +10,7 @@ import {
   calculateSubtotal,
 } from "@/lib/order-logic";
 import { MENU_PACKAGES } from "@/data/catering-data";
+import { ensurePackageMenuItem } from "@/modules/menu/package-menu-item";
 import { sendWhatsAppMessage, getAppBaseUrl } from "@/lib/whatsapp";
 import { MIN_ORDER_PCS } from "@/lib/order-rules";
 
@@ -118,39 +119,7 @@ export async function createOrderAction(
   // 10. Simpan Pesanan ke Basis Data
   try {
     await prisma.$transaction(async (tx) => {
-      // Pastikan kategori katering tersedia
-      let category = await tx.category.findUnique({
-        where: { slug: "paket-katering" },
-      });
-
-      if (!category) {
-        category = await tx.category.create({
-          data: {
-            name: "Paket Katering",
-            slug: "paket-katering",
-          },
-        });
-      }
-
-      // Pastikan MenuItem untuk paket ini tersedia
-      let menuItem = await tx.menuItem.findFirst({
-        where: {
-          categoryId: category.id,
-          price: packagePrice,
-        },
-      });
-
-      if (!menuItem) {
-        menuItem = await tx.menuItem.create({
-          data: {
-            name: selectedPackage.name,
-            description: selectedPackage.description,
-            price: packagePrice,
-            categoryId: category.id,
-            isActive: true,
-          },
-        });
-      }
+      const menuItem = await ensurePackageMenuItem(tx, packagePrice);
 
       // Buat record Order dan OrderItem
       await tx.order.create({

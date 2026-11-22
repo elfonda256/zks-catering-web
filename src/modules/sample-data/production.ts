@@ -1,5 +1,5 @@
 /**
- * Sample recipes, production schedule, kitchen checks and walk-in orders.
+ * Sample recipes and walk-in orders.
  * Recipes match the three public menu packages (see src/data/catering-data.ts).
  */
 
@@ -67,47 +67,6 @@ export const RECIPES: Recipe[] = [
       { code: "SMK-01", qty: 0.1 },
     ],
   },
-];
-
-export type WorkOrderStatus = "dijadwalkan" | "persiapan" | "dimasak" | "packing" | "siap-kirim";
-
-/** Orders in these statuses have not taken their ingredients from stock yet. */
-export const WORK_ORDER_STATUSES_BEFORE_COOKING: WorkOrderStatus[] = ["dijadwalkan", "persiapan"];
-
-export interface WorkOrder {
-  id: string;
-  recipeId: string;
-  portions: number;
-  customer: string;
-  /** Production day relative to today. */
-  day: number;
-  shift: "Pagi" | "Siang" | "Malam";
-  deliveryTime: string;
-  status: WorkOrderStatus;
-}
-
-export const WORK_ORDERS: WorkOrder[] = [
-  { id: "WO-0101", recipeId: "RSP-HEMAT", portions: 350, customer: "Pabrik komponen, Kawasan KIIC", day: 0, shift: "Pagi", deliveryTime: "11.30", status: "dimasak" },
-  { id: "WO-0102", recipeId: "RSP-FAVORIT", portions: 120, customer: "Kantor administrasi, Suryacipta", day: 0, shift: "Siang", deliveryTime: "12.00", status: "persiapan" },
-  { id: "WO-0103", recipeId: "RSP-HEMAT", portions: 80, customer: "Lembur malam, Kawasan KIIC", day: 0, shift: "Malam", deliveryTime: "19.00", status: "dijadwalkan" },
-  { id: "WO-0104", recipeId: "RSP-EKSEKUTIF", portions: 60, customer: "Rapat direksi, Karawang Barat", day: 1, shift: "Siang", deliveryTime: "12.00", status: "dijadwalkan" },
-];
-
-export interface FoodSafetyCheck {
-  id: string;
-  time: string;
-  point: string;
-  reading: string;
-  limit: string;
-  ok: boolean;
-  checkedBy: string;
-}
-
-export const FOOD_SAFETY_CHECKS: FoodSafetyCheck[] = [
-  { id: "CHK-1", time: "05.00", point: "Suhu chiller", reading: "3 °C", limit: "0–4 °C", ok: true, checkedBy: "Kepala dapur" },
-  { id: "CHK-2", time: "05.00", point: "Suhu freezer", reading: "−19 °C", limit: "≤ −18 °C", ok: true, checkedBy: "Kepala dapur" },
-  { id: "CHK-3", time: "09.45", point: "Suhu inti ayam goreng (WO-0101)", reading: "78 °C", limit: "≥ 75 °C", ok: true, checkedBy: "Juru masak" },
-  { id: "CHK-4", time: "10.30", point: "Suhu nasi saat packing (WO-0101)", reading: "58 °C", limit: "≥ 60 °C", ok: false, checkedBy: "Juru masak" },
 ];
 
 export type DirectOrderStatus = "baru" | "dikonfirmasi" | "selesai";

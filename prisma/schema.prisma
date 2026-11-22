@@ -53,6 +53,8 @@ model Admin {
   purchaseRequests PurchaseRequest[]
   purchaseOrders   PurchaseOrder[]
   goodsReceipts    GoodsReceipt[]
+  productionOrders ProductionOrder[]
+  foodSafetyChecks FoodSafetyCheck[]
 }
 
 model Setting {
@@ -74,22 +76,24 @@ model Category {
 }
 
 model MenuItem {
-  id          Int         @id @default(autoincrement())
+  id          Int               @id @default(autoincrement())
   name        String
   description String?
   price       Int
   categoryId  Int
-  category    Category    @relation(fields: [categoryId], references: [id])
-  isActive    Boolean     @default(true)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  category    Category          @relation(fields: [categoryId], references: [id])
+  isActive    Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
   orderItems  OrderItem[]
+  recipeLines RecipeLine[]
+  production  ProductionOrder[]
 }
 
 model Order {
-  id                  Int         @id @default(autoincrement())
-  orderCode           String      @unique
-  accessTokenHash     String      @unique
+  id                  Int               @id @default(autoincrement())
+  orderCode           String            @unique
+  accessTokenHash     String            @unique
   customerName        String
   customerPhone       String
   customerAddress     String
@@ -102,7 +106,7 @@ model Order {
   shippingFee         Int?
   totalAmount         Int?
   dpAmount            Int?
-  status              OrderStatus @default(WAITING_ADMIN_CONFIRMATION)
+  status              OrderStatus       @default(WAITING_ADMIN_CONFIRMATION)
   termsAcceptedAt     DateTime?
   confirmedAt         DateTime?
   initialPaymentDueAt DateTime?
@@ -111,12 +115,13 @@ model Order {
   forfeitedAmount     Int?
   refundAmount        Int?
   refundedAt          DateTime?
-  isAnonymized        Boolean     @default(false)
+  isAnonymized        Boolean           @default(false)
   anonymizedAt        DateTime?
-  createdAt           DateTime    @default(now())
-  updatedAt           DateTime    @updatedAt
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
   items               OrderItem[]
   payments            Payment[]
+  production          ProductionOrder[]
 
   @@index([status])
   @@index([eventDate])
@@ -241,6 +246,7 @@ model Ingredient {
   movements         StockMovement[]
   requestLines      PurchaseRequestLine[]
   orderLines        PurchaseOrderLine[]
+  recipeLines       RecipeLine[]
 
   @@index([typeId])
 }
@@ -380,4 +386,78 @@ model GoodsReceiptLine {
   note             String?
 
   @@index([receiptId])
+}
+
+// ---------------------------------------------------------------------------
+// Produksi: resep per paket, perintah produksi, dan cek keamanan pangan.
+// Bahan resep diambil dari stok (mutasi OUT) saat perintah produksi mulai dimasak.
+// ---------------------------------------------------------------------------
+
+enum ProductionStatus {
+  SCHEDULED
+  PREPARING
+  COOKING // bahan sudah diambil dari stok
+  PACKING
+  READY
+  CANCELLED
+}
+
+enum ProductionShift {
+  MORNING
+  AFTERNOON
+  NIGHT
+}
+
+model RecipeLine {
+  id                 Int        @id @default(autoincrement())
+  menuItemId         Int
+  menuItem           MenuItem   @relation(fields: [menuItemId], references: [id], onDelete: Restrict)
+  ingredientId       Int
+  ingredient         Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+  // Dalam satuan bahan, untuk satu porsi
+  quantityPerPortion Decimal    @db.Decimal(12, 3)
+
+  @@unique([menuItemId, ingredientId])
+}
+
+model ProductionOrder {
+  id                Int               @id @default(autoincrement())
+  menuItemId        Int
+  menuItem          MenuItem          @relation(fields: [menuItemId], references: [id], onDelete: Restrict)
+  orderId           Int?
+  order             Order?            @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  portions          Int
+  // Awal hari produksi dalam WIB
+  productionDate    DateTime
+  shift             ProductionShift
+  // Jam kirim "HH:MM" WIB
+  deliveryTime      String
+  destination       String
+  note              String?
+  status            ProductionStatus  @default(SCHEDULED)
+  materialsIssuedAt DateTime?
+  createdById       Int?
+  createdBy         Admin?            @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  safetyChecks      FoodSafetyCheck[]
+
+  @@index([productionDate])
+  @@index([status])
+}
+
+model FoodSafetyCheck {
+  id                Int              @id @default(autoincrement())
+  productionOrderId Int?
+  productionOrder   ProductionOrder? @relation(fields: [productionOrderId], references: [id], onDelete: Restrict)
+  point             String
+  reading           String
+  limit             String
+  ok                Boolean
+  checkedBy         String
+  createdById       Int?
+  createdBy         Admin?           @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  createdAt         DateTime         @default(now())
+
+  @@index([createdAt])
 }

@@ -1,7 +1,8 @@
 "use client";
 
-import { DIRECT_ORDERS, relativeDay, type DirectOrder, type DirectOrderStatus } from "@/modules/sample-data";
-import { getRecipe } from "@/modules/production/recipes";
+import { DIRECT_ORDERS, RECIPES, relativeDay, type DirectOrder, type DirectOrderStatus } from "@/modules/sample-data";
+
+const getRecipe = (id: string) => RECIPES.find((r) => r.id === id)!;
 import { Badge, type BadgeVariant } from "@/shared/components/ui/Badge";
 import { KpiCard } from "@/shared/components/ui/KpiCard";
 import { SampleDataNotice } from "@/shared/components/ui/SampleDataNotice";

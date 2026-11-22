@@ -1,151 +1,117 @@
 "use client";
 
 import { useState } from "react";
-import {
-  WORK_ORDERS,
-  WORK_ORDER_STATUSES_BEFORE_COOKING,
-  formatQty,
-  getIngredient,
-  relativeDay,
-  type WorkOrder,
-} from "@/modules/sample-data";
+import { wibDateKey } from "@/lib/wib-date";
 import { Badge } from "@/shared/components/ui/Badge";
 import { Button } from "@/shared/components/ui/Button";
-import { DetailList } from "@/shared/components/ui/DetailList";
-import { KpiCard } from "@/shared/components/ui/KpiCard";
-import { Modal } from "@/shared/components/ui/Modal";
-import { SampleDataNotice } from "@/shared/components/ui/SampleDataNotice";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/components/ui/Table";
 import { DataList, type DataColumn } from "@/shared/components/ui/DataList";
+import { EmptyState } from "@/shared/components/ui/EmptyState";
+import { KpiCard } from "@/shared/components/ui/KpiCard";
 import { KpiGrid } from "@/shared/components/ui/KpiGrid";
-import { getRecipe, materialNeeds } from "../recipes";
-import { WORK_ORDER_STATUS } from "../status";
+import { formatDate } from "@/shared/utils/formatters";
+import { SHIFT_LABELS, isBeforeCooking } from "../rules";
+import { PRODUCTION_STATUS } from "../status";
+import type { ProductionRow, SchedulableOrder } from "../types";
+import { ProductionFormDialog } from "./ProductionFormDialog";
+import { ProductionOrderDialog } from "./ProductionOrderDialog";
 
-const DAYS = [...new Set(WORK_ORDERS.map((wo) => wo.day))].sort((a, b) => a - b);
+interface ProductionScheduleViewProps {
+  orders: ProductionRow[];
+  schedulable: SchedulableOrder[];
+}
 
-export function ProductionScheduleView() {
-  const [selected, setSelected] = useState<WorkOrder | null>(null);
+const portionsOf = (rows: ProductionRow[]) => rows.reduce((sum, o) => sum + o.portions, 0);
 
-  const columns: DataColumn<WorkOrder>[] = [
+export function ProductionScheduleView({ orders, schedulable }: ProductionScheduleViewProps) {
+  const [creating, setCreating] = useState(false);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const selected = orders.find((o) => o.id === selectedId) ?? null;
+
+  const now = new Date();
+  const todayKey = wibDateKey(now);
+  const tomorrowKey = wibDateKey(new Date(now.getTime() + 24 * 60 * 60 * 1000));
+  const active = orders.filter((o) => o.status !== "CANCELLED");
+  const dayOf = (o: ProductionRow) => wibDateKey(new Date(o.productionDate));
+
+  // Only orders that have not cooked yet still need stock; sum their needs per ingredient.
+  const pending = active.filter((o) => isBeforeCooking(o.status) && dayOf(o) <= tomorrowKey);
+  const shortNames = new Set<string>();
+  const totals = new Map<number, { name: string; required: number; available: number }>();
+  for (const order of pending) {
+    for (const need of order.needs) {
+      const entry = totals.get(need.ingredientId) ?? { name: need.ingredientName, required: 0, available: need.available };
+      entry.required += need.required;
+      totals.set(need.ingredientId, entry);
+    }
+  }
+  for (const entry of totals.values()) if (entry.required > entry.available + 1e-9) shortNames.add(entry.name);
+
+  const days = [...new Set(orders.map(dayOf))].sort();
+
+  const columns: DataColumn<ProductionRow>[] = [
     {
-      key: "id",
+      key: "code",
       header: "Nomor",
       mobile: "title",
-      cell: (wo) => (
+      cell: (o) => (
         <button
           type="button"
-          onClick={() => setSelected(wo)}
+          onClick={() => setSelectedId(o.id)}
           className="whitespace-nowrap font-mono font-medium text-stone-900 underline decoration-stone-300 underline-offset-4 hover:decoration-stone-900 cursor-pointer"
         >
-          {wo.id}
+          {o.code}
         </button>
       ),
     },
-    { key: "recipe", header: "Paket", mobile: "subtitle", cell: (wo) => getRecipe(wo.recipeId).name },
-    { key: "portions", header: "Porsi", align: "right", isNumeric: true, cell: (wo) => wo.portions },
-    { key: "shift", header: "Shift", cell: (wo) => wo.shift },
-    { key: "customer", header: "Tujuan", wide: true, cell: (wo) => wo.customer },
-    { key: "delivery", header: "Kirim", cell: (wo) => wo.deliveryTime },
+    { key: "package", header: "Paket", mobile: "subtitle", cell: (o) => o.packageName },
+    { key: "portions", header: "Porsi", align: "right", isNumeric: true, cell: (o) => o.portions },
+    { key: "shift", header: "Shift", cell: (o) => SHIFT_LABELS[o.shift] },
+    { key: "destination", header: "Tujuan", wide: true, cell: (o) => o.destination },
+    { key: "delivery", header: "Kirim", cell: (o) => o.deliveryTime },
     {
       key: "status",
       header: "Status",
       mobile: "status",
-      cell: (wo) => (
-        <Badge variant={WORK_ORDER_STATUS[wo.status].variant} dot>
-          {WORK_ORDER_STATUS[wo.status].label}
+      cell: (o) => (
+        <Badge variant={PRODUCTION_STATUS[o.status].variant} dot>
+          {PRODUCTION_STATUS[o.status].label}
         </Badge>
       ),
     },
   ];
-  const today = WORK_ORDERS.filter((wo) => wo.day === 0);
-  // Orders already cooking have taken their ingredients, so only upcoming ones count.
-  const upcoming = WORK_ORDERS.filter((wo) => wo.day <= 1 && WORK_ORDER_STATUSES_BEFORE_COOKING.includes(wo.status));
-  const shortages = materialNeeds(upcoming).filter((need) => need.short);
+
+  const todayOrders = active.filter((o) => dayOf(o) === todayKey);
 
   return (
     <div className="space-y-6">
-      <SampleDataNotice />
-
       <KpiGrid label="Ringkasan produksi" columns={3}>
-        <KpiCard label="Porsi hari ini" tone="brand" value={today.reduce((s, wo) => s + wo.portions, 0)} subtext={`${today.length} perintah produksi`} />
-        <KpiCard label="Porsi besok" value={WORK_ORDERS.filter((wo) => wo.day === 1).reduce((s, wo) => s + wo.portions, 0)} subtext="Sudah dijadwalkan" />
-        <KpiCard
-          label="Bahan kurang"
-          tone="danger"
-          value={shortages.length}
-          subtext={shortages.map((n) => getIngredient(n.code).name).join(", ") || "Stok cukup untuk 2 hari"}
-        />
+        <KpiCard label="Porsi hari ini" tone="brand" value={portionsOf(todayOrders)} subtext={`${todayOrders.length} perintah produksi`} />
+        <KpiCard label="Porsi besok" value={portionsOf(active.filter((o) => dayOf(o) === tomorrowKey))} subtext="Sudah dijadwalkan" />
+        <KpiCard label="Bahan kurang" tone="danger" value={shortNames.size} subtext={[...shortNames].join(", ") || "Stok cukup untuk hari ini dan besok"} />
       </KpiGrid>
 
-      {DAYS.map((day) => (
-        <section key={day} aria-labelledby={`day-${day}`} className="space-y-3">
-          <h2 id={`day-${day}`} className="text-[15px] font-semibold text-stone-900">
-            {relativeDay(day)}
-          </h2>
-          <DataList rows={WORK_ORDERS.filter((wo) => wo.day === day)} columns={columns} rowKey={(wo) => wo.id} />
-        </section>
-      ))}
+      <div className="flex justify-end">
+        <Button onClick={() => setCreating(true)}>Jadwalkan produksi</Button>
+      </div>
 
-      {selected && <WorkOrderDialog order={selected} onClose={() => setSelected(null)} />}
+      {orders.length === 0 ? (
+        <EmptyState
+          title="Belum ada jadwal produksi"
+          description="Jadwalkan produksi dari pesanan yang sudah dibayar, atau langsung untuk pesanan rutin. Isi resep paket dulu agar kebutuhan bahan terhitung."
+        />
+      ) : (
+        days.map((day) => (
+          <section key={day} aria-labelledby={`day-${day}`} className="space-y-3">
+            <h2 id={`day-${day}`} className="text-[15px] font-semibold text-stone-900">
+              {day === todayKey ? "Hari ini" : day === tomorrowKey ? "Besok" : formatDate(`${day}T00:00:00+07:00`)}
+            </h2>
+            <DataList rows={orders.filter((o) => dayOf(o) === day)} columns={columns} rowKey={(o) => String(o.id)} />
+          </section>
+        ))
+      )}
+
+      {creating && <ProductionFormDialog orders={schedulable} onClose={() => setCreating(false)} />}
+      {selected && <ProductionOrderDialog order={selected} onClose={() => setSelectedId(null)} />}
     </div>
-  );
-}
-
-function WorkOrderDialog({ order, onClose }: { order: WorkOrder; onClose: () => void }) {
-  const recipe = getRecipe(order.recipeId);
-  const needs = materialNeeds([order]);
-  const taken = !WORK_ORDER_STATUSES_BEFORE_COOKING.includes(order.status);
-
-  return (
-    <Modal
-      isOpen
-      onClose={onClose}
-      title={`Produksi ${order.id}`}
-      subtitle={`${recipe.name} · ${order.portions} porsi`}
-      maxWidth="2xl"
-      footer={
-        <Button variant="secondary" onClick={onClose}>
-          Tutup
-        </Button>
-      }
-    >
-      <DetailList
-        items={[
-          { label: "Jadwal", value: `${relativeDay(order.day)}, shift ${order.shift.toLowerCase()}` },
-          { label: "Kirim", value: `${order.deliveryTime} ke ${order.customer}` },
-          { label: "Menu", value: recipe.menu },
-          { label: "Status", value: WORK_ORDER_STATUS[order.status].label },
-        ]}
-      />
-      {taken && <p className="text-[13px] text-stone-600">Bahan untuk produksi ini sudah diambil dari gudang.</p>}
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Bahan</TableHead>
-            <TableHead align="right">Kebutuhan</TableHead>
-            {!taken && <TableHead align="right">Stok</TableHead>}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {needs.map((need) => {
-            const item = getIngredient(need.code);
-            return (
-              <TableRow key={need.code}>
-                <TableCell className="font-medium text-stone-900">{item.name}</TableCell>
-                <TableCell align="right" isNumeric>
-                  {formatQty(need.required, item.unit)}
-                </TableCell>
-                {!taken && (
-                  <TableCell align="right" isNumeric className={need.short ? "text-rose-700" : undefined}>
-                    {formatQty(need.stock, item.unit)}
-                    {need.short && <span className="block font-sans text-[12px]">Kurang</span>}
-                  </TableCell>
-                )}
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </Modal>
   );
 }
