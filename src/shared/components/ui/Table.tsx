@@ -193,7 +193,7 @@ export function TableLoadingRow({
       {Array.from({ length: rows }).map((_, idx) => (
         <tr key={idx} className="border-b border-stone-100 last:border-0">
           <td colSpan={colSpan} className="py-4 px-4">
-            <div className="h-4 bg-stone-100 rounded-[6px] w-full relative overflow-hidden after:absolute after:inset-0 after:-transtone-x-full after:animate-enterprise-shimmer after:bg-gradient-to-r after:from-transparent after:via-stone-200/50 after:to-transparent" />
+            <div className="h-4 bg-stone-100 rounded-[6px] w-full relative overflow-hidden after:absolute after:inset-0 after:-translate-x-full after:animate-enterprise-shimmer after:bg-gradient-to-r after:from-transparent after:via-stone-200/50 after:to-transparent" />
           </td>
         </tr>
       ))}

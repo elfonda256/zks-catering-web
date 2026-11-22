@@ -20,7 +20,7 @@ export function Skeleton({ className, variant = "rect", ...props }: SkeletonProp
   return (
     <div
       className={cn(
-        "bg-stone-100 border border-stone-200/50 relative overflow-hidden after:absolute after:inset-0 after:-transtone-x-full after:animate-enterprise-shimmer after:bg-gradient-to-r after:from-transparent after:via-stone-200/60 after:to-transparent",
+        "bg-stone-100 border border-stone-200/50 relative overflow-hidden after:absolute after:inset-0 after:-translate-x-full after:animate-enterprise-shimmer after:bg-gradient-to-r after:from-transparent after:via-stone-200/60 after:to-transparent",
         variantStyles[variant],
         className
       )}
