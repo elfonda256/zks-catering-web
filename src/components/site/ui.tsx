@@ -7,7 +7,10 @@ import { ArrowUpRight } from "@/components/icons";
  * Type scale, colours and spacing are defined here once; see DESIGN_MASTERBOOK.md.
  */
 
-export const CANVAS = "bg-[#1A1F22] text-white";
+export const CANVAS = "bg-ink text-white";
+
+/** Warm paper chapter: used once per page at most, where content reads like a document. */
+export const PAPER = "bg-canvas text-ink";
 
 /** Heading face: uppercase Saira Semi Condensed, tight leading, no orphans. */
 export const HEADING = "font-heading font-extrabold uppercase leading-[1.02] text-balance";
@@ -46,9 +49,9 @@ export function RuledEyebrow({ children }: { children: ReactNode }) {
 }
 
 const BUTTON_VARIANTS = {
-  solid: "bg-[#C85A17] text-white hover:bg-[#A4460E]",
-  outline: "border-2 border-white/80 text-white hover:bg-white hover:text-[#1A1F22]",
-  light: "bg-white text-[#1A1F22] hover:bg-white/85",
+  solid: "bg-brand-600 text-white hover:bg-brand-700",
+  outline: "border-2 border-white/80 text-white hover:bg-white hover:text-ink",
+  light: "bg-white text-ink hover:bg-white/85",
 } as const;
 
 interface ButtonLinkProps {
@@ -69,7 +72,7 @@ export function TextLink({ href, children }: { href: string; children: ReactNode
   return (
     <SmartLink
       href={href}
-      className="group inline-flex items-center gap-1.5 font-heading text-sm font-bold uppercase underline decoration-2 underline-offset-[6px] transition-colors hover:text-[#E07A35]"
+      className="group inline-flex items-center gap-1.5 font-heading text-sm font-bold uppercase underline decoration-2 underline-offset-[6px] transition-colors hover:text-brand-300"
     >
       {children}
       <ArrowUpRight className="h-3.5 w-3.5 btn-arrow" aria-hidden="true" />

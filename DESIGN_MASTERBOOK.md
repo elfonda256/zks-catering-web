@@ -84,8 +84,10 @@ Use:
 ## RULE 06: FEW BACKGROUNDS, CHANGED BY CHAPTER
 Avoid changing background colors every section. A background changes only when the chapter changes.
 
-- **Public site** (updated 2026-11-19): one charcoal canvas `#1A1F22` throughout. Brand orange
-  `#C85A17` is reserved for the proposal block and the footer.
+- **Public site** (updated 2026-11-22): charcoal canvas `#1A1F22` for almost every chapter. One
+  chapter per page may turn to warm paper `#F4F0E8` when its content reads like a document
+  (facilities and legal papers on the homepage, ordering terms on the menu). Brick orange carries
+  the proposal block and the footer.
 - **Admin console**: a charcoal frame around a warm paper canvas, see "Admin console colour" below.
 - **Order pages for customers** follow the public site.
 
@@ -158,13 +160,19 @@ The admin ERP keeps its own design system.
 - **Links under copy** use `TextLink` (small uppercase, underlined). Calls to action use `ButtonLink` pills.
 
 ### Colour
-| Role | Value |
-|---|---|
-| Canvas | `#1A1F22` |
-| Card / panel surface | `#232A2E` |
-| Brand accent, buttons, tags, footer | `#C85A17`, hover `#A4460E` |
-| Accent text on dark | `#E07A35` |
-| Text | white; secondary copy white at 75–85% |
+Same "Dapur Rempah" tokens as the admin console (`src/app/globals.css`); never write hex in components.
+
+| Role | Token | Value |
+|---|---|---|
+| Canvas | `ink` | `#1A1F22` |
+| Card / panel surface | `ink-soft` | `#232A2E` |
+| Paper chapter (one per page) | `canvas`, text `ink`, body `stone-700` | `#F4F0E8` |
+| Buttons, tags, footer, proposal block (anything with text) | `brand-600`, hover `brand-700` | `#B04C10`, `#8F3E0D` |
+| Lines, rules, progress, selected outlines (no text) | `brand-500` | `#C85A17` |
+| Accent text on dark | `brand-300` | `#E07A35` |
+| Text | white; secondary copy white at 75–85% | |
+
+White on `#C85A17` is only 4.3:1, so the brand fill that carries text is `brand-600` (5.4:1).
 
 ### Layout and photography
 - Content aligns to `CONTAINER` (max 90rem, 100px side padding on desktop).
@@ -175,10 +183,11 @@ The admin ERP keeps its own design system.
 - **Cards** (`PhotoCard`): 10px radius, photo fills the card, orange tag top-left, title over a gradient.
 - **Banner + block**: a full-width photo with an orange block overlapping its lower edge, inset from the
   left, 50px rounded bottom-left corner.
-- **Footer**: solid `#C85A17`, logo, link columns in small uppercase heading type.
+- **Footer**: solid `brand-600`, logo, link columns in small uppercase heading type.
 
 ### Admin console colour: "Dapur Rempah" (2026-11-22)
-Replaces every earlier admin colour rule (monochrome slate, blue primary, paper canvas). The
+Replaces every earlier admin colour rule (monochrome slate, blue primary, paper canvas) and shares
+its tokens with the public site above. The
 admin console is a kitchen's control room: a charcoal frame you stop noticing, a warm paper desk
 where the work happens, and the ZKS brick orange only where something is yours to act on.
 Tokens live in `src/app/globals.css` (`@theme`).
@@ -190,7 +199,7 @@ Tokens live in `src/app/globals.css` (`@theme`).
 | Desk (canvas) | `canvas` | `#F4F0E8` | Behind every page |
 | Surface | white | `#FFFFFF` | Cards, tables, dialogs |
 | Neutrals | Tailwind `stone` | | Borders, secondary text, table headers (warm, never `slate`) |
-| Brand action | `brand-600` / hover `brand-700` | `#A4460E` / `#87390B` | Primary buttons, links that act |
+| Brand action | `brand-600` / hover `brand-700` | `#B04C10` / `#8F3E0D` | Primary buttons, links that act |
 | Brand accent | `brand-500` | `#C85A17` | Active-nav bar, active tab, focus rings, avatar, bars in charts |
 | Brand on dark | `brand-300` | `#E07A35` | Active nav icon, "Panel admin" label |
 | Brand tint | `brand-50` / `brand-100` | `#FDF4EE` / `#FAE3D3` | Quiet highlights (delivery stop number) |
@@ -210,7 +219,7 @@ Rules of use
   `danger`, `brand` or `neutral` (stone). One colour per card, never a coloured background.
 - **Badges** are pills (`rounded-full`) with a tinted background and dark text of the same hue.
 - **Orange is for action and "you are here"**, not decoration: one primary button per area.
-- **Contrast**: white on `brand-600` 6.1:1, `brand-600` on white 6.1:1, `brand-300` on `ink` 5.5:1,
+- **Contrast**: white on `brand-600` 5.4:1, `brand-600` on white 5.4:1, `brand-300` on `ink` 5.5:1,
   white 70% on `ink` above 9:1. Never put `brand-500` text on white (4.3:1).
 - **Type**: Plus Jakarta Sans for the interface, JetBrains Mono only for codes (`ZKS-…`, PO numbers);
   amounts use the interface face with `tabular-nums`.

@@ -38,8 +38,8 @@ function OptionCard({
 }) {
   return (
     <label
-      className={`block cursor-pointer rounded-[10px] border-2 p-5 transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-[#E07A35] ${
-        selected ? "border-[#C85A17] bg-[#C85A17]/15" : "border-white/15 bg-[#1A1F22] hover:border-white/40"
+      className={`block cursor-pointer rounded-[10px] border-2 p-5 transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-brand-300 ${
+        selected ? "border-brand-500 bg-brand-500/15" : "border-white/15 bg-ink hover:border-white/40"
       }`}
     >
       <input
@@ -54,7 +54,7 @@ function OptionCard({
         <span className="font-heading text-sm font-bold uppercase text-white/85">{title}</span>
         <span
           className={`flex h-5 w-5 items-center justify-center rounded-full border-2 ${
-            selected ? "border-[#C85A17] bg-[#C85A17]" : "border-white/40"
+            selected ? "border-brand-500 bg-brand-600" : "border-white/40"
           }`}
           aria-hidden="true"
         >
@@ -173,9 +173,9 @@ export default function PaymentUploadClient({ rawToken, orderCode, due, dueAt, a
     : null;
 
   return (
-    <section aria-labelledby="payment-title" className="space-y-8 rounded-[10px] bg-[#232A2E] p-6 sm:p-8">
+    <section aria-labelledby="payment-title" className="space-y-8 rounded-[10px] bg-ink-soft p-6 sm:p-8">
       <div className="space-y-1">
-        <span className="font-heading text-sm font-bold uppercase text-[#E07A35]">Langkah berikutnya</span>
+        <span className="font-heading text-sm font-bold uppercase text-brand-300">Langkah berikutnya</span>
         <h2 id="payment-title" className={`${HEADING} text-[1.75rem]`}>
           {due.kind === "settlement" ? "Lunasi sisa tagihan" : "Bayar pesanan"}
         </h2>
@@ -210,11 +210,11 @@ export default function PaymentUploadClient({ rawToken, orderCode, due, dueAt, a
 
       <div className="space-y-3">
         <h3 className={FIELD_LABEL}>1. Transfer ke salah satu rekening</h3>
-        <ul className="divide-y divide-white/10 rounded-[10px] border border-white/10 bg-[#1A1F22]">
+        <ul className="divide-y divide-white/10 rounded-[10px] border border-white/10 bg-ink">
           <li className="flex items-center justify-between gap-4 p-4">
             <div>
               <p className="text-sm text-white/60">Nominal transfer</p>
-              <p className="font-heading text-2xl font-extrabold tabular-nums text-[#E07A35]">{formatRupiah(amountToPay)}</p>
+              <p className="font-heading text-2xl font-extrabold tabular-nums text-brand-300">{formatRupiah(amountToPay)}</p>
             </div>
             <CopyButton value={String(amountToPay)} label="nominal transfer" />
           </li>
@@ -296,7 +296,7 @@ export default function PaymentUploadClient({ rawToken, orderCode, due, dueAt, a
           <label htmlFor="proofFile" className="block text-sm font-medium text-white/85">
             Foto atau tangkapan layar bukti transfer
           </label>
-          <div className="relative rounded-[10px] border-2 border-dashed border-white/25 bg-[#1A1F22] p-6 text-center transition-colors hover:border-[#E07A35] has-[:focus-visible]:border-[#E07A35]">
+          <div className="relative rounded-[10px] border-2 border-dashed border-white/25 bg-ink p-6 text-center transition-colors hover:border-brand-300 has-[:focus-visible]:border-brand-300">
             <input
               id="proofFile"
               type="file"
@@ -355,7 +355,7 @@ export default function PaymentUploadClient({ rawToken, orderCode, due, dueAt, a
         <button
           type="submit"
           disabled={isPending}
-          className="inline-flex min-h-12 w-full cursor-pointer items-center justify-center rounded-full bg-[#C85A17] px-8 font-heading text-base font-bold uppercase text-white transition-colors hover:bg-[#A4460E] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E07A35] disabled:opacity-50 sm:w-auto"
+          className="inline-flex min-h-12 w-full cursor-pointer items-center justify-center rounded-full bg-brand-600 px-8 font-heading text-base font-bold uppercase text-white transition-colors hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300 disabled:opacity-50 sm:w-auto"
         >
           {isPending ? "Mengirim bukti…" : `Kirim bukti ${formatRupiah(amountToPay)}`}
         </button>

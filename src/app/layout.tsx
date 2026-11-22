@@ -30,7 +30,7 @@ export default function RootLayout({
       lang="id"
       className={`${headingFont.variable} ${bodyFont.variable} ${adminSansFont.variable} ${adminMonoFont.variable} font-sans h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#FAF9F5] text-[#141413] selection:bg-[#D96B27]/20 selection:text-[#141413] font-sans">
+      <body className="min-h-full flex flex-col bg-canvas text-ink selection:bg-brand-500/20 selection:text-ink font-sans">
         {children}
       </body>
     </html>

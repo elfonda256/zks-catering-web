@@ -31,12 +31,12 @@ export function OrderProgress({ status }: { status: string }) {
         return (
           <li key={step} aria-current={active ? "step" : undefined} className="min-w-0">
             <span
-              className={`block h-1.5 rounded-full ${done ? "bg-[#C85A17]" : active ? "bg-[#E07A35]/50" : "bg-white/15"}`}
+              className={`block h-1.5 rounded-full ${done ? "bg-brand-500" : active ? "bg-brand-300/50" : "bg-white/15"}`}
               aria-hidden="true"
             />
             <span
               className={`mt-2 block truncate font-heading text-xs font-bold uppercase sm:text-sm ${
-                active ? "text-[#E07A35]" : done ? "text-white" : "text-white/45"
+                active ? "text-brand-300" : done ? "text-white" : "text-white/45"
               }`}
             >
               {step}

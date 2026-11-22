@@ -26,7 +26,7 @@ export function CopyButton({ value, label }: CopyButtonProps) {
       type="button"
       onClick={copy}
       aria-label={`Salin ${label}`}
-      className="inline-flex min-h-9 shrink-0 cursor-pointer items-center rounded-full border border-white/20 px-3 font-heading text-xs font-bold uppercase text-white/85 transition-colors hover:border-white/50 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E07A35]"
+      className="inline-flex min-h-9 shrink-0 cursor-pointer items-center rounded-full border border-white/20 px-3 font-heading text-xs font-bold uppercase text-white/85 transition-colors hover:border-white/50 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300"
     >
       <span aria-live="polite">{status === "copied" ? "Tersalin" : status === "failed" ? "Gagal" : "Salin"}</span>
     </button>

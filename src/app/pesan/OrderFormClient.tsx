@@ -233,7 +233,7 @@ export default function OrderFormClient() {
       </div>
 
       {/* Mobile order bar: total and the main action stay in reach, as in food-ordering apps. */}
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[#232A2E]/95 px-6 py-4 backdrop-blur lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-ink-soft/95 px-6 py-4 backdrop-blur lg:hidden">
         {state.error && (
           <p role="alert" className="mx-auto mb-3 max-w-xl text-sm font-medium text-red-300">
             {state.error}
