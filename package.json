@@ -10,7 +10,8 @@
     "db:generate": "prisma generate",
     "init-admin": "tsx scripts/init-admin.ts",
     "test": "tsx --test tests/*.test.ts",
-    "seed:inventory": "tsx scripts/seed-inventory.ts"
+    "seed:inventory": "tsx scripts/seed-inventory.ts",
+    "seed:starter": "tsx scripts/seed-starter-catalog.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "7.10.0",
