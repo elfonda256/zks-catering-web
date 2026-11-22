@@ -28,6 +28,13 @@ enum OrderStatus {
   REFUNDED
 }
 
+enum OrderSource {
+  ONLINE // form /pesan
+  PHONE
+  WHATSAPP
+  WALK_IN
+}
+
 enum PaymentType {
   DP
   SETTLEMENT
@@ -55,6 +62,7 @@ model Admin {
   goodsReceipts    GoodsReceipt[]
   productionOrders ProductionOrder[]
   foodSafetyChecks FoodSafetyCheck[]
+  directOrders     Order[]
 }
 
 model Setting {
@@ -115,6 +123,10 @@ model Order {
   forfeitedAmount     Int?
   refundAmount        Int?
   refundedAt          DateTime?
+  // Pesanan dari telepon, WhatsApp, atau datang langsung dicatat admin
+  source              OrderSource       @default(ONLINE)
+  createdById         Int?
+  createdBy           Admin?            @relation(fields: [createdById], references: [id], onDelete: Restrict)
   isAnonymized        Boolean           @default(false)
   anonymizedAt        DateTime?
   createdAt           DateTime          @default(now())
@@ -125,6 +137,7 @@ model Order {
 
   @@index([status])
   @@index([eventDate])
+  @@index([source])
 }
 
 model OrderItem {

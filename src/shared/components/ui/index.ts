@@ -11,7 +11,6 @@ export * from "./KpiCard";
 export * from "./SearchInput";
 export * from "./ListToolbar";
 export * from "./DetailList";
-export * from "./SampleDataNotice";
 export * from "./DataList";
 export * from "./KpiGrid";
 export * from "./SelectField";

@@ -3,16 +3,11 @@
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { getClientIp, checkOrderRateLimit, recordOrderAttempt } from "@/lib/rate-limit";
-import {
-  validateOrderLeadTime,
-  generateOrderCode,
-  generateOrderAccessToken,
-  calculateSubtotal,
-} from "@/lib/order-logic";
+import { generateOrderCode, generateOrderAccessToken, calculateSubtotal } from "@/lib/order-logic";
+import { newOrderWhatsAppText, parseOrderDetails } from "@/lib/order-form";
 import { MENU_PACKAGES } from "@/data/catering-data";
 import { ensurePackageMenuItem } from "@/modules/menu/package-menu-item";
 import { sendWhatsAppMessage, getAppBaseUrl } from "@/lib/whatsapp";
-import { MIN_ORDER_PCS } from "@/lib/order-rules";
 
 export interface CreateOrderState {
   error?: string;
@@ -42,59 +37,21 @@ export async function createOrderAction(
     return { error: "Anda wajib menyetujui syarat & ketentuan pemesanan katering ZKS." };
   }
 
-  // 4. Ekstraksi & Sanitasi Data Formulir
-  const customerName = String(formData.get("customerName") || "").trim();
-  const customerPhone = String(formData.get("customerPhone") || "").trim();
-  const customerAddress = String(formData.get("customerAddress") || "").trim();
-  const customerEmail = String(formData.get("customerEmail") || "").trim() || null;
-  const eventDateStr = String(formData.get("eventDate") || "").trim();
-  const eventTimeStr = String(formData.get("eventTime") || "").trim() || "11:00";
-  const packagePrice = Number(formData.get("packagePrice") || 0);
-  const quantity = Number(formData.get("quantity") || 0);
-  const notes = String(formData.get("notes") || "").trim() || null;
-
-  // 5. Validasi Kolom Data Pelanggan
-  if (!customerName || customerName.length < 3) {
-    return { error: "Nama lengkap pemesan wajib diisi (minimal 3 karakter)." };
+  // 4–7. Data pelanggan, paket, kuantitas, dan jeda pemesanan (WIB)
+  const details = parseOrderDetails(formData);
+  if (!details.ok) {
+    return { error: details.error };
   }
-
-  const phoneRegex = /^[0-9+-\s]{10,20}$/;
-  if (!customerPhone || !phoneRegex.test(customerPhone)) {
-    return { error: "Nomor telepon / WhatsApp tidak valid (minimal 10 digit angka)." };
-  }
-
-  if (!customerAddress || customerAddress.length < 10) {
-    return { error: "Alamat pengantaran di Karawang wajib diisi lengkap (minimal 10 karakter)." };
-  }
-
-  // 6. Validasi Paket & Kuantitas
-  if (!MENU_PACKAGES[packagePrice]) {
-    return { error: "Paket katering yang dipilih tidak valid." };
-  }
-
-  if (!Number.isInteger(quantity) || quantity < MIN_ORDER_PCS) {
-    return { error: `Pemesanan katering minimal ${MIN_ORDER_PCS} porsi.` };
-  }
-
-  // 7. Validasi Tanggal & Jeda Pemesanan (WIB)
-  if (!eventDateStr) {
-    return { error: "Tanggal acara wajib dipilih." };
-  }
-
-  const [year, month, day] = eventDateStr.split("-").map(Number);
-  const [hours, minutes] = eventTimeStr.split(":").map(Number);
-
-  if (!year || !month || !day || isNaN(hours) || isNaN(minutes)) {
-    return { error: "Format tanggal atau waktu acara tidak valid." };
-  }
-
-  // Konversi jam WIB (UTC+7) ke objek Date UTC
-  const fullEventDate = new Date(Date.UTC(year, month - 1, day, hours - 7, minutes, 0));
-
-  const validation = validateOrderLeadTime(fullEventDate, quantity);
-  if (!validation.valid) {
-    return { error: validation.error || "Tanggal acara tidak memenuhi batas minimum pemesanan." };
-  }
+  const {
+    customerName,
+    customerPhone,
+    customerAddress,
+    customerEmail,
+    eventDate: fullEventDate,
+    packagePrice,
+    quantity,
+    notes,
+  } = details.value;
 
   // 8. Pembatasan Laju (Rate Limiting)
   const reqHeaders = await headers();
@@ -161,21 +118,15 @@ export async function createOrderAction(
     // Kirim notifikasi WhatsApp otomatis ke pelanggan
     try {
       const trackingUrl = `${getAppBaseUrl()}/pesanan/${rawToken}`;
-      const waText =
-        `*PT. ZAHDAN KAMAL SENTOSA*\n` +
-        `_Konfirmasi Pengajuan Pesanan Katering_\n\n` +
-        `Halo Bpk/Ibu *${customerName}*,\n` +
-        `Terima kasih telah mengajukan pesanan katering industri di PT. Zahdan Kamal Sentosa.\n\n` +
-        `📋 *Detail Pengajuan Pesanan:*\n` +
-        `• Kode Pesanan : *${orderCode}*\n` +
-        `• Paket Menu : ${selectedPackage.name}\n` +
-        `• Jumlah Porsi : ${quantity} Porsi\n` +
-        `• Subtotal Makanan : Rp${subtotal.toLocaleString("id-ID")}\n` +
-        `• Alamat Pabrik : ${customerAddress}\n\n` +
-        `Tim operasional kami sedang meninjau pesanan Anda dan menghitung estimasi ongkos kirim resmi ke lokasi pabrik Anda.\n\n` +
-        `🔗 *Tautan Pelacakan & Pembayaran:*\n` +
-        `${trackingUrl}\n\n` +
-        `_Simpan pesan dan tautan ini untuk memantau status pesanan dan melakukan pembayaran._`;
+      const waText = newOrderWhatsAppText({
+        customerName,
+        orderCode,
+        packageName: selectedPackage.name,
+        quantity,
+        subtotal,
+        customerAddress,
+        trackingUrl,
+      });
 
       await sendWhatsAppMessage({
         targetPhone: customerPhone,
