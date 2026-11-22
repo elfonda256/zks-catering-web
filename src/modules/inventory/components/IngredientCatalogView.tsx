@@ -128,7 +128,7 @@ function IngredientDialog({ item, onClose }: { item: Ingredient; onClose: () => 
             label: "Stok",
             value: (
               <span className="flex flex-wrap items-center gap-2">
-                <span className="font-mono tabular-nums">{formatQty(item.stock, item.unit)}</span>
+                <span className="tabular-nums">{formatQty(item.stock, item.unit)}</span>
                 <Badge variant={level.variant}>{level.label}</Badge>
               </span>
             ),
@@ -157,7 +157,7 @@ function IngredientDialog({ item, onClose }: { item: Ingredient; onClose: () => 
                 <span className="text-slate-700">
                   {relativeDay(m.day)}, {m.time} · {m.note}
                 </span>
-                <span className="font-mono tabular-nums text-slate-900">
+                <span className="tabular-nums text-slate-900">
                   {formatMovementQty(m.type, m.qty, item.unit)}
                 </span>
               </li>

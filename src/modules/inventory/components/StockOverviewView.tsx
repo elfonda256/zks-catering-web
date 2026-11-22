@@ -120,8 +120,8 @@ export function StockOverviewView() {
 
       <KpiGrid label="Ringkasan stok" columns={4}>
         <KpiCard label="Jenis bahan" value={INGREDIENTS.length} subtext={`${CATEGORIES.length} kategori`} />
-        <KpiCard label="Perlu dibeli" value={counts.beli} subtext="Di bawah stok minimum" />
-        <KpiCard label="Segera kedaluwarsa" value={counts.kedaluwarsa} subtext={`Dalam ${EXPIRY_WARNING_DAYS} hari`} />
+        <KpiCard label="Perlu dibeli" tone="warning" value={counts.beli} subtext="Di bawah stok minimum" />
+        <KpiCard label="Segera kedaluwarsa" tone="danger" value={counts.kedaluwarsa} subtext={`Dalam ${EXPIRY_WARNING_DAYS} hari`} />
         <KpiCard label="Nilai stok" value={formatRupiahShort(counts.nilai)} subtext="Harga beli terakhir" />
       </KpiGrid>
 

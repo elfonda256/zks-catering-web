@@ -67,10 +67,11 @@ export function ProductionScheduleView() {
       <SampleDataNotice />
 
       <KpiGrid label="Ringkasan produksi" columns={3}>
-        <KpiCard label="Porsi hari ini" value={today.reduce((s, wo) => s + wo.portions, 0)} subtext={`${today.length} perintah produksi`} />
+        <KpiCard label="Porsi hari ini" tone="brand" value={today.reduce((s, wo) => s + wo.portions, 0)} subtext={`${today.length} perintah produksi`} />
         <KpiCard label="Porsi besok" value={WORK_ORDERS.filter((wo) => wo.day === 1).reduce((s, wo) => s + wo.portions, 0)} subtext="Sudah dijadwalkan" />
         <KpiCard
           label="Bahan kurang"
+          tone="danger"
           value={shortages.length}
           subtext={shortages.map((n) => getIngredient(n.code).name).join(", ") || "Stok cukup untuk 2 hari"}
         />

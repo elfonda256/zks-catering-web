@@ -85,7 +85,7 @@ export function DataList<T>({ rows, columns, rowKey, fixed = false }: DataListPr
                 {details.map((c) => (
                   <div key={c.key} className={c.wide ? "col-span-2 min-w-0" : "min-w-0"}>
                     <dt className="text-[11px] font-medium uppercase tracking-wider text-slate-500">{c.header}</dt>
-                    <dd className={`mt-1 text-slate-800 ${c.isNumeric ? "font-mono tabular-nums" : ""}`}>{c.cell(row)}</dd>
+                    <dd className={`mt-1 text-slate-800 ${c.isNumeric ? "tabular-nums" : ""}`}>{c.cell(row)}</dd>
                   </div>
                 ))}
               </dl>

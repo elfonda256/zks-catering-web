@@ -50,7 +50,7 @@ export function PurchaseOrdersView() {
       <SampleDataNotice />
 
       <KpiGrid label="Ringkasan pembelian" columns={3}>
-        <KpiCard label="PO berjalan" value={open.length} subtext="Belum diterima penuh" />
+        <KpiCard label="PO berjalan" tone="brand" value={open.length} subtext="Belum diterima penuh" />
         <KpiCard label="Nilai PO berjalan" value={formatRupiahShort(open.reduce((s, po) => s + lineTotal(po.lines), 0))} subtext="Sebelum ongkir supplier" />
         <KpiCard label="Total nilai PO" value={formatRupiahShort(PURCHASE_ORDERS.reduce((s, po) => s + lineTotal(po.lines), 0))} subtext="Minggu ini" />
       </KpiGrid>

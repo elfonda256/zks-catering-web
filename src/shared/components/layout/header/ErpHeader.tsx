@@ -56,14 +56,14 @@ export function ErpHeader({
 
         <Link
           href="/admin/dashboard"
-          className="flex items-center gap-3 rounded-[8px] focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900"
+          className="flex items-center gap-3 rounded-[8px] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
           aria-label="Admin ZKS Catering"
         >
           {/* Served unoptimized: the emblem file is already sized for 2x displays */}
           <Image src="/images/zks-emblem.png" alt="" width={38} height={24} unoptimized priority />
           <span className="flex flex-col leading-none">
-            <span className="text-[14px] font-semibold text-slate-900">ZKS Catering</span>
-            <span className="text-[11px] text-slate-500 mt-1">Panel admin</span>
+            <span className="text-[15px] font-bold tracking-tight text-ink">ZKS Catering</span>
+            <span className="text-[11px] font-medium text-brand-600 mt-1">Panel admin</span>
           </span>
         </Link>
       </div>

@@ -128,10 +128,10 @@ export function FinanceView({ summary, months }: FinanceViewProps) {
       </div>
 
       <KpiGrid label="Ringkasan keuangan" columns={4}>
-        <KpiCard label="Diterima" value={formatRupiahShort(sum(summary.received.map((p) => p.amount)))} subtext={`${summary.received.length} pembayaran · ${monthLabel}`} />
-        <KpiCard label="Menunggu verifikasi" value={summary.pending.length} subtext={formatRupiah(sum(summary.pending.map((p) => p.amount)))} />
-        <KpiCard label="Piutang" value={formatRupiahShort(outstanding)} subtext={`${summary.receivables.length} pesanan belum lunas`} />
-        <KpiCard label="Refund tertunda" value={summary.refunds.length} subtext="Perlu dikembalikan" />
+        <KpiCard label="Diterima" tone="success" value={formatRupiahShort(sum(summary.received.map((p) => p.amount)))} subtext={`${summary.received.length} pembayaran · ${monthLabel}`} />
+        <KpiCard label="Menunggu verifikasi" tone="warning" value={summary.pending.length} subtext={formatRupiah(sum(summary.pending.map((p) => p.amount)))} />
+        <KpiCard label="Piutang" tone="brand" value={formatRupiahShort(outstanding)} subtext={`${summary.receivables.length} pesanan belum lunas`} />
+        <KpiCard label="Refund tertunda" tone="danger" value={summary.refunds.length} subtext="Perlu dikembalikan" />
       </KpiGrid>
 
       <ListToolbar

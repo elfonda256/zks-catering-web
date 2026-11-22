@@ -16,6 +16,16 @@
   --color-zks-haccp: #16A34A;
   --color-zks-alert: #DC2626;
 
+  /* Admin console: ZKS industrial orange and charcoal. White text on brand-600
+     and brand-600 text on white both pass WCAG AA (6.1:1). */
+  --color-brand-50: #FDF4EE;
+  --color-brand-100: #FAE3D3;
+  --color-brand-500: #C85A17;
+  --color-brand-600: #A4460E;
+  --color-brand-700: #87390B;
+  --color-ink: #1A1F22;
+  --color-canvas: #F5F4F0;
+
   --font-serif: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "SF Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
@@ -61,6 +71,14 @@ body {
     font-family: var(--font-sans);
     letter-spacing: -0.025em;
   }
+}
+
+/* Admin console scope: interface and figure faces. Set on the admin layout
+   and on portalled dialogs, which render outside it. */
+.admin-theme {
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-family: var(--font-sans);
 }
 
 /* ==============================================================

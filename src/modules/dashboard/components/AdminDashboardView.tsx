@@ -37,7 +37,7 @@ type Dialog =
   | { type: "rejectProof"; order: AdminOrderData; payment: AdminOrderPayment };
 
 const TEXTAREA =
-  "w-full rounded-[12px] border border-slate-200 bg-white p-3 text-[14px] text-slate-900 placeholder:text-slate-400 focus:border-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900";
+  "w-full rounded-[12px] border border-slate-200 bg-white p-3 text-[14px] text-slate-900 placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-3 focus:ring-brand-500/15";
 
 export default function AdminDashboardView({ orders }: AdminDashboardViewProps) {
   const { counts, tab, setTab, query, setQuery, filteredOrders } = useDashboard(orders);
@@ -125,10 +125,10 @@ export default function AdminDashboardView({ orders }: AdminDashboardViewProps) 
   return (
     <div className="space-y-6">
       <section aria-label="Ringkasan pesanan" className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard label="Bukti bayar" value={counts.proof} subtext="Menunggu verifikasi" />
-        <KpiCard label="Perlu ongkir" value={counts.shipping} subtext="Menunggu konfirmasi admin" />
+        <KpiCard label="Bukti bayar" tone="warning" value={counts.proof} subtext="Menunggu verifikasi" />
+        <KpiCard label="Perlu ongkir" tone="brand" value={counts.shipping} subtext="Menunggu konfirmasi admin" />
         <KpiCard label="Menunggu bayar" value={counts.payment} subtext="Tagihan sudah dikirim" />
-        <KpiCard label="Berjalan" value={counts.active} subtext="Dibayar, dimasak, atau dikirim" />
+        <KpiCard label="Berjalan" tone="success" value={counts.active} subtext="Dibayar, dimasak, atau dikirim" />
       </section>
 
       <section aria-label="Daftar pesanan" className="space-y-4">
@@ -263,7 +263,7 @@ export default function AdminDashboardView({ orders }: AdminDashboardViewProps) 
         >
           <p className="text-[14px] text-slate-700">
             {PAYMENT_TYPE_LABELS[dialog.payment.paymentType] ?? dialog.payment.paymentType} sebesar{" "}
-            <strong className="font-mono tabular-nums">{formatRupiah(dialog.payment.amount)}</strong> dicatat sebagai
+            <strong className="tabular-nums">{formatRupiah(dialog.payment.amount)}</strong> dicatat sebagai
             diterima. Pastikan dana sudah masuk ke rekening.
           </p>
           {dialogErrorNode}

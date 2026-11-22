@@ -98,30 +98,30 @@ export function OrderCard({ order, disabled, onAction }: OrderCardProps) {
           <dl className="space-y-1 text-[13px]">
             <div className="flex justify-between gap-4">
               <dt className="text-slate-600">Makanan</dt>
-              <dd className="font-mono tabular-nums text-slate-900">{formatRupiah(order.subtotal)}</dd>
+              <dd className="tabular-nums text-slate-900">{formatRupiah(order.subtotal)}</dd>
             </div>
             <div className="flex justify-between gap-4">
               <dt className="text-slate-600">Ongkir</dt>
-              <dd className="font-mono tabular-nums text-slate-900">
+              <dd className="tabular-nums text-slate-900">
                 {order.shippingFee !== null ? formatRupiah(order.shippingFee) : "Belum ditentukan"}
               </dd>
             </div>
             <div className="flex justify-between gap-4 pt-2 border-t border-slate-200">
               <dt className="font-semibold text-slate-900">Total</dt>
-              <dd className="font-mono tabular-nums font-semibold text-slate-900">
+              <dd className="tabular-nums font-semibold text-slate-900">
                 {order.totalAmount !== null ? formatRupiah(order.totalAmount) : "—"}
               </dd>
             </div>
             {paidAmount > 0 && (
               <div className="flex justify-between gap-4">
                 <dt className="text-slate-600">Sudah dibayar</dt>
-                <dd className="font-mono tabular-nums text-slate-900">{formatRupiah(paidAmount)}</dd>
+                <dd className="tabular-nums text-slate-900">{formatRupiah(paidAmount)}</dd>
               </div>
             )}
             {paidAmount > 0 && remaining !== null && remaining > 0 && (
               <div className="flex justify-between gap-4">
                 <dt className="font-semibold text-amber-900">Sisa tagihan</dt>
-                <dd className="font-mono tabular-nums font-semibold text-amber-900">{formatRupiah(remaining)}</dd>
+                <dd className="tabular-nums font-semibold text-amber-900">{formatRupiah(remaining)}</dd>
               </div>
             )}
           </dl>
@@ -140,7 +140,7 @@ export function OrderCard({ order, disabled, onAction }: OrderCardProps) {
               <div className="text-[13px]">
                 <p className="font-semibold text-slate-900">
                   {PAYMENT_TYPE_LABELS[payment.paymentType] ?? payment.paymentType} ·{" "}
-                  <span className="font-mono tabular-nums">{formatRupiah(payment.amount)}</span>
+                  <span className="tabular-nums">{formatRupiah(payment.amount)}</span>
                 </p>
                 <p className="text-[12px] text-slate-500">
                   {payment.paymentChannel || "Transfer bank"} · {formatDateTime(payment.createdAt)}

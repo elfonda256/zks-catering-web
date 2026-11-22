@@ -40,11 +40,11 @@ export function UserProfileMenu({ user, onLogout }: UserProfileMenuProps) {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 p-1 rounded-[8px] hover:bg-slate-100 transition-colors cursor-pointer text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900"
+        className="flex items-center gap-2 p-1 rounded-[8px] hover:bg-slate-100 transition-colors cursor-pointer text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
         aria-label="Menu akun"
         aria-expanded={isOpen}
       >
-        <div className="w-8 h-8 rounded-[8px] bg-slate-900 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs">
+        <div className="w-8 h-8 rounded-full bg-brand-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs">
           {initials}
         </div>
         <div className="hidden xl:flex flex-col text-left">

@@ -228,9 +228,9 @@ export function ErpSidebar({
               <button
                 type="button"
                 onClick={() => toggleSection(section.id)}
-                className="w-full flex items-center justify-between px-2.5 py-1 text-[10px] font-semibold text-slate-400 hover:text-slate-700 tracking-wider uppercase transition-colors"
+                className="w-full flex items-center justify-between px-3 py-1 text-[10.5px] font-bold text-slate-400 hover:text-slate-700 tracking-[0.08em] uppercase transition-colors"
               >
-                <span className={cn(hasActiveChild && "text-slate-900 font-bold")}>
+                <span className={cn(hasActiveChild && "text-brand-600")}>
                   {section.title}
                 </span>
                 <svg
@@ -269,10 +269,10 @@ export function ErpSidebar({
                         if (isMobileOpen) onCloseMobile();
                       }}
                       className={cn(
-                        "group relative flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 ease-out",
+                        "group relative flex items-center gap-3 px-3 py-2 rounded-lg text-[13.5px] font-medium transition-colors duration-150 ease-out",
                         active
-                          ? "bg-slate-100 text-slate-900 font-semibold"
-                          : "text-slate-600 hover:text-slate-900 hover:bg-slate-50",
+                          ? "bg-brand-50 text-brand-700 font-semibold"
+                          : "text-slate-600 hover:text-ink hover:bg-slate-100/70",
                         isRoadmap && "opacity-50 cursor-not-allowed hover:bg-transparent hover:text-slate-500",
                         collapsed && "justify-center px-0 py-2.5"
                       )}
@@ -281,7 +281,7 @@ export function ErpSidebar({
                       <span
                         className={cn(
                           "transition-colors duration-150",
-                          active ? "text-slate-900" : "text-slate-400 group-hover:text-slate-600"
+                          active ? "text-brand-600" : "text-slate-400 group-hover:text-slate-600"
                         )}
                       >
                         {getNavIcon(item.id)}
@@ -306,9 +306,8 @@ export function ErpSidebar({
                         </span>
                       )}
 
-                      {/* Active indicator bar on collapsed */}
-                      {collapsed && active && (
-                        <div className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-slate-900 rounded-r-full" />
+                      {active && (
+                        <span aria-hidden="true" className="absolute -left-2 top-1.5 bottom-1.5 w-[3px] bg-brand-500 rounded-r-full" />
                       )}
                     </Link>
                   );
@@ -336,7 +335,7 @@ export function ErpSidebar({
         <div className="p-2.5 border-t border-slate-200 bg-slate-50/60 flex items-center justify-between text-[11px] text-slate-400">
           {!isCollapsed && (
             <div className="flex items-center gap-1.5 pl-1">
-              <span className="text-[11px] text-slate-500">ZKS Admin</span>
+              <span className="text-[11px] font-medium text-slate-500">PT Zahdan Kamal Sentosa</span>
             </div>
           )}
           <button

@@ -143,7 +143,7 @@ function SupplierDialog({ supplier, onClose }: { supplier: Supplier; onClose: ()
               <li key={po.id} className="flex flex-wrap items-center justify-between gap-3 px-3 py-2">
                 <span className="font-mono text-slate-900">{po.id}</span>
                 <span className="text-slate-600">{relativeDay(po.day)}</span>
-                <span className="font-mono tabular-nums text-slate-900">{formatRupiah(lineTotal(po.lines))}</span>
+                <span className="tabular-nums text-slate-900">{formatRupiah(lineTotal(po.lines))}</span>
                 <Badge variant={PO_STATUS[po.status].variant}>{PO_STATUS[po.status].label}</Badge>
               </li>
             ))}

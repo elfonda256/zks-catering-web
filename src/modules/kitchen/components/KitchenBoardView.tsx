@@ -42,7 +42,7 @@ export function KitchenBoardView() {
             <div key={status} className="rounded-[12px] border border-slate-200 bg-white">
               <h2 className="flex items-center justify-between border-b border-slate-100 px-4 py-3 text-[13px] font-semibold text-slate-900">
                 {WORK_ORDER_STATUS[status].label}
-                <span className="font-mono tabular-nums text-slate-400">{orders.length}</span>
+                <span className="tabular-nums text-slate-400">{orders.length}</span>
               </h2>
               <ul className="space-y-3 p-3">
                 {orders.length === 0 && <li className="px-1 py-2 text-[13px] text-slate-400">Kosong</li>}

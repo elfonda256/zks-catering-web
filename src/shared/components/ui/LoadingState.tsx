@@ -93,7 +93,7 @@ export function LoadingState({ rows = 5, className, label = "Memuat data operasi
         <div className="flex items-center gap-2">
           <Skeleton className="h-4 w-32" />
         </div>
-        <span className="text-[12px] font-medium text-slate-400 font-mono">{label}</span>
+        <span className="text-[12px] font-medium text-slate-400">{label}</span>
       </div>
 
       <div className="space-y-3">

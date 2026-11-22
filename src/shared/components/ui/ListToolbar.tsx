@@ -49,7 +49,7 @@ export function ListToolbar<T extends string>({
             <TabsTrigger key={t.id} value={t.id} className="whitespace-nowrap">
               {t.label}
               {t.count !== undefined && (
-                <span className="ml-1 font-mono tabular-nums text-slate-400">{t.count}</span>
+                <span className="ml-1 tabular-nums text-slate-400">{t.count}</span>
               )}
             </TabsTrigger>
           ))}

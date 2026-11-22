@@ -62,9 +62,9 @@ export function DeliveryView({ stops, days }: DeliveryViewProps) {
       />
 
       <KpiGrid label="Ringkasan pengiriman" columns={3}>
-        <KpiCard label="Titik antar" value={forDay.length} subtext="Pesanan dibayar" />
+        <KpiCard label="Titik antar" tone="brand" value={forDay.length} subtext="Pesanan dibayar" />
         <KpiCard label="Total porsi" value={portions} subtext="Untuk dimuat ke armada" />
-        <KpiCard label="Belum lunas" value={unpaid.length} subtext="Tagih sisa saat serah terima" />
+        <KpiCard label="Belum lunas" tone="warning" value={unpaid.length} subtext="Tagih sisa saat serah terima" />
       </KpiGrid>
 
       {forDay.length === 0 ? (
@@ -81,11 +81,11 @@ export function DeliveryView({ stops, days }: DeliveryViewProps) {
               <li key={stop.orderId} className="rounded-[12px] border border-slate-200 bg-white">
                 <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 px-5 py-4">
                   <div className="flex items-start gap-4">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-900 font-mono text-[13px] font-semibold text-white">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-700 ring-1 ring-brand-100 font-mono text-[13px] font-semibold">
                       {index + 1}
                     </span>
                     <div>
-                      <p className="font-mono text-[18px] font-semibold tabular-nums text-slate-900">{timeOf(stop.eventDate)}</p>
+                      <p className="text-[18px] font-bold tabular-nums text-slate-900">{timeOf(stop.eventDate)}</p>
                       <p className="font-medium text-slate-900">{stop.customerName}</p>
                       <p className="font-mono text-[12px] text-slate-500">{stop.orderCode}</p>
                     </div>
@@ -97,7 +97,8 @@ export function DeliveryView({ stops, days }: DeliveryViewProps) {
                     {remaining > 0 ? (
                       <Badge variant="pending">Sisa {formatRupiah(remaining)}</Badge>
                     ) : (
-                      <Badge variant="completed">Lunas</Badge>
+                      // FULLY_PAID already reads "Lunas" in the status badge.
+                      status !== "FULLY_PAID" && <Badge variant="completed">Lunas</Badge>
                     )}
                   </div>
                 </div>

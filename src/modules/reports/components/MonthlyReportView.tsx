@@ -39,11 +39,12 @@ export function MonthlyReportView({ report, month, months }: MonthlyReportViewPr
       </div>
 
       <KpiGrid label={`Ringkasan ${monthLabel}`} columns={4}>
-        <KpiCard label="Pesanan berjalan" value={report.orders} subtext={`${report.portions.toLocaleString("id-ID")} porsi`} />
+        <KpiCard label="Pesanan berjalan" tone="brand" value={report.orders} subtext={`${report.portions.toLocaleString("id-ID")} porsi`} />
         <KpiCard label="Nilai pesanan" value={formatRupiahShort(report.orderValue)} subtext={`Rata-rata ${formatRupiahShort(report.averageOrderValue)}`} />
-        <KpiCard label="Uang diterima" value={formatRupiahShort(report.received)} subtext="Pembayaran disetujui" />
+        <KpiCard label="Uang diterima" tone="success" value={formatRupiahShort(report.received)} subtext="Pembayaran disetujui" />
         <KpiCard
           label="Batal / ditolak"
+          tone="danger"
           value={report.cancelled}
           subtext={`${Math.round(report.cancelRate * 100)}% dari pesanan yang diputuskan`}
         />
@@ -62,10 +63,10 @@ export function MonthlyReportView({ report, month, months }: MonthlyReportViewPr
                 <li key={pkg.name} className="space-y-2 text-[14px]">
                   <div className="flex justify-between gap-4">
                     <span className="text-slate-800">{pkg.name}</span>
-                    <span className="font-mono tabular-nums text-slate-900">{pkg.portions.toLocaleString("id-ID")} porsi</span>
+                    <span className="tabular-nums text-slate-900">{pkg.portions.toLocaleString("id-ID")} porsi</span>
                   </div>
                   <div className="h-2 rounded-full bg-slate-100" aria-hidden="true">
-                    <div className="h-2 rounded-full bg-slate-800" style={{ width: `${(pkg.portions / maxPortions) * 100}%` }} />
+                    <div className="h-2 rounded-full bg-brand-500" style={{ width: `${(pkg.portions / maxPortions) * 100}%` }} />
                   </div>
                   <p className="text-[12px] text-slate-500">{formatRupiah(pkg.value)}</p>
                 </li>
@@ -85,7 +86,7 @@ export function MonthlyReportView({ report, month, months }: MonthlyReportViewPr
                     <span className="text-slate-800">{customer.name}</span>
                   </span>
                   <span className="text-right">
-                    <span className="block font-mono tabular-nums text-slate-900">{formatRupiah(customer.value)}</span>
+                    <span className="block tabular-nums text-slate-900">{formatRupiah(customer.value)}</span>
                     <span className="text-[12px] text-slate-500">{customer.orders} pesanan</span>
                   </span>
                 </li>

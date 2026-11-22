@@ -59,18 +59,18 @@ export function ErpPageTemplate({
       )}
 
       {/* 2. Page Header: Category + Title + Description + Standardized Top Right Action Area */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-slate-200/80">
         <div>
           {category && (
             <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1">
               {category}
             </div>
           )}
-          <h1 className="text-[22px] sm:text-[24px] font-semibold text-slate-900 tracking-tight leading-snug">
+          <h1 className="text-[24px] sm:text-[28px] font-bold text-ink tracking-[-0.02em] leading-tight">
             {title}
           </h1>
           {description && (
-            <p className="text-[13px] sm:text-[14px] text-slate-600 mt-1 max-w-4xl">
+            <p className="text-[13px] sm:text-[14px] text-slate-500 mt-1.5 max-w-4xl">
               {description}
             </p>
           )}

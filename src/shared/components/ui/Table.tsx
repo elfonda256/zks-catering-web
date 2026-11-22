@@ -149,7 +149,7 @@ export function TableCell({
       className={cn(
         "py-3.5 px-4 text-slate-700 align-middle",
         alignClass,
-        isNumeric && "font-mono tabular-nums text-slate-900",
+        isNumeric && "tabular-nums text-slate-900",
         isCheckbox && "w-10 px-3",
         className
       )}

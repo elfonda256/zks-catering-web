@@ -55,7 +55,7 @@ export function DirectOrdersView() {
       <SampleDataNotice />
 
       <KpiGrid label="Ringkasan pesanan langsung" columns={3}>
-        <KpiCard label="Perlu konfirmasi" value={DIRECT_ORDERS.filter((o) => o.status === "baru").length} subtext="Hubungi pemesan" />
+        <KpiCard label="Perlu konfirmasi" tone="warning" value={DIRECT_ORDERS.filter((o) => o.status === "baru").length} subtext="Hubungi pemesan" />
         <KpiCard label="Porsi 3 hari ke depan" value={DIRECT_ORDERS.reduce((s, o) => s + o.portions, 0)} subtext={`${DIRECT_ORDERS.length} pesanan`} />
         <KpiCard label="Nilai makanan" value={formatRupiahShort(DIRECT_ORDERS.reduce((s, o) => s + orderValue(o), 0))} subtext="Sebelum ongkir" />
       </KpiGrid>

@@ -28,7 +28,7 @@ const COLUMNS: DataColumn<StockTransfer>[] = [
           const item = getIngredient(line.code);
           return (
             <li key={line.code}>
-              {item.name} <span className="font-mono tabular-nums text-slate-500">{formatQty(line.qty, item.unit)}</span>
+              {item.name} <span className="tabular-nums text-slate-500">{formatQty(line.qty, item.unit)}</span>
             </li>
           );
         })}

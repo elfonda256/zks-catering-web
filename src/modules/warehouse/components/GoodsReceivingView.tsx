@@ -68,9 +68,9 @@ export function GoodsReceivingView() {
       <SampleDataNotice />
 
       <KpiGrid label="Ringkasan penerimaan" columns={3}>
-        <KpiCard label="PO menunggu barang" value={awaiting.length} subtext={awaiting.map((po) => po.id).join(", ") || "Tidak ada"} />
+        <KpiCard label="PO menunggu barang" tone="brand" value={awaiting.length} subtext={awaiting.map((po) => po.id).join(", ") || "Tidak ada"} />
         <KpiCard label="Penerimaan tercatat" value={GOODS_RECEIPTS.length} subtext="Termasuk hasil cek kualitas" />
-        <KpiCard label="Ada barang ditolak" value={GOODS_RECEIPTS.filter(hasRejection).length} subtext="Gagal cek kualitas" />
+        <KpiCard label="Ada barang ditolak" tone="danger" value={GOODS_RECEIPTS.filter(hasRejection).length} subtext="Gagal cek kualitas" />
       </KpiGrid>
 
       <DataList rows={GOODS_RECEIPTS} columns={columns} rowKey={(r) => r.id} />

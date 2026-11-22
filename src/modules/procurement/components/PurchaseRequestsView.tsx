@@ -65,7 +65,7 @@ export function PurchaseRequestsView() {
       <SampleDataNotice />
 
       <KpiGrid label="Ringkasan permintaan" columns={3}>
-        <KpiCard label="Menunggu persetujuan" value={waiting.length} subtext={formatRupiah(waiting.reduce((s, pr) => s + lineTotal(pr.lines), 0))} />
+        <KpiCard label="Menunggu persetujuan" tone="warning" value={waiting.length} subtext={formatRupiah(waiting.reduce((s, pr) => s + lineTotal(pr.lines), 0))} />
         <KpiCard label="Sudah jadi PO" value={PURCHASE_REQUESTS.filter((pr) => pr.poId).length} subtext="Diteruskan ke supplier" />
         <KpiCard label="Total permintaan" value={PURCHASE_REQUESTS.length} subtext="Minggu ini" />
       </KpiGrid>
