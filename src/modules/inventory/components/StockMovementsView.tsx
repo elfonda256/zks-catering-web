@@ -23,7 +23,7 @@ function signedQuantity(m: MovementRow): string {
 }
 
 const COLUMNS: DataColumn<MovementRow>[] = [
-  { key: "item", header: "Bahan", mobile: "title", cell: (m) => <span className="font-medium text-slate-900">{m.ingredientName}</span> },
+  { key: "item", header: "Bahan", mobile: "title", cell: (m) => <span className="font-medium text-stone-900">{m.ingredientName}</span> },
   { key: "time", header: "Waktu", mobile: "subtitle", cell: (m) => <span className="whitespace-nowrap">{formatDateTime(m.createdAt)}</span> },
   {
     key: "type",
@@ -39,9 +39,9 @@ const COLUMNS: DataColumn<MovementRow>[] = [
     header: "Catatan",
     wide: true,
     cell: (m) => (
-      <span className="text-slate-600">
+      <span className="text-stone-600">
         {m.note ?? "—"}
-        {m.createdBy && <span className="block text-[12px] text-slate-500">oleh {m.createdBy}</span>}
+        {m.createdBy && <span className="block text-[12px] text-stone-500">oleh {m.createdBy}</span>}
       </span>
     ),
   },
@@ -90,7 +90,7 @@ export function StockMovementsView({ movements }: { movements: MovementRow[] }) 
       ) : (
         <DataList rows={rows} columns={COLUMNS} rowKey={(m) => String(m.id)} />
       )}
-      <p className="text-[12px] text-slate-500">Menampilkan 200 mutasi terbaru.</p>
+      <p className="text-[12px] text-stone-500">Menampilkan 200 mutasi terbaru.</p>
     </div>
   );
 }

@@ -108,7 +108,7 @@ async function DashboardContent() {
             href="/pesan"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex h-8 items-center gap-2 rounded-[8px] border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+            className="inline-flex h-8 items-center gap-2 rounded-[8px] border border-stone-200 bg-white px-3 text-xs font-medium text-stone-700 hover:bg-stone-50 transition-colors"
           >
             Form pemesanan <span aria-hidden="true">↗</span>
           </Link>
@@ -124,7 +124,7 @@ export default function AdminDashboardPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-8">
+        <div className="min-h-screen bg-stone-50 flex items-center justify-center p-8">
           <LoadingState label="Memuat pesanan..." rows={6} />
         </div>
       }

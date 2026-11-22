@@ -16,7 +16,7 @@ export default function ContactBlock() {
         />
       </div>
 
-      <div className="relative -mt-24 ml-6 bg-[#C85A17] px-8 py-14 sm:ml-10 sm:px-12 lg:-mt-40 lg:ml-[6.25rem] lg:rounded-bl-[3.125rem] lg:px-16 lg:py-20">
+      <div className="relative -mt-24 ml-6 bg-brand-600 px-8 py-14 sm:ml-10 sm:px-12 lg:-mt-40 lg:ml-[6.25rem] lg:rounded-bl-[3.125rem] lg:px-16 lg:py-20">
         <span className="block font-heading text-base font-bold uppercase">Pengadaan katering</span>
         <h2 className={`${HEADING} ${TITLE_SIZE.large} mt-3 max-w-3xl`}>Mulai bahas kebutuhan karyawan Anda</h2>
         <p className="mt-6 max-w-xl text-[17px] leading-[1.7] text-white/90">

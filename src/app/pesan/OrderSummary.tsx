@@ -27,7 +27,7 @@ export function OrderSummary({ pkg, quantity, scheduleLabel, error, isPending }:
 
       <div className="flex items-center gap-4">
         {image && (
-          <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-[10px] bg-[#1A1F22]">
+          <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-[10px] bg-ink">
             <Image src={image.src} alt="" fill sizes="4rem" className="object-cover" />
           </span>
         )}
@@ -63,7 +63,7 @@ export function OrderSummary({ pkg, quantity, scheduleLabel, error, isPending }:
         </div>
       </dl>
 
-      <p className="rounded-[10px] bg-[#1A1F22] px-4 py-3 text-sm leading-relaxed text-white/75">
+      <p className="rounded-[10px] bg-ink px-4 py-3 text-sm leading-relaxed text-white/75">
         Bisa bayar DP 20% dulu, sekitar{" "}
         <strong className="text-white">{formatRupiah(Math.round(subtotal * DP_RATE))}</strong>.
       </p>
@@ -81,7 +81,7 @@ export function OrderSummary({ pkg, quantity, scheduleLabel, error, isPending }:
             name="acceptTerms"
             required
             disabled={isPending}
-            className="mt-0.5 h-5 w-5 shrink-0 cursor-pointer accent-[#C85A17]"
+            className="mt-0.5 h-5 w-5 shrink-0 cursor-pointer accent-brand-500"
           />
           <span className="text-sm leading-relaxed text-white/85">Saya menyetujui ketentuan pemesanan.</span>
         </label>

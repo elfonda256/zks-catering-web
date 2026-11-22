@@ -27,7 +27,7 @@ export function ErpShell({ children, user, onLogout }: ErpShellProps) {
   }, [setIsSidebarCollapsed]);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-800 antialiased">
+    <div className="min-h-screen bg-canvas flex flex-col font-sans text-stone-800 antialiased">
       <ErpHeader
         user={user}
         onLogout={onLogout}

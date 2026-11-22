@@ -13,7 +13,7 @@ The ZKS Catering ERP is transformed from isolated admin views into a single, per
 Key Operational Tenets:
 - **Permanent Application Shell**: Every route automatically inherits the unified layout without page flashing or disconnected interfaces.
 - **Root-Cause Friendly & Modular**: Strict separation of layout concerns into `sidebar/`, `header/`, `navigation/`, `breadcrumb/`, `template/`, and `shell/`.
-- **Zero AI Slop**: Strict adherence to the 8pt grid, 12px uniform border radius, Level 1 border-first elevation, slate/blue enterprise color palette, and zero gratuitous gradients.
+- **Zero AI Slop**: Strict adherence to the 8pt grid, 12px uniform border radius, Level 1 border-first elevation, the "Dapur Rempah" palette (DESIGN_MASTERBOOK.md), and zero gratuitous gradients.
 - **Safe State Persistence**: Uses React 19 `useSyncExternalStore` for SSR-safe `localStorage` synchronization without cascading renders or hydration flicker.
 
 ---
@@ -101,7 +101,7 @@ src/shared/components/layout/
 - Automatically analyzes `usePathname()` to generate hierarchical, clickable breadcrumbs conforming to enterprise standards:
   - Example: `Dashboard › Inventory › Receiving`
   - Example: `Dashboard › Procurement › Supplier`
-- Leaf item styled in bold slate-900 with `aria-current="page"`. Ancestors are clickable links with smooth hover states.
+- Leaf item styled in bold ink with `aria-current="page"`. Ancestors are clickable links with smooth hover states.
 
 #### 4.4 Standardized Page Template (`ErpPageTemplate.tsx`)
 Enforces uniform hierarchy across all current and future modules:

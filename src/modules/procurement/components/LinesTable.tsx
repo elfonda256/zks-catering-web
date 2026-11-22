@@ -25,7 +25,7 @@ export function LinesTable({ lines }: LinesTableProps) {
           const price = line.price ?? item.price;
           return (
             <TableRow key={line.code}>
-              <TableCell className="font-medium text-slate-900">{item.name}</TableCell>
+              <TableCell className="font-medium text-stone-900">{item.name}</TableCell>
               <TableCell align="right" isNumeric>
                 {formatQty(line.qty, item.unit)}
               </TableCell>
@@ -39,7 +39,7 @@ export function LinesTable({ lines }: LinesTableProps) {
           );
         })}
         <TableRow>
-          <TableCell colSpan={3} className="font-semibold text-slate-900">
+          <TableCell colSpan={3} className="font-semibold text-stone-900">
             Total
           </TableCell>
           <TableCell align="right" isNumeric className="font-semibold">

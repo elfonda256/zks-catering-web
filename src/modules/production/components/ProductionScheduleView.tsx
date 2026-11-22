@@ -35,7 +35,7 @@ export function ProductionScheduleView() {
         <button
           type="button"
           onClick={() => setSelected(wo)}
-          className="whitespace-nowrap font-mono font-medium text-slate-900 underline decoration-slate-300 underline-offset-4 hover:decoration-slate-900 cursor-pointer"
+          className="whitespace-nowrap font-mono font-medium text-stone-900 underline decoration-stone-300 underline-offset-4 hover:decoration-stone-900 cursor-pointer"
         >
           {wo.id}
         </button>
@@ -67,10 +67,11 @@ export function ProductionScheduleView() {
       <SampleDataNotice />
 
       <KpiGrid label="Ringkasan produksi" columns={3}>
-        <KpiCard label="Porsi hari ini" value={today.reduce((s, wo) => s + wo.portions, 0)} subtext={`${today.length} perintah produksi`} />
+        <KpiCard label="Porsi hari ini" tone="brand" value={today.reduce((s, wo) => s + wo.portions, 0)} subtext={`${today.length} perintah produksi`} />
         <KpiCard label="Porsi besok" value={WORK_ORDERS.filter((wo) => wo.day === 1).reduce((s, wo) => s + wo.portions, 0)} subtext="Sudah dijadwalkan" />
         <KpiCard
           label="Bahan kurang"
+          tone="danger"
           value={shortages.length}
           subtext={shortages.map((n) => getIngredient(n.code).name).join(", ") || "Stok cukup untuk 2 hari"}
         />
@@ -78,7 +79,7 @@ export function ProductionScheduleView() {
 
       {DAYS.map((day) => (
         <section key={day} aria-labelledby={`day-${day}`} className="space-y-3">
-          <h2 id={`day-${day}`} className="text-[15px] font-semibold text-slate-900">
+          <h2 id={`day-${day}`} className="text-[15px] font-semibold text-stone-900">
             {relativeDay(day)}
           </h2>
           <DataList rows={WORK_ORDERS.filter((wo) => wo.day === day)} columns={columns} rowKey={(wo) => wo.id} />
@@ -116,7 +117,7 @@ function WorkOrderDialog({ order, onClose }: { order: WorkOrder; onClose: () => 
           { label: "Status", value: WORK_ORDER_STATUS[order.status].label },
         ]}
       />
-      {taken && <p className="text-[13px] text-slate-600">Bahan untuk produksi ini sudah diambil dari gudang.</p>}
+      {taken && <p className="text-[13px] text-stone-600">Bahan untuk produksi ini sudah diambil dari gudang.</p>}
       <Table>
         <TableHeader>
           <TableRow>
@@ -130,7 +131,7 @@ function WorkOrderDialog({ order, onClose }: { order: WorkOrder; onClose: () => 
             const item = getIngredient(need.code);
             return (
               <TableRow key={need.code}>
-                <TableCell className="font-medium text-slate-900">{item.name}</TableCell>
+                <TableCell className="font-medium text-stone-900">{item.name}</TableCell>
                 <TableCell align="right" isNumeric>
                   {formatQty(need.required, item.unit)}
                 </TableCell>

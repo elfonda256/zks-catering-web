@@ -25,12 +25,12 @@ export default function PhotoCard({ image, tag, title, description, selected = f
         className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
       />
       <span
-        className="absolute inset-0 bg-gradient-to-t from-[#1A1F22] via-[#1A1F22]/55 to-transparent"
+        className="absolute inset-0 bg-gradient-to-t from-ink via-ink/55 to-transparent"
         aria-hidden="true"
       />
-      {selected && <span className="absolute inset-0 rounded-[10px] ring-4 ring-inset ring-[#C85A17]" aria-hidden="true" />}
+      {selected && <span className="absolute inset-0 rounded-[10px] ring-4 ring-inset ring-brand-500" aria-hidden="true" />}
 
-      <span className="absolute left-4 top-4 rounded-full bg-[#C85A17] px-3 py-1 font-heading text-xs font-bold uppercase">
+      <span className="absolute left-4 top-4 rounded-full bg-brand-600 px-3 py-1 font-heading text-xs font-bold uppercase">
         {tag}
       </span>
 

@@ -5,7 +5,7 @@
 To uphold the ZKS Enterprise ERP design language (industrial precision, editorial clarity, zero decorative clutter), all base UI primitives are centralized:
 
 ### 1. Button (`Button.tsx`)
-- **Variants**: `primary` (industrial dark `#141413`), `secondary` (`#ECEBE4`), `outline` (border-based), `ghost`, `danger` (`#DC2626`).
+- **Variants**: `primary` (brand), `secondary`, `outline`, `ghost`, `danger`. Colours: DESIGN_MASTERBOOK.md, "Admin console colour".
 - **Features**: Disabled state, loading spinner, tactile click states, monospace option.
 
 ### 2. Badge (`Badge.tsx`)
@@ -17,7 +17,7 @@ To uphold the ZKS Enterprise ERP design language (industrial precision, editoria
 - **Styling**: Sharp borders (`rounded-none` or subtle `rounded-sm`), flat editorial surfaces, consistent padding tokens.
 
 ### 4. Input & Select (`Input.tsx`, `Select.tsx`)
-- **Styling**: Monospace tabular numbers, crisp border `#141413]/20`, focus states with `#141413` ring, prefix/suffix support.
+- **Styling**: stone border, brand focus ring, tabular numbers, prefix/suffix support.
 
 ### 5. Dialog & Modal (`Modal.tsx`, `Dialog.tsx`)
 - **Features**: Keyboard Escape dismiss, backdrop backdrop-blur, accessible dialog headers, body, and action footer.

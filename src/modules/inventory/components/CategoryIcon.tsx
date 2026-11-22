@@ -69,7 +69,7 @@ interface CategoryIconProps {
 export function CategoryIcon({ category, className = "" }: CategoryIconProps) {
   return (
     <span
-      className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] bg-slate-100 text-slate-700 ${className}`}
+      className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] bg-stone-100 text-stone-700 ${className}`}
       aria-hidden="true"
     >
       <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">

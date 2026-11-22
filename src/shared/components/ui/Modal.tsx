@@ -96,7 +96,7 @@ export function Modal({
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-enterprise-fade-in"
+      className="admin-theme fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-enterprise-fade-in"
     >
       <div
         className="fixed inset-0"
@@ -108,22 +108,22 @@ export function Modal({
         ref={panelRef}
         tabIndex={-1}
         className={cn(
-          "relative w-full bg-white border border-slate-200 rounded-[12px] focus:outline-none shadow-xl overflow-hidden flex flex-col max-h-[90vh] z-10 animate-enterprise-modal",
+          "relative w-full bg-white border border-stone-200 rounded-[12px] focus:outline-none shadow-xl overflow-hidden flex flex-col max-h-[90vh] z-10 animate-enterprise-modal",
           widthClasses[maxWidth]
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 bg-white shrink-0">
+        <div className="flex items-center justify-between border-b border-stone-100 px-6 py-4 bg-white shrink-0">
           <div>
-            <h3 id={titleId} className="text-[18px] font-semibold text-slate-900 tracking-tight">{title}</h3>
+            <h3 id={titleId} className="text-[18px] font-semibold text-stone-900 tracking-tight">{title}</h3>
             {subtitle && (
-              <p className="text-[12px] text-slate-500 mt-0.5">{subtitle}</p>
+              <p className="text-[12px] text-stone-500 mt-0.5">{subtitle}</p>
             )}
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-[8px] flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+            className="w-8 h-8 rounded-[8px] flex items-center justify-center text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors"
             aria-label="Tutup"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -137,7 +137,7 @@ export function Modal({
 
         {/* Footer */}
         {footer && (
-          <div className="border-t border-slate-100 px-6 py-4 bg-slate-50 rounded-b-[12px] flex items-center justify-end gap-3 shrink-0">
+          <div className="border-t border-stone-100 px-6 py-4 bg-stone-50 rounded-b-[12px] flex items-center justify-end gap-3 shrink-0">
             {footer}
           </div>
         )}
@@ -152,9 +152,9 @@ export function DialogHeader({ className, children, ...props }: HTMLAttributes<H
 }
 
 export function DialogTitle({ className, children, ...props }: HTMLAttributes<HTMLHeadingElement>) {
-  return <h4 className={cn("text-[18px] font-semibold text-slate-900", className)} {...props}>{children}</h4>;
+  return <h4 className={cn("text-[18px] font-semibold text-stone-900", className)} {...props}>{children}</h4>;
 }
 
 export function DialogDescription({ className, children, ...props }: HTMLAttributes<HTMLParagraphElement>) {
-  return <p className={cn("text-[14px] text-slate-600", className)} {...props}>{children}</p>;
+  return <p className={cn("text-[14px] text-stone-600", className)} {...props}>{children}</p>;
 }

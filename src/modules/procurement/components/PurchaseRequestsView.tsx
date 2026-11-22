@@ -24,7 +24,7 @@ export function PurchaseRequestsView() {
         <button
           type="button"
           onClick={() => setSelected(pr)}
-          className="whitespace-nowrap font-mono font-medium text-slate-900 underline decoration-slate-300 underline-offset-4 hover:decoration-slate-900 cursor-pointer"
+          className="whitespace-nowrap font-mono font-medium text-stone-900 underline decoration-stone-300 underline-offset-4 hover:decoration-stone-900 cursor-pointer"
         >
           {pr.id}
         </button>
@@ -42,7 +42,7 @@ export function PurchaseRequestsView() {
       cell: (pr) => (
         <>
           {relativeDay(pr.day)}
-          <span className="block text-[12px] text-slate-500">{pr.requestedBy}</span>
+          <span className="block text-[12px] text-stone-500">{pr.requestedBy}</span>
         </>
       ),
     },
@@ -65,7 +65,7 @@ export function PurchaseRequestsView() {
       <SampleDataNotice />
 
       <KpiGrid label="Ringkasan permintaan" columns={3}>
-        <KpiCard label="Menunggu persetujuan" value={waiting.length} subtext={formatRupiah(waiting.reduce((s, pr) => s + lineTotal(pr.lines), 0))} />
+        <KpiCard label="Menunggu persetujuan" tone="warning" value={waiting.length} subtext={formatRupiah(waiting.reduce((s, pr) => s + lineTotal(pr.lines), 0))} />
         <KpiCard label="Sudah jadi PO" value={PURCHASE_REQUESTS.filter((pr) => pr.poId).length} subtext="Diteruskan ke supplier" />
         <KpiCard label="Total permintaan" value={PURCHASE_REQUESTS.length} subtext="Minggu ini" />
       </KpiGrid>
@@ -93,7 +93,7 @@ export function PurchaseRequestsView() {
               { label: "PO", value: selected.poId ?? "Belum dibuat" },
             ]}
           />
-          <p className="text-[12px] text-slate-500">Harga memakai harga beli terakhir sebagai perkiraan.</p>
+          <p className="text-[12px] text-stone-500">Harga memakai harga beli terakhir sebagai perkiraan.</p>
           <LinesTable lines={selected.lines} />
         </Modal>
       )}

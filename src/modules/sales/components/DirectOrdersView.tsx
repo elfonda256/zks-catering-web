@@ -24,14 +24,14 @@ const COLUMNS: DataColumn<DirectOrder>[] = [
     mobile: "title",
     cell: (o) => (
       <>
-        <span className="font-medium text-slate-900">{o.customer}</span>
-        <span className="block text-[12px] font-normal text-slate-500">
+        <span className="font-medium text-stone-900">{o.customer}</span>
+        <span className="block text-[12px] font-normal text-stone-500">
           {o.id} · {o.contact} · {o.channel}
         </span>
       </>
     ),
   },
-  { key: "note", header: "Catatan", mobile: "subtitle", width: "max-w-xs", cell: (o) => <span className="text-[13px] text-slate-600">{o.note}</span> },
+  { key: "note", header: "Catatan", mobile: "subtitle", width: "max-w-xs", cell: (o) => <span className="text-[13px] text-stone-600">{o.note}</span> },
   { key: "event", header: "Acara", cell: (o) => <span className="whitespace-nowrap">{relativeDay(o.day)}, {o.deliveryTime}</span> },
   { key: "recipe", header: "Paket", cell: (o) => getRecipe(o.recipeId).name },
   { key: "portions", header: "Porsi", align: "right", isNumeric: true, cell: (o) => o.portions },
@@ -55,7 +55,7 @@ export function DirectOrdersView() {
       <SampleDataNotice />
 
       <KpiGrid label="Ringkasan pesanan langsung" columns={3}>
-        <KpiCard label="Perlu konfirmasi" value={DIRECT_ORDERS.filter((o) => o.status === "baru").length} subtext="Hubungi pemesan" />
+        <KpiCard label="Perlu konfirmasi" tone="warning" value={DIRECT_ORDERS.filter((o) => o.status === "baru").length} subtext="Hubungi pemesan" />
         <KpiCard label="Porsi 3 hari ke depan" value={DIRECT_ORDERS.reduce((s, o) => s + o.portions, 0)} subtext={`${DIRECT_ORDERS.length} pesanan`} />
         <KpiCard label="Nilai makanan" value={formatRupiahShort(DIRECT_ORDERS.reduce((s, o) => s + orderValue(o), 0))} subtext="Sebelum ongkir" />
       </KpiGrid>

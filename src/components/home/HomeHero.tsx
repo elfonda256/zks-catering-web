@@ -4,7 +4,7 @@ import { ButtonLink, HEADING, TITLE_SIZE } from "@/components/site/ui";
 
 export default function HomeHero() {
   return (
-    <section className="relative isolate flex min-h-[100svh] items-center overflow-hidden bg-[#1A1F22] text-white">
+    <section className="relative isolate flex min-h-[100svh] items-center overflow-hidden bg-ink text-white">
       <Image
         src="/images/industrial-facility.jpg"
         alt="Dapur sentral PT Zahdan Kamal Sentosa saat produksi katering industri"
@@ -13,8 +13,8 @@ export default function HomeHero() {
         sizes="100vw"
         className="-z-20 object-cover"
       />
-      <div className="absolute inset-0 -z-10 bg-[#1A1F22]/55" aria-hidden="true" />
-      <div className="absolute inset-x-0 bottom-0 -z-10 h-1/2 bg-gradient-to-t from-[#1A1F22] to-transparent" aria-hidden="true" />
+      <div className="absolute inset-0 -z-10 bg-ink/55" aria-hidden="true" />
+      <div className="absolute inset-x-0 bottom-0 -z-10 h-1/2 bg-gradient-to-t from-ink to-transparent" aria-hidden="true" />
 
       <div className="mx-auto w-full max-w-[90rem] px-6 pb-40 pt-32 sm:px-10">
         <div className="mx-auto w-fit">

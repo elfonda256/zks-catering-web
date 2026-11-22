@@ -9,6 +9,8 @@ import {
 } from "@/lib/order-logic";
 import type { OrderStatus } from "@/generated/prisma/enums";
 import { sendWhatsAppMessage, getAppBaseUrl } from "@/lib/whatsapp";
+import { bankAccountsForWhatsApp } from "@/modules/settings/bank-accounts";
+import { getBankAccounts } from "@/modules/settings/services/settings.repository";
 import type { OrderStatusValue } from "@/modules/dashboard/constants";
 import { canAdvanceStatus, statusAfterPaymentApproval } from "@/modules/dashboard/services/order-status";
 
@@ -20,6 +22,13 @@ export interface AdminActionResult {
 }
 
 class StaleOrderError extends Error {}
+
+/** Every admin page that shows order or payment data. */
+function revalidateOrderPages() {
+  for (const path of ["/admin/dashboard", "/admin/distribution", "/admin/finance", "/admin/reports"]) {
+    revalidatePath(path);
+  }
+}
 
 /** Parses a stored JSON object; anything else (null, invalid, array) becomes an empty object. */
 function parseJsonObject(value: string | null): Record<string, unknown> {
@@ -108,9 +117,7 @@ export async function lockOrderTotalAction(
         `• *Total Tagihan* : *Rp${lockValues.totalAmount.toLocaleString("id-ID")}*\n` +
         `${dpSection}\n` +
         `💳 *Rekening Pembayaran Resmi ZKS:*\n` +
-        `• Bank Mandiri : 173-00-1122334-5\n` +
-        `• Bank BCA : 109-8877-665\n` +
-        `• Atas Nama : PT. Zahdan Kamal Sentosa\n` +
+        bankAccountsForWhatsApp(await getBankAccounts()) +
         `• Berita Transfer : *${order.orderCode}*\n\n` +
         `Silakan buka kembali tautan pelacakan pesanan Anda di chat sebelumnya untuk mengunggah bukti transfer (DP 20% atau Pelunasan Penuh).\n\n` +
         `_Batas pembayaran awal: ${lockValues.initialPaymentDueAt.toLocaleDateString("id-ID", { dateStyle: "full" })}_`;
@@ -123,7 +130,7 @@ export async function lockOrderTotalAction(
       console.warn("Gagal mengirim WA lock total order:", waErr);
     }
 
-    revalidatePath("/admin/dashboard");
+    revalidateOrderPages();
     return { success: true };
   } catch (err: unknown) {
     console.error("Gagal mengunci total pesanan oleh admin:", err);
@@ -194,7 +201,7 @@ export async function rejectOrderAction(
       console.warn("Gagal mengirim WA reject order:", waErr);
     }
 
-    revalidatePath("/admin/dashboard");
+    revalidateOrderPages();
     return { success: true };
   } catch (err: unknown) {
     console.error("Gagal menolak pesanan oleh admin:", err);
@@ -269,7 +276,7 @@ export async function updateOrderStatusAction(
       console.warn("Gagal mengirim WA update status order:", waErr);
     }
 
-    revalidatePath("/admin/dashboard");
+    revalidateOrderPages();
     return { success: true };
   } catch (err: unknown) {
     console.error("Gagal memperbarui status pesanan oleh admin:", err);
@@ -328,7 +335,7 @@ export async function regenerateOrderTokenAction(
       }
     }
 
-    revalidatePath("/admin/dashboard");
+    revalidateOrderPages();
     return {
       success: true,
       newRawToken: rawToken,
@@ -429,7 +436,7 @@ export async function approvePaymentAction(
       }
     }
 
-    revalidatePath("/admin/dashboard");
+    revalidateOrderPages();
     return { success: true };
   } catch (err: unknown) {
     if (err instanceof StaleOrderError) {
@@ -510,7 +517,7 @@ export async function rejectPaymentAction(
       }
     }
 
-    revalidatePath("/admin/dashboard");
+    revalidateOrderPages();
     return { success: true };
   } catch (err: unknown) {
     console.error("Gagal menolak pembayaran:", err);

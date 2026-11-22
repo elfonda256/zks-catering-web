@@ -16,6 +16,21 @@
   --color-zks-haccp: #16A34A;
   --color-zks-alert: #DC2626;
 
+  /* "Dapur Rempah" palette for the whole site (see DESIGN_MASTERBOOK.md, Colour).
+     Charcoal ink, warm paper canvas and the ZKS brick orange; status colours stay Tailwind
+     emerald (daun), amber (kunyit), rose (cabai) and sky (telang) on stone neutrals.
+     brand-500 is for fills without text and lines; anything carrying text uses brand-600
+     (white on it 5.4:1) or brand-300 on ink (5.5:1). */
+  --color-brand-50: #FDF4EE;
+  --color-brand-100: #FAE3D3;
+  --color-brand-300: #E07A35;
+  --color-brand-500: #C85A17;
+  --color-brand-600: #B04C10;
+  --color-brand-700: #8F3E0D;
+  --color-ink: #1A1F22;
+  --color-ink-soft: #232A2E;
+  --color-canvas: #F4F0E8;
+
   --font-serif: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "SF Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
@@ -61,6 +76,14 @@ body {
     font-family: var(--font-sans);
     letter-spacing: -0.025em;
   }
+}
+
+/* Admin console scope: interface and figure faces. Set on the admin layout
+   and on portalled dialogs, which render outside it. */
+.admin-theme {
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-family: var(--font-sans);
 }
 
 /* ==============================================================

@@ -13,9 +13,9 @@ const NAV_LINKS = [
   { href: "/#kontak", label: "Kontak" },
 ];
 
-const NAV_LINK = "font-heading text-[13px] font-bold uppercase tracking-[0.02em] text-white transition-colors hover:text-[#E07A35]";
+const NAV_LINK = "font-heading text-[13px] font-bold uppercase tracking-[0.02em] text-white transition-colors hover:text-brand-300";
 const OUTLINE_PILL =
-  "inline-flex min-h-10 items-center rounded-full border-2 border-white/80 px-4 font-heading text-[13px] font-bold uppercase text-white transition-colors hover:bg-white hover:text-[#1A1F22]";
+  "inline-flex min-h-10 items-center rounded-full border-2 border-white/80 px-4 font-heading text-[13px] font-bold uppercase text-white transition-colors hover:bg-white hover:text-ink";
 
 interface NavbarProps {
   /** Start transparent over a full-bleed hero and turn solid on scroll. */
@@ -38,7 +38,7 @@ export default function Navbar({ overlay = false }: NavbarProps) {
   return (
     <header
       className={`${overlay ? "fixed" : "sticky"} inset-x-0 top-0 z-50 transition-colors duration-300 ${
-        solid ? "bg-[#1A1F22]" : "bg-transparent"
+        solid ? "bg-ink" : "bg-transparent"
       }`}
     >
       <a href="#main-content" className="skip-link">
@@ -95,7 +95,7 @@ export default function Navbar({ overlay = false }: NavbarProps) {
       </div>
 
       {isOpen && (
-        <div className="border-t border-white/10 bg-[#1A1F22] px-6 pb-8 pt-4 sm:px-10 xl:hidden">
+        <div className="border-t border-white/10 bg-ink px-6 pb-8 pt-4 sm:px-10 xl:hidden">
           <nav className="flex flex-col" aria-label="Navigasi seluler">
             {NAV_LINKS.map((link) => (
               <Link

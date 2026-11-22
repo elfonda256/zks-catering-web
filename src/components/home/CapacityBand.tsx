@@ -10,7 +10,7 @@ export default function CapacityBand() {
 
         <div className="mt-12 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
           {CAPACITY_STATS.map((stat, index) => (
-            <div key={stat.label} className={`border-t-4 border-[#C85A17] pt-6 reveal-fade-up stagger-${index + 1}`}>
+            <div key={stat.label} className={`border-t-4 border-brand-500 pt-6 reveal-fade-up stagger-${index + 1}`}>
               <StatCounter
                 value={stat.value}
                 suffix={stat.suffix}
@@ -23,7 +23,7 @@ export default function CapacityBand() {
           ))}
         </div>
 
-        <div className="mt-14 grid gap-6 rounded-[10px] bg-[#232A2E] p-8 lg:grid-cols-12 lg:items-center lg:p-10">
+        <div className="mt-14 grid gap-6 rounded-[10px] bg-ink-soft p-8 lg:grid-cols-12 lg:items-center lg:p-10">
           <div className="lg:col-span-4">
             <span className="block font-heading text-xl font-extrabold uppercase">Waktu tempuh armada</span>
             <p className="mt-2 text-[15px] text-white/75">Via gerbang tol Karawang Barat &amp; Timur.</p>

@@ -11,7 +11,7 @@ interface QuantityFieldProps {
 }
 
 const STEPPER_BUTTON =
-  "flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center text-2xl text-white transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#E07A35] disabled:cursor-not-allowed disabled:opacity-40";
+  "flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center text-2xl text-white transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-brand-300 disabled:cursor-not-allowed disabled:opacity-40";
 
 export function QuantityField({ value, onChange, disabled }: QuantityFieldProps) {
   const isLarge = value >= LARGE_ORDER_PCS;
@@ -23,7 +23,7 @@ export function QuantityField({ value, onChange, disabled }: QuantityFieldProps)
       </label>
 
       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex items-stretch overflow-hidden rounded-full border border-white/15 bg-[#232A2E]">
+        <div className="flex items-stretch overflow-hidden rounded-full border border-white/15 bg-ink-soft">
           <button
             type="button"
             onClick={() => onChange(Math.max(MIN_ORDER_PCS, value - STEP))}
@@ -66,9 +66,9 @@ export function QuantityField({ value, onChange, disabled }: QuantityFieldProps)
               onClick={() => onChange(pick)}
               disabled={disabled}
               aria-pressed={value === pick}
-              className={`min-h-11 cursor-pointer rounded-full border px-4 font-heading text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E07A35] ${
+              className={`min-h-11 cursor-pointer rounded-full border px-4 font-heading text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300 ${
                 value === pick
-                  ? "border-[#C85A17] bg-[#C85A17] text-white"
+                  ? "border-brand-500 bg-brand-600 text-white"
                   : "border-white/20 text-white/85 hover:border-white/50"
               }`}
             >
@@ -81,7 +81,7 @@ export function QuantityField({ value, onChange, disabled }: QuantityFieldProps)
       <p id="quantity-hint" className={FIELD_HINT}>
         Minimal {MIN_ORDER_PCS} porsi.{" "}
         {isLarge ? (
-          <span className="font-medium text-[#E07A35]">
+          <span className="font-medium text-brand-300">
             Mulai {LARGE_ORDER_PCS} porsi, pesan paling lambat H-3 sebelum acara.
           </span>
         ) : (

@@ -2,6 +2,12 @@
 
 All notable changes to the Zahdan Kamal Sentosa Enterprise ERP project are documented in this file.
 
+## [Dapur Rempah Colour System] - 2026-11-22
+- One palette for the whole site, tokens in `src/app/globals.css` (`ink`, `ink-soft`, `canvas`, `brand-50…700`); hard-coded hex removed from public components.
+- Admin console: charcoal header and sidebar, warm paper canvas, stone neutrals, Plus Jakarta Sans and JetBrains Mono, KPI cards with a tone edge, pill badges.
+- Public site: brand fills that carry text moved to `brand-600` (#B04C10, WCAG AA); one paper chapter per page (homepage documents, menu terms); branded 404 page.
+- Old monochrome/blue colour rules removed from the masterbook chapters; `DESIGN_MASTERBOOK.md` holds the single colour definition.
+
 ## [Public Site Redesign] - 2026-11-19
 - Homepage and `/menu` rebuilt to follow the cage.ca layout: staggered hero headline, intro overlapping the hero, photo cards, alternating edge-bleed split features with a rounded inner corner, ruled eyebrows, banner with overlapping orange block.
 - New fonts: Saira Semi Condensed (headings) and Barlow (body), self-hosted in `src/app/fonts/` and loaded in the root layout; Barlow Condensed removed.

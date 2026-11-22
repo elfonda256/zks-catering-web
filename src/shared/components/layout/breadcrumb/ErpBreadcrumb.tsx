@@ -136,7 +136,7 @@ export function ErpBreadcrumb({ customItems, className }: ErpBreadcrumbProps) {
   }, [pathname, customItems]);
 
   return (
-    <nav aria-label="Breadcrumb" className={cn("flex items-center text-[12px] text-slate-500", className)}>
+    <nav aria-label="Breadcrumb" className={cn("flex items-center text-[12px] text-stone-500", className)}>
       <ol className="flex items-center flex-wrap gap-1.5 list-none m-0 p-0">
         {breadcrumbs.map((item, index) => {
           const isLast = index === breadcrumbs.length - 1;
@@ -144,7 +144,7 @@ export function ErpBreadcrumb({ customItems, className }: ErpBreadcrumbProps) {
           return (
             <li key={index} className="flex items-center gap-1.5">
               {index > 0 && (
-                <span className="text-slate-300 font-normal select-none" aria-hidden="true">
+                <span className="text-stone-300 font-normal select-none" aria-hidden="true">
                   ›
                 </span>
               )}
@@ -152,7 +152,7 @@ export function ErpBreadcrumb({ customItems, className }: ErpBreadcrumbProps) {
               {item.href && !isLast ? (
                 <Link
                   href={item.href}
-                  className="text-slate-500 hover:text-slate-900 transition-colors font-medium"
+                  className="text-stone-500 hover:text-stone-900 transition-colors font-medium"
                 >
                   {item.label}
                 </Link>
@@ -160,7 +160,7 @@ export function ErpBreadcrumb({ customItems, className }: ErpBreadcrumbProps) {
                 <span
                   className={cn(
                     "truncate max-w-[200px] sm:max-w-none",
-                    isLast ? "text-slate-900 font-semibold" : "text-slate-500"
+                    isLast ? "text-stone-900 font-semibold" : "text-stone-500"
                   )}
                   aria-current={isLast ? "page" : undefined}
                 >

@@ -58,13 +58,13 @@ export function MovementFormDialog({ items, options, initialItemId, onClose }: M
     >
       <form id="movement-form" onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <fieldset className="sm:col-span-2">
-          <legend className="text-[14px] font-medium text-slate-700">Jenis mutasi</legend>
+          <legend className="text-[14px] font-medium text-stone-700">Jenis mutasi</legend>
           <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-2">
             {(Object.keys(MOVEMENT_TYPE_LABELS) as MovementType[]).map((option) => (
               <label
                 key={option}
-                className={`cursor-pointer rounded-[8px] border px-3 py-2 text-[13px] has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-slate-900 ${
-                  type === option ? "border-slate-900 bg-slate-50 font-semibold text-slate-900" : "border-slate-200 text-slate-700"
+                className={`cursor-pointer rounded-[8px] border px-3 py-2 text-[13px] has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-stone-900 ${
+                  type === option ? "border-stone-900 bg-stone-50 font-semibold text-stone-900" : "border-stone-200 text-stone-700"
                 }`}
               >
                 <input
@@ -76,7 +76,7 @@ export function MovementFormDialog({ items, options, initialItemId, onClose }: M
                   className="sr-only"
                 />
                 {MOVEMENT_TYPE_LABELS[option].label}
-                <span className="block text-[11px] font-normal text-slate-500">{MOVEMENT_TYPE_LABELS[option].hint}</span>
+                <span className="block text-[11px] font-normal text-stone-500">{MOVEMENT_TYPE_LABELS[option].hint}</span>
               </label>
             ))}
           </div>

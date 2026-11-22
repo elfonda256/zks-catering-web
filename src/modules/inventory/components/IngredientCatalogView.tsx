@@ -47,11 +47,11 @@ export function IngredientCatalogView({ items, options }: IngredientCatalogViewP
           <button
             type="button"
             onClick={() => setEditing(item)}
-            className="text-left font-medium text-slate-900 underline decoration-slate-300 underline-offset-4 hover:decoration-slate-900 cursor-pointer"
+            className="text-left font-medium text-stone-900 underline decoration-stone-300 underline-offset-4 hover:decoration-stone-900 cursor-pointer"
           >
             {item.name}
           </button>
-          <span className="block font-mono text-[12px] font-normal text-slate-500">{item.code}</span>
+          <span className="block font-mono text-[12px] font-normal text-stone-500">{item.code}</span>
         </>
       ),
     },
@@ -93,13 +93,13 @@ export function IngredientCatalogView({ items, options }: IngredientCatalogViewP
         groups.map(({ category, rows }) => (
           <section key={category.slug} aria-labelledby={`catalog-${category.slug}`} className="space-y-3">
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-              <h2 id={`catalog-${category.slug}`} className="flex items-center gap-3 text-[15px] font-semibold text-slate-900">
+              <h2 id={`catalog-${category.slug}`} className="flex items-center gap-3 text-[15px] font-semibold text-stone-900">
                 <CategoryIcon category={category.slug} />
                 {category.name}
               </h2>
               <ul className="flex flex-wrap gap-2" aria-label={`Jenis ${category.name}`}>
                 {category.types.map((type) => (
-                  <li key={type.id} className="rounded-full border border-slate-200 bg-white px-3 py-1 text-[12px] text-slate-600">
+                  <li key={type.id} className="rounded-full border border-stone-200 bg-white px-3 py-1 text-[12px] text-stone-600">
                     {type.name}
                   </li>
                 ))}

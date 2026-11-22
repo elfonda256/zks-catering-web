@@ -27,8 +27,8 @@ function StockBar({ item }: { item: CatalogItem }) {
   const percent = item.minStock > 0 ? Math.min(100, (item.stock / (item.minStock * 2)) * 100) : 100;
   const low = stockLevel(item) !== "aman";
   return (
-    <div className="h-1.5 w-24 rounded-full bg-slate-100" aria-hidden="true">
-      <div className={`h-1.5 rounded-full ${low ? "bg-amber-500" : "bg-slate-700"}`} style={{ width: `${percent}%` }} />
+    <div className="h-1.5 w-24 rounded-full bg-stone-100" aria-hidden="true">
+      <div className={`h-1.5 rounded-full ${low ? "bg-amber-500" : "bg-stone-700"}`} style={{ width: `${percent}%` }} />
     </div>
   );
 }
@@ -65,8 +65,8 @@ export function StockOverviewView({ items, options }: StockOverviewViewProps) {
       mobile: "title",
       cell: (item) => (
         <>
-          <span className="font-medium text-slate-900">{item.name}</span>
-          <span className="block font-mono text-[12px] font-normal text-slate-500">{item.code}</span>
+          <span className="font-medium text-stone-900">{item.name}</span>
+          <span className="block font-mono text-[12px] font-normal text-stone-500">{item.code}</span>
         </>
       ),
     },
@@ -80,7 +80,7 @@ export function StockOverviewView({ items, options }: StockOverviewViewProps) {
       cell: (item) => (
         <div className="flex items-center gap-3">
           <StockBar item={item} />
-          <span className="text-[12px] text-slate-500">{formatQuantity(item.minStock, item.unit)}</span>
+          <span className="text-[12px] text-stone-500">{formatQuantity(item.minStock, item.unit)}</span>
         </div>
       ),
     },
@@ -114,7 +114,7 @@ export function StockOverviewView({ items, options }: StockOverviewViewProps) {
         title="Belum ada bahan"
         description="Tambahkan bahan di Katalog bahan dulu. Setelah itu stok bisa dicatat dari halaman ini."
         action={
-          <Link href="/admin/inventory/items" className="text-[13px] font-medium text-slate-900 underline underline-offset-4">
+          <Link href="/admin/inventory/items" className="text-[13px] font-medium text-stone-900 underline underline-offset-4">
             Buka Katalog bahan
           </Link>
         }
@@ -126,12 +126,12 @@ export function StockOverviewView({ items, options }: StockOverviewViewProps) {
     <div className="space-y-6">
       <KpiGrid label="Ringkasan stok" columns={3}>
         <KpiCard label="Jenis bahan" value={active.length} subtext={`${options.categories.length} kategori`} />
-        <KpiCard label="Perlu dibeli" value={toBuy.length} subtext="Di bawah stok minimum" />
+        <KpiCard label="Perlu dibeli" tone="warning" value={toBuy.length} subtext="Di bawah stok minimum" />
         <KpiCard label="Nilai stok" value={formatRupiahShort(stockValue)} subtext="Harga beli terakhir" />
       </KpiGrid>
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <p className="text-[13px] text-slate-600">Stok dihitung dari semua mutasi yang tercatat.</p>
+        <p className="text-[13px] text-stone-600">Stok dihitung dari semua mutasi yang tercatat.</p>
         <Button onClick={() => setMovementFor("new")}>Catat mutasi</Button>
       </div>
 
@@ -152,10 +152,10 @@ export function StockOverviewView({ items, options }: StockOverviewViewProps) {
       ) : (
         groups.map(({ category, rows }) => (
           <section key={category.slug} aria-labelledby={`cat-${category.slug}`} className="space-y-3">
-            <h2 id={`cat-${category.slug}`} className="flex items-center gap-3 text-[15px] font-semibold text-slate-900">
+            <h2 id={`cat-${category.slug}`} className="flex items-center gap-3 text-[15px] font-semibold text-stone-900">
               <CategoryIcon category={category.slug} />
               <span>
-                {category.name} <span className="font-normal text-slate-500">· {rows.length} bahan</span>
+                {category.name} <span className="font-normal text-stone-500">· {rows.length} bahan</span>
               </span>
             </h2>
             <DataList rows={rows} columns={columns} rowKey={(item) => String(item.id)} fixed />

@@ -16,6 +16,8 @@ interface ListToolbarProps<T extends string> {
   query: string;
   onQueryChange: (query: string) => void;
   searchPlaceholder: string;
+  /** Tabs only, for lists too short to need a search. */
+  hideSearch?: boolean;
 }
 
 const MAX_INLINE_TABS = 6;
@@ -28,6 +30,7 @@ export function ListToolbar<T extends string>({
   query,
   onQueryChange,
   searchPlaceholder,
+  hideSearch = false,
 }: ListToolbarProps<T>) {
   // Many tabs get their own row so none is pushed out of view.
   const stacked = tabs.length > MAX_INLINE_TABS;
@@ -46,12 +49,13 @@ export function ListToolbar<T extends string>({
             <TabsTrigger key={t.id} value={t.id} className="whitespace-nowrap">
               {t.label}
               {t.count !== undefined && (
-                <span className="ml-1 font-mono tabular-nums text-slate-400">{t.count}</span>
+                <span className="ml-1 tabular-nums text-stone-400">{t.count}</span>
               )}
             </TabsTrigger>
           ))}
         </TabsList>
       </Tabs>
+      {!hideSearch && (
       <SearchInput
         value={query}
         onChange={onQueryChange}
@@ -59,6 +63,7 @@ export function ListToolbar<T extends string>({
         aria-label={searchPlaceholder}
         className="lg:max-w-xs"
       />
+      )}
     </div>
   );
 }
