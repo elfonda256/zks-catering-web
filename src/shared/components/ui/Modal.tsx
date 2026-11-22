@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useId, useRef, useState, ReactNode, HTMLAttributes } from "react";
+import { createPortal } from "react-dom";
 import { cn } from "@/shared/utils/cn";
 
 export interface ModalProps {
@@ -89,7 +90,8 @@ export function Modal({
     "4xl": "max-w-4xl",
   };
 
-  return (
+  // Portal to <body>: an animated (transformed) ancestor would otherwise trap the fixed overlay.
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
@@ -140,7 +142,8 @@ export function Modal({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

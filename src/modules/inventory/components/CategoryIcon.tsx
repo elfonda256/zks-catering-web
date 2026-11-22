@@ -1,4 +1,4 @@
-import type { CategoryId } from "@/modules/sample-data";
+import type { CategoryId } from "../master-data";
 
 /** Simple line drawings, one per ingredient category, drawn on a 24×24 grid. */
 const PATHS: Record<CategoryId, React.ReactNode> = {
@@ -60,7 +60,8 @@ const PATHS: Record<CategoryId, React.ReactNode> = {
 };
 
 interface CategoryIconProps {
-  category: CategoryId;
+  /** Category slug; unknown slugs (added later in the database) get no drawing. */
+  category: string;
   className?: string;
 }
 
@@ -72,7 +73,7 @@ export function CategoryIcon({ category, className = "" }: CategoryIconProps) {
       aria-hidden="true"
     >
       <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
-        {PATHS[category]}
+        {PATHS[category as CategoryId] ?? <rect x="5" y="5" width="14" height="14" rx="3" />}
       </svg>
     </span>
   );

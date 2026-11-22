@@ -1,39 +1,30 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import {
-  CATEGORIES,
-  INGREDIENTS,
-  LOCATIONS,
-  formatQty,
-  stockLevel,
-  type Ingredient,
-} from "@/modules/sample-data";
+import Link from "next/link";
 import { Badge } from "@/shared/components/ui/Badge";
+import { Button } from "@/shared/components/ui/Button";
+import { DataList, type DataColumn } from "@/shared/components/ui/DataList";
 import { EmptyState } from "@/shared/components/ui/EmptyState";
 import { KpiCard } from "@/shared/components/ui/KpiCard";
-import { ListToolbar } from "@/shared/components/ui/ListToolbar";
-import { SampleDataNotice } from "@/shared/components/ui/SampleDataNotice";
-import { DataList, type DataColumn } from "@/shared/components/ui/DataList";
 import { KpiGrid } from "@/shared/components/ui/KpiGrid";
+import { ListToolbar } from "@/shared/components/ui/ListToolbar";
 import { formatRupiahShort } from "@/shared/utils/formatters";
-import { EXPIRY_WARNING_DAYS, STOCK_LEVEL_BADGE } from "../stock";
+import type { CatalogItem, InventoryFormOptions } from "../types";
+import { STOCK_LEVEL_BADGE, formatQuantity, stockLevel } from "../stock";
 import { CategoryIcon } from "./CategoryIcon";
+import { MovementFormDialog } from "./MovementFormDialog";
 
-type StockTab = "semua" | "beli" | "kedaluwarsa";
+type StockTab = "semua" | "beli";
 
-const isExpiringSoon = (item: Ingredient) =>
-  item.expiresInDays !== undefined && item.expiresInDays <= EXPIRY_WARNING_DAYS;
+interface StockOverviewViewProps {
+  items: CatalogItem[];
+  options: InventoryFormOptions;
+}
 
-const TAB_FILTER: Record<StockTab, (item: Ingredient) => boolean> = {
-  semua: () => true,
-  beli: (item) => stockLevel(item) !== "aman",
-  kedaluwarsa: isExpiringSoon,
-};
-
-function StockBar({ item }: { item: Ingredient }) {
-  // Bar is full at twice the minimum, so the minimum sits in the middle.
-  const percent = Math.min(100, (item.stock / (item.minStock * 2)) * 100);
+function StockBar({ item }: { item: CatalogItem }) {
+  // Full at twice the minimum, so the minimum sits in the middle.
+  const percent = item.minStock > 0 ? Math.min(100, (item.stock / (item.minStock * 2)) * 100) : 100;
   const low = stockLevel(item) !== "aman";
   return (
     <div className="h-1.5 w-24 rounded-full bg-slate-100" aria-hidden="true">
@@ -42,116 +33,143 @@ function StockBar({ item }: { item: Ingredient }) {
   );
 }
 
-const COLUMNS: DataColumn<Ingredient>[] = [
-  {
-    key: "name",
-    header: "Bahan",
-    width: "w-[24%]",
-    mobile: "title",
-    cell: (item) => (
-      <>
-        <span className="font-medium text-slate-900">{item.name}</span>
-        <span className="block font-mono text-[12px] font-normal text-slate-500">{item.code}</span>
-      </>
-    ),
-  },
-  { key: "type", header: "Jenis", width: "w-[14%]", cell: (item) => item.type },
-  { key: "location", header: "Lokasi", width: "w-[14%]", cell: (item) => LOCATIONS[item.location].name },
-  { key: "stock", header: "Stok", width: "w-[11%]", align: "right", isNumeric: true, cell: (item) => formatQty(item.stock, item.unit) },
-  {
-    key: "min",
-    header: "Minimum",
-    width: "w-[17%]",
-    cell: (item) => (
-      <div className="flex items-center gap-3">
-        <StockBar item={item} />
-        <span className="text-[12px] text-slate-500">{formatQty(item.minStock, item.unit)}</span>
-      </div>
-    ),
-  },
-  {
-    key: "status",
-    header: "Status",
-    width: "w-[20%]",
-    mobile: "status",
-    cell: (item) => {
-      const level = STOCK_LEVEL_BADGE[stockLevel(item)];
-      return (
-        <div className="flex flex-wrap justify-end gap-2 md:justify-start">
-          <Badge variant={level.variant} dot>
-            {level.label}
-          </Badge>
-          {isExpiringSoon(item) && <Badge variant="expired">Kedaluwarsa {item.expiresInDays} hari</Badge>}
-        </div>
-      );
-    },
-  },
-];
-
-export function StockOverviewView() {
+export function StockOverviewView({ items, options }: StockOverviewViewProps) {
   const [tab, setTab] = useState<StockTab>("semua");
   const [query, setQuery] = useState("");
+  const [movementFor, setMovementFor] = useState<number | "new" | null>(null);
 
-  const counts = useMemo(
-    () => ({
-      beli: INGREDIENTS.filter(TAB_FILTER.beli).length,
-      kedaluwarsa: INGREDIENTS.filter(isExpiringSoon).length,
-      nilai: INGREDIENTS.reduce((sum, item) => sum + item.stock * item.price, 0),
-    }),
-    []
-  );
+  const active = useMemo(() => items.filter((item) => item.isActive), [items]);
+  const toBuy = active.filter((item) => stockLevel(item) !== "aman");
+  const stockValue = active.reduce((sum, item) => sum + Math.max(item.stock, 0) * item.lastPrice, 0);
 
   const groups = useMemo(() => {
     const q = query.toLowerCase().trim();
-    return CATEGORIES.map((category) => ({
-      category,
-      items: INGREDIENTS.filter(
-        (item) =>
-          item.category === category.id &&
-          TAB_FILTER[tab](item) &&
-          (!q || item.name.toLowerCase().includes(q) || item.type.toLowerCase().includes(q))
+    return options.categories
+      .map((category) => ({
+        category,
+        rows: active.filter(
+          (item) =>
+            item.categorySlug === category.slug &&
+            (tab === "semua" || stockLevel(item) !== "aman") &&
+            (!q || [item.name, item.code, item.typeName].some((field) => field.toLowerCase().includes(q)))
+        ),
+      }))
+      .filter((group) => group.rows.length > 0);
+  }, [active, options.categories, tab, query]);
+
+  const columns: DataColumn<CatalogItem>[] = [
+    {
+      key: "name",
+      header: "Bahan",
+      width: "w-[24%]",
+      mobile: "title",
+      cell: (item) => (
+        <>
+          <span className="font-medium text-slate-900">{item.name}</span>
+          <span className="block font-mono text-[12px] font-normal text-slate-500">{item.code}</span>
+        </>
       ),
-    })).filter((group) => group.items.length > 0);
-  }, [tab, query]);
+    },
+    { key: "type", header: "Jenis", width: "w-[13%]", cell: (item) => item.typeName },
+    { key: "location", header: "Lokasi utama", width: "w-[14%]", cell: (item) => item.locationName },
+    { key: "stock", header: "Stok", width: "w-[11%]", align: "right", isNumeric: true, cell: (item) => formatQuantity(item.stock, item.unit) },
+    {
+      key: "min",
+      header: "Minimum",
+      width: "w-[17%]",
+      cell: (item) => (
+        <div className="flex items-center gap-3">
+          <StockBar item={item} />
+          <span className="text-[12px] text-slate-500">{formatQuantity(item.minStock, item.unit)}</span>
+        </div>
+      ),
+    },
+    {
+      key: "status",
+      header: "Status",
+      width: "w-[12%]",
+      mobile: "status",
+      cell: (item) => (
+        <Badge variant={STOCK_LEVEL_BADGE[stockLevel(item)].variant} dot>
+          {STOCK_LEVEL_BADGE[stockLevel(item)].label}
+        </Badge>
+      ),
+    },
+    {
+      key: "action",
+      header: "Aksi",
+      width: "w-[9%]",
+      align: "right",
+      cell: (item) => (
+        <Button size="sm" variant="ghost" onClick={() => setMovementFor(item.id)}>
+          Catat
+        </Button>
+      ),
+    },
+  ];
+
+  if (active.length === 0) {
+    return (
+      <EmptyState
+        title="Belum ada bahan"
+        description="Tambahkan bahan di Katalog bahan dulu. Setelah itu stok bisa dicatat dari halaman ini."
+        action={
+          <Link href="/admin/inventory/items" className="text-[13px] font-medium text-slate-900 underline underline-offset-4">
+            Buka Katalog bahan
+          </Link>
+        }
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
-      <SampleDataNotice />
-
-      <KpiGrid label="Ringkasan stok" columns={4}>
-        <KpiCard label="Jenis bahan" value={INGREDIENTS.length} subtext={`${CATEGORIES.length} kategori`} />
-        <KpiCard label="Perlu dibeli" value={counts.beli} subtext="Di bawah stok minimum" />
-        <KpiCard label="Segera kedaluwarsa" value={counts.kedaluwarsa} subtext={`Dalam ${EXPIRY_WARNING_DAYS} hari`} />
-        <KpiCard label="Nilai stok" value={formatRupiahShort(counts.nilai)} subtext="Harga beli terakhir" />
+      <KpiGrid label="Ringkasan stok" columns={3}>
+        <KpiCard label="Jenis bahan" value={active.length} subtext={`${options.categories.length} kategori`} />
+        <KpiCard label="Perlu dibeli" value={toBuy.length} subtext="Di bawah stok minimum" />
+        <KpiCard label="Nilai stok" value={formatRupiahShort(stockValue)} subtext="Harga beli terakhir" />
       </KpiGrid>
+
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <p className="text-[13px] text-slate-600">Stok dihitung dari semua mutasi yang tercatat.</p>
+        <Button onClick={() => setMovementFor("new")}>Catat mutasi</Button>
+      </div>
 
       <ListToolbar
         tabs={[
-          { id: "semua", label: "Semua", count: INGREDIENTS.length },
-          { id: "beli", label: "Perlu dibeli", count: counts.beli },
-          { id: "kedaluwarsa", label: "Segera kedaluwarsa", count: counts.kedaluwarsa },
+          { id: "semua", label: "Semua", count: active.length },
+          { id: "beli", label: "Perlu dibeli", count: toBuy.length },
         ]}
         tab={tab}
         onTabChange={setTab}
         query={query}
         onQueryChange={setQuery}
-        searchPlaceholder="Cari bahan atau jenis"
+        searchPlaceholder="Cari bahan, kode, atau jenis"
       />
 
       {groups.length === 0 ? (
         <EmptyState title="Tidak ada bahan" description="Tidak ada bahan yang cocok dengan filter ini." />
       ) : (
-        groups.map(({ category, items }) => (
-          <section key={category.id} aria-labelledby={`cat-${category.id}`} className="space-y-3">
-            <h2 id={`cat-${category.id}`} className="flex items-center gap-3 text-[15px] font-semibold text-slate-900">
-              <CategoryIcon category={category.id} />
+        groups.map(({ category, rows }) => (
+          <section key={category.slug} aria-labelledby={`cat-${category.slug}`} className="space-y-3">
+            <h2 id={`cat-${category.slug}`} className="flex items-center gap-3 text-[15px] font-semibold text-slate-900">
+              <CategoryIcon category={category.slug} />
               <span>
-                {category.name} <span className="font-normal text-slate-500">· {items.length} bahan</span>
+                {category.name} <span className="font-normal text-slate-500">· {rows.length} bahan</span>
               </span>
             </h2>
-            <DataList rows={items} columns={COLUMNS} rowKey={(item) => item.code} fixed />
+            <DataList rows={rows} columns={columns} rowKey={(item) => String(item.id)} fixed />
           </section>
         ))
+      )}
+
+      {movementFor !== null && (
+        <MovementFormDialog
+          items={items}
+          options={options}
+          initialItemId={movementFor === "new" ? undefined : movementFor}
+          onClose={() => setMovementFor(null)}
+        />
       )}
     </div>
   );
