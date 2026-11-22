@@ -5,6 +5,7 @@ import { submitPaymentProofAction, type SubmitPaymentProofState } from "./action
 import { HEADING } from "@/components/site/ui";
 import { FIELD_HINT, FIELD_INPUT, FIELD_LABEL } from "@/components/site/form";
 import { CopyButton } from "./CopyButton";
+import { compressProofImage } from "./proof-image";
 import type { AmountDue } from "./payment-due";
 import type { BankAccount } from "@/modules/settings/bank-accounts";
 import { formatRupiahCompact as formatRupiah } from "@/shared/utils/formatters";
@@ -77,53 +78,6 @@ interface PaymentUploadClientProps {
   accounts: BankAccount[];
 }
 
-function compressImage(file: File): Promise<File> {
-  return new Promise((resolve) => {
-    const img = new window.Image();
-    const url = URL.createObjectURL(file);
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      const maxDim = 1200;
-      let width = img.width;
-      let height = img.height;
-      if (width > maxDim || height > maxDim) {
-        if (width > height) {
-          height = Math.round((height * maxDim) / width);
-          width = maxDim;
-        } else {
-          width = Math.round((width * maxDim) / height);
-          height = maxDim;
-        }
-      }
-      const canvas = document.createElement("canvas");
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        resolve(file);
-        return;
-      }
-      ctx.drawImage(img, 0, 0, width, height);
-      canvas.toBlob(
-        (blob) => {
-          if (!blob) {
-            resolve(file);
-            return;
-          }
-          const compressed = new File([blob], file.name.replace(/\.[^.]+$/, ".jpg"), {
-            type: "image/jpeg",
-          });
-          resolve(compressed);
-        },
-        "image/jpeg",
-        0.8
-      );
-    };
-    img.onerror = () => resolve(file);
-    img.src = url;
-  });
-}
-
 export default function PaymentUploadClient({ rawToken, orderCode, due, dueAt, accounts }: PaymentUploadClientProps) {
   const dpAmount = due.kind === "initial" ? due.dpAmount : null;
   const [selectedType, setSelectedType] = useState<"DP" | "FULL">(dpAmount ? "DP" : "FULL");
@@ -141,14 +95,7 @@ export default function PaymentUploadClient({ rawToken, orderCode, due, dueAt, a
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      let fileToUpload = file;
-      if (file.type.startsWith("image/")) {
-        try {
-          fileToUpload = await compressImage(file);
-        } catch {
-          fileToUpload = file;
-        }
-      }
+      const fileToUpload = file.type.startsWith("image/") ? await compressProofImage(file) : file;
 
       setProcessedFile(fileToUpload);
       setSelectedFileName(`${file.name} (${Math.round(fileToUpload.size / 1024)} KB)`);
@@ -321,7 +268,7 @@ export default function PaymentUploadClient({ rawToken, orderCode, due, dueAt, a
             ) : (
               <div className="space-y-1">
                 <span className="block font-heading text-base font-bold uppercase">Pilih foto bukti</span>
-                <p className={FIELD_HINT}>JPG, PNG, atau WebP, maksimal 5 MB</p>
+                <p className={FIELD_HINT}>JPG, PNG, atau WebP. Foto otomatis diperkecil sebelum dikirim.</p>
               </div>
             )}
           </div>

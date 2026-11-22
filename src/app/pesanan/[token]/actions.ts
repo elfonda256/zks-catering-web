@@ -5,7 +5,9 @@ import { writeFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import { prisma } from "@/lib/prisma";
 import { hashAccessToken } from "@/lib/order-logic";
+import { expireOverdueOrdersOnAccess } from "@/modules/dashboard/services/order-expiry.repository";
 import { getAmountDue } from "./payment-due";
+import { MAX_PROOF_BYTES, PROOF_MIME_TYPES } from "./proof-image";
 import type { PaymentType } from "@/generated/prisma/enums";
 
 export interface SubmitPaymentProofState {
@@ -25,6 +27,7 @@ export async function submitPaymentProofAction(
     }
 
     const tokenHash = hashAccessToken(rawToken);
+    await expireOverdueOrdersOnAccess({ accessTokenHash: tokenHash });
     const order = await prisma.order.findUnique({
       where: { accessTokenHash: tokenHash },
       include: { payments: { select: { status: true, amount: true } } },
@@ -67,12 +70,13 @@ export async function submitPaymentProofAction(
       };
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      return { error: "Ukuran berkas bukti transfer maksimal 5 MB." };
+    if (file.size > MAX_PROOF_BYTES) {
+      return {
+        error: "Foto bukti terlalu besar. Kirim tangkapan layar dari aplikasi bank, atau muat ulang halaman lalu pilih fotonya lagi.",
+      };
     }
 
-    const allowedMime = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
-    if (!allowedMime.includes(file.type)) {
+    if (!PROOF_MIME_TYPES.includes(file.type)) {
       return {
         error: "Format berkas tidak valid. Harap unggah gambar JPG, PNG, atau WebP.",
       };
@@ -115,12 +119,14 @@ export async function submitPaymentProofAction(
 
     // Simpan record Payment PENDING. Baris pesanan dikunci agar dua kiriman bersamaan
     // tidak menghasilkan dua bukti yang menunggu verifikasi.
-    const created = await prisma.$transaction(async (tx) => {
-      await tx.$queryRaw`SELECT id FROM "Order" WHERE id = ${order.id} FOR UPDATE`;
+    // The status is read again under the lock: the order may have expired or changed meanwhile.
+    const outcome = await prisma.$transaction(async (tx) => {
+      const [locked] = await tx.$queryRaw<{ status: string }[]>`SELECT status FROM "Order" WHERE id = ${order.id} FOR UPDATE`;
+      if (locked?.status !== order.status) return "changed";
       const pending = await tx.payment.count({
         where: { orderId: order.id, status: "PENDING" },
       });
-      if (pending > 0) return false;
+      if (pending > 0) return "pending";
 
       await tx.payment.create({
         data: {
@@ -142,10 +148,13 @@ export async function submitPaymentProofAction(
           }),
         },
       });
-      return true;
+      return "created";
     });
 
-    if (!created) {
+    if (outcome === "changed") {
+      return { error: "Status pesanan baru saja berubah. Muat ulang halaman." };
+    }
+    if (outcome === "pending") {
       return {
         error: "Bukti bayar sebelumnya masih diverifikasi admin. Tunggu sebentar, lalu muat ulang halaman.",
       };
