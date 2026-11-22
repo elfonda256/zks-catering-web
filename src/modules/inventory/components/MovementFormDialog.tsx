@@ -155,6 +155,13 @@ export function MovementFormDialog({ items, options, initialItemId, initialType 
           </SelectField>
         )}
 
+        {type === "IN" && (
+          <>
+            <Input id="mv-batch" name="batchCode" label="Nomor lot / batch" maxLength={40} placeholder="Opsional, dari label supplier" />
+            <Input id="mv-exp" name="expiresAt" type="date" label="Kedaluwarsa" helperText="Isi untuk bahan segar agar FEFO berjalan." />
+          </>
+        )}
+
         <Input id="mv-ref" name="reference" label="Referensi" placeholder="Nomor PO, nota, atau produksi" maxLength={40} />
         <Input
           id="mv-note"

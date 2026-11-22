@@ -260,6 +260,7 @@ model Ingredient {
   requestLines      PurchaseRequestLine[]
   orderLines        PurchaseOrderLine[]
   recipeLines       RecipeLine[]
+  batches           StockBatch[]
 
   @@index([typeId])
 }
@@ -279,10 +280,14 @@ model StockMovement {
   note           String?
   createdById    Int?
   createdBy      Admin?            @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  // Batch asal; kosong untuk stok lama atau penyesuaian tambah
+  batchId        Int?
+  batch          StockBatch?       @relation(fields: [batchId], references: [id], onDelete: Restrict)
   createdAt      DateTime          @default(now())
 
   @@index([ingredientId, createdAt])
   @@index([createdAt])
+  @@index([batchId])
 }
 
 // ---------------------------------------------------------------------------
@@ -397,6 +402,7 @@ model GoodsReceiptLine {
   // Ditolak saat cek kualitas: tidak masuk stok
   rejectedQuantity Decimal           @default(0) @db.Decimal(12, 3)
   note             String?
+  batch            StockBatch?
 
   @@index([receiptId])
 }
@@ -473,4 +479,25 @@ model FoodSafetyCheck {
   createdAt         DateTime         @default(now())
 
   @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Batch bahan: lot dan tanggal kedaluwarsa per penerimaan, dipakai untuk FEFO dan penelusuran.
+// Jumlah per batch per lokasi dihitung dari mutasi yang membawa batchId, sama seperti stok.
+// ---------------------------------------------------------------------------
+
+model StockBatch {
+  id            Int               @id @default(autoincrement())
+  ingredientId  Int
+  ingredient    Ingredient        @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+  // Nomor lot dari supplier, atau nomor penerimaan (GRN-xxxx) bila tidak ada
+  batchCode     String
+  // Awal hari kedaluwarsa (WIB); kosong untuk barang tahan lama
+  expiresAt     DateTime?
+  receiptLineId Int?              @unique
+  receiptLine   GoodsReceiptLine? @relation(fields: [receiptLineId], references: [id], onDelete: Restrict)
+  createdAt     DateTime          @default(now())
+  movements     StockMovement[]
+
+  @@index([ingredientId, expiresAt])
 }

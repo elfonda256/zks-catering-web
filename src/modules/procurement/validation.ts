@@ -4,7 +4,7 @@
  */
 
 import { startOfWibDay, wibDayStart } from "@/lib/wib-date";
-import { parseQuantity } from "@/modules/inventory/validation";
+import { parseBatchInput, parseQuantity, type BatchInput } from "@/modules/inventory/validation";
 
 type Result<T> = { ok: true; value: T } | { ok: false; error: string };
 
@@ -135,11 +135,11 @@ export interface ReceiptInput {
   orderId: number;
   locationId: number;
   note: string | null;
-  lines: { orderLineId: number; accepted: number; rejected: number; note: string | null }[];
+  lines: { orderLineId: number; accepted: number; rejected: number; note: string | null; batch: BatchInput | null }[];
 }
 
 /** Reads the receiving form: one `receiptLine` id per PO line, with `accepted:<id>` and `rejected:<id>`. */
-export function parseReceiptInput(form: FormData): Result<ReceiptInput> {
+export function parseReceiptInput(form: FormData, now: Date = new Date()): Result<ReceiptInput> {
   const orderId = positiveInt(text(form, "orderId"));
   const locationId = positiveInt(text(form, "locationId"));
   const note = text(form, "note").slice(0, 200) || null;
@@ -147,9 +147,11 @@ export function parseReceiptInput(form: FormData): Result<ReceiptInput> {
   if (!locationId) return { ok: false, error: "Pilih lokasi barang masuk." };
 
   const lines: ReceiptInput["lines"] = [];
+  const seen = new Set<number>();
   for (const raw of form.getAll("receiptLine")) {
     const orderLineId = positiveInt(String(raw));
-    if (!orderLineId) return { ok: false, error: "Baris penerimaan tidak valid. Muat ulang halaman." };
+    if (!orderLineId || seen.has(orderLineId)) return { ok: false, error: "Baris penerimaan tidak valid. Muat ulang halaman." };
+    seen.add(orderLineId);
     const acceptedRaw = text(form, `accepted:${orderLineId}`) || "0";
     const rejectedRaw = text(form, `rejected:${orderLineId}`) || "0";
     const accepted = parseQuantity(acceptedRaw, { allowZero: true });
@@ -158,7 +160,13 @@ export function parseReceiptInput(form: FormData): Result<ReceiptInput> {
     if (accepted === 0 && rejected === 0) continue;
     const lineNote = text(form, `lineNote:${orderLineId}`).slice(0, 120) || null;
     if (rejected > 0 && !lineNote) return { ok: false, error: "Barang yang ditolak wajib diberi alasan." };
-    lines.push({ orderLineId, accepted, rejected, note: lineNote });
+    let batch: BatchInput | null = null;
+    if (accepted > 0) {
+      const parsedBatch = parseBatchInput(text(form, `batchCode:${orderLineId}`), text(form, `expiresAt:${orderLineId}`), now);
+      if (!parsedBatch.ok) return parsedBatch;
+      batch = parsedBatch.value;
+    }
+    lines.push({ orderLineId, accepted, rejected, note: lineNote, batch });
   }
 
   if (lines.length === 0) return { ok: false, error: "Isi jumlah diterima atau ditolak minimal satu bahan." };

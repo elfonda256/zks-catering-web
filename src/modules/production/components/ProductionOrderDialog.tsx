@@ -72,7 +72,38 @@ export function ProductionOrderDialog({ order, onClose }: { order: ProductionRow
           {short.length > 0 && " Bahan yang kurang harus ditambah dulu."}
         </p>
       ) : null}
-      {order.needs.length === 0 ? (
+      {taken && order.issued.length > 0 && (
+        <section className="space-y-2">
+          <h3 className="text-[13px] font-semibold text-stone-900">Bahan yang dipakai (penelusuran batch)</h3>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Bahan</TableHead>
+                <TableHead>Batch</TableHead>
+                <TableHead align="right">Jumlah</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {order.issued.map((line, index) => (
+                <TableRow key={index}>
+                  <TableCell>
+                    <span className="font-medium text-stone-900">{line.ingredientName}</span>
+                    <span className="block text-[12px] text-stone-500">{line.locationName}</span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="font-mono text-[13px]">{line.batchCode ?? "Stok lama (tanpa batch)"}</span>
+                    {line.expiresAt && <span className="block text-[12px] text-stone-500">Kedaluwarsa {formatDate(line.expiresAt)}</span>}
+                  </TableCell>
+                  <TableCell align="right" isNumeric>
+                    {formatQuantity(line.quantity, line.unit)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </section>
+      )}
+      {taken ? null : order.needs.length === 0 ? (
         <p className="text-[13px] text-amber-800">Resep paket ini belum diisi, jadi kebutuhan bahan belum bisa dihitung.</p>
       ) : (
         <Table>
@@ -80,7 +111,7 @@ export function ProductionOrderDialog({ order, onClose }: { order: ProductionRow
             <TableRow>
               <TableHead>Bahan</TableHead>
               <TableHead align="right">Kebutuhan</TableHead>
-              {!taken && <TableHead align="right">Stok di lokasi</TableHead>}
+              <TableHead align="right">Stok di lokasi</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -95,12 +126,10 @@ export function ProductionOrderDialog({ order, onClose }: { order: ProductionRow
                   <TableCell align="right" isNumeric>
                     {formatQuantity(need.required, need.unit)}
                   </TableCell>
-                  {!taken && (
-                    <TableCell align="right" isNumeric className={isShort ? "text-rose-700" : undefined}>
-                      {formatQuantity(need.available, need.unit)}
-                      {isShort && <span className="block font-sans text-[12px]">Kurang</span>}
-                    </TableCell>
-                  )}
+                  <TableCell align="right" isNumeric className={isShort ? "text-rose-700" : undefined}>
+                    {formatQuantity(need.available, need.unit)}
+                    {isShort && <span className="block font-sans text-[12px]">Kurang</span>}
+                  </TableCell>
                 </TableRow>
               );
             })}

@@ -44,7 +44,7 @@ export function ReceiveGoodsDialog({ orders, locations, onClose }: ReceiveGoodsD
       isOpen
       onClose={() => !isPending && onClose()}
       title="Terima barang"
-      subtitle="Barang yang lolos cek kualitas langsung masuk stok; yang ditolak hanya dicatat."
+      subtitle="Barang lolos cek kualitas masuk stok sebagai batch baru; isi kedaluwarsa untuk bahan segar. Yang ditolak hanya dicatat."
       maxWidth="2xl"
       footer={
         <>
@@ -109,6 +109,28 @@ export function ReceiveGoodsDialog({ orders, locations, onClose }: ReceiveGoodsD
                     <label className="sr-only" htmlFor={`grn-note-${line.lineId}`}>
                       Alasan ditolak {line.ingredientName}
                     </label>
+                    <div className="mt-1 grid grid-cols-2 gap-1">
+                      <label className="sr-only" htmlFor={`grn-lot-${line.lineId}`}>
+                        Nomor lot {line.ingredientName}
+                      </label>
+                      <input
+                        id={`grn-lot-${line.lineId}`}
+                        name={`batchCode:${line.lineId}`}
+                        maxLength={40}
+                        placeholder="Nomor lot (opsional)"
+                        className="block h-8 w-full rounded-lg border border-stone-200 bg-white px-2 text-[12px] text-stone-700 focus:border-brand-500 focus:outline-none"
+                      />
+                      <label className="sr-only" htmlFor={`grn-exp-${line.lineId}`}>
+                        Kedaluwarsa {line.ingredientName}
+                      </label>
+                      <input
+                        id={`grn-exp-${line.lineId}`}
+                        name={`expiresAt:${line.lineId}`}
+                        type="date"
+                        title="Tanggal kedaluwarsa"
+                        className="block h-8 w-full rounded-lg border border-stone-200 bg-white px-2 text-[12px] text-stone-700 focus:border-brand-500 focus:outline-none"
+                      />
+                    </div>
                     <input
                       id={`grn-note-${line.lineId}`}
                       name={`lineNote:${line.lineId}`}

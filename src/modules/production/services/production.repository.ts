@@ -79,6 +79,32 @@ export async function getProductionOrders({ onlyDay }: { onlyDay?: Date } = {}):
 
   const available = new Map<string, number>(stock.map((row) => [`${row.ingredientId}:${row.locationId}`, row.quantity]));
 
+  type Issued = ProductionRow["issued"][number];
+  const issuedRows = await prisma.stockMovement.findMany({
+    where: { type: "OUT", reference: { in: orders.filter((o) => o.materialsIssuedAt).map((o) => productionCode(o.id)) } },
+    orderBy: { id: "asc" },
+    select: {
+      reference: true,
+      quantity: true,
+      ingredient: { select: { name: true, unit: true } },
+      batch: { select: { batchCode: true, expiresAt: true } },
+      fromLocation: { select: { name: true } },
+    },
+  });
+  const issuedByCode = new Map<string, Issued[]>();
+  for (const m of issuedRows) {
+    const list = issuedByCode.get(m.reference!) ?? [];
+    list.push({
+      ingredientName: m.ingredient.name,
+      unit: m.ingredient.unit,
+      quantity: Number(m.quantity),
+      batchCode: m.batch?.batchCode ?? null,
+      expiresAt: m.batch?.expiresAt?.toISOString() ?? null,
+      locationName: m.fromLocation?.name ?? "—",
+    });
+    issuedByCode.set(m.reference!, list);
+  }
+
   return orders.map((o) => {
     const recipe: RecipeLineData[] = recipes.get(o.menuItem.price)?.recipeLines ?? [];
     const lineById = new Map<number, RecipeLineData>(recipe.map((line) => [line.ingredientId, line]));
@@ -111,6 +137,7 @@ export async function getProductionOrders({ onlyDay }: { onlyDay?: Date } = {}):
       materialsIssuedAt: o.materialsIssuedAt?.toISOString() ?? null,
       orderCode: o.order?.orderCode ?? null,
       needs,
+      issued: issuedByCode.get(productionCode(o.id)) ?? [],
     };
   });
 }

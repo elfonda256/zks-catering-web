@@ -64,7 +64,7 @@ test("parseOrderInput: supplier wajib, jadwal kirim opsional", () => {
 test("parseReceiptInput: baris nol dilewati, barang ditolak wajib beralasan", () => {
   const base: [string, string][] = [["orderId", "5"], ["locationId", "2"], ["receiptLine", "11"], ["receiptLine", "12"]];
   const ok = parseReceiptInput(form([...base, ["accepted:11", "10"], ["accepted:12", "0"]]));
-  assert.deepEqual(ok.ok && ok.value.lines, [{ orderLineId: 11, accepted: 10, rejected: 0, note: null }]);
+  assert.deepEqual(ok.ok && ok.value.lines, [{ orderLineId: 11, accepted: 10, rejected: 0, note: null, batch: null }]);
   assert.equal(parseReceiptInput(form([...base, ["accepted:11", "8"], ["rejected:11", "2"]])).ok, false);
   assert.ok(parseReceiptInput(form([...base, ["accepted:11", "8"], ["rejected:11", "2"], ["lineNote:11", "Layu"]])).ok);
   assert.equal(parseReceiptInput(form(base)).ok, false);

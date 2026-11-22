@@ -3,6 +3,7 @@
  * Every value comes from the browser, so nothing here is trusted until it passes.
  */
 
+import { startOfWibDay, wibDayStart } from "@/lib/wib-date";
 import type { MovementType } from "./types";
 
 type Result<T> = { ok: true; value: T } | { ok: false; error: string };
@@ -67,6 +68,23 @@ export function parseIngredientInput(form: FormData): Result<IngredientInput> {
   return { ok: true, value: { code, name, typeId, unit, locationId, minStock, lastPrice, supplierId } };
 }
 
+export interface BatchInput {
+  /** Supplier lot number; null = use the movement reference or a generated code. */
+  code: string | null;
+  expiresAt: Date | null;
+}
+
+/** Optional lot and expiry for stock coming in. Expired goods are refused. */
+export function parseBatchInput(rawCode: string, rawExpiry: string, now: Date): Result<BatchInput | null> {
+  const code = rawCode.trim().slice(0, 40) || null;
+  const expiryText = rawExpiry.trim();
+  if (!code && !expiryText) return { ok: true, value: null };
+  const expiresAt = expiryText ? wibDayStart(expiryText) : null;
+  if (expiryText && !expiresAt) return { ok: false, error: "Tanggal kedaluwarsa tidak valid." };
+  if (expiresAt && expiresAt < startOfWibDay(now)) return { ok: false, error: "Barang yang sudah kedaluwarsa tidak boleh masuk stok." };
+  return { ok: true, value: { code, expiresAt } };
+}
+
 export interface MovementInput {
   ingredientId: number;
   type: MovementType;
@@ -75,11 +93,13 @@ export interface MovementInput {
   toLocationId: number | null;
   reference: string | null;
   note: string | null;
+  /** Only for IN: the lot and expiry of the goods coming in. */
+  batch: BatchInput | null;
 }
 
 const MOVEMENT_TYPES: MovementType[] = ["IN", "OUT", "TRANSFER", "ADJUSTMENT"];
 
-export function parseMovementInput(form: FormData): Result<MovementInput> {
+export function parseMovementInput(form: FormData, now: Date = new Date()): Result<MovementInput> {
   const type = text(form, "type") as MovementType;
   const ingredientId = positiveInt(text(form, "ingredientId"));
   const quantity = parseQuantity(text(form, "quantity"), { allowZero: false });
@@ -117,7 +137,14 @@ export function parseMovementInput(form: FormData): Result<MovementInput> {
       break;
   }
 
-  return { ok: true, value: { ingredientId, type, quantity, fromLocationId, toLocationId, reference, note } };
+  let batch: BatchInput | null = null;
+  if (type === "IN") {
+    const parsedBatch = parseBatchInput(text(form, "batchCode"), text(form, "expiresAt"), now);
+    if (!parsedBatch.ok) return parsedBatch;
+    batch = parsedBatch.value;
+  }
+
+  return { ok: true, value: { ingredientId, type, quantity, fromLocationId, toLocationId, reference, note, batch } };
 }
 
 export interface OpnameInput {

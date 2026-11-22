@@ -193,10 +193,12 @@ export async function receiveGoodsAction(form: FormData): Promise<ProcurementAct
             })),
           },
         },
+        include: { lines: { select: { id: true, orderLineId: true } } },
       });
 
       const reference = documentCode("GRN", saved.id);
       const byId = new Map(orderLines.map((l) => [l.id, l]));
+      const receiptLineId = new Map<number, number>(saved.lines.map((l: { id: number; orderLineId: number }) => [l.orderLineId, l.id]));
       for (const line of receipt.lines) {
         if (line.accepted === 0) continue;
         const orderLine = byId.get(line.orderLineId)!;
@@ -205,12 +207,22 @@ export async function receiveGoodsAction(form: FormData): Promise<ProcurementAct
           where: { id: orderLine.id },
           data: { receivedQuantity: { increment: line.accepted } },
         });
+        // Every accepted delivery is its own batch, so cooking can take the earliest expiry first.
+        const batch = await tx.stockBatch.create({
+          data: {
+            ingredientId: orderLine.ingredientId,
+            batchCode: line.batch?.code ?? reference,
+            expiresAt: line.batch?.expiresAt ?? null,
+            receiptLineId: receiptLineId.get(line.orderLineId),
+          },
+        });
         await tx.stockMovement.create({
           data: {
             ingredientId: orderLine.ingredientId,
             type: "IN",
             quantity: line.accepted,
             toLocationId: receipt.locationId,
+            batchId: batch.id,
             reference,
             note: `Dari ${documentCode("PO", order.id)} · ${order.supplier.name}`,
             createdById: adminId,

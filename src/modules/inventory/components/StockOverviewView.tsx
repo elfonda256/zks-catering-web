@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Badge } from "@/shared/components/ui/Badge";
 import { Button } from "@/shared/components/ui/Button";
@@ -10,16 +10,32 @@ import { KpiCard } from "@/shared/components/ui/KpiCard";
 import { KpiGrid } from "@/shared/components/ui/KpiGrid";
 import { ListToolbar } from "@/shared/components/ui/ListToolbar";
 import { formatRupiahShort } from "@/shared/utils/formatters";
-import type { CatalogItem, InventoryFormOptions } from "../types";
-import { STOCK_LEVEL_BADGE, formatQuantity, stockLevel } from "../stock";
+import { formatDate } from "@/shared/utils/formatters";
+import { daysUntilExpiry } from "../fefo";
+import type { BatchStockRow, CatalogItem, InventoryFormOptions } from "../types";
+import { EXPIRY_WARNING_DAYS, STOCK_LEVEL_BADGE, formatQuantity, stockLevel } from "../stock";
 import { CategoryIcon } from "./CategoryIcon";
 import { MovementFormDialog } from "./MovementFormDialog";
 
-type StockTab = "semua" | "beli";
+type StockTab = "semua" | "beli" | "kedaluwarsa";
 
 interface StockOverviewViewProps {
   items: CatalogItem[];
   options: InventoryFormOptions;
+  /** Batches still in stock, earliest expiry first. */
+  batches: BatchStockRow[];
+  /** Server time (ISO) so expiry days are computed the same way on every render. */
+  now: string;
+}
+
+/** Batches expiring within this many days are listed under the stock table. */
+const BATCH_LIST_DAYS = 7;
+
+function ExpiryLabel({ expiresAt, now }: { expiresAt: string | null; now: Date }) {
+  if (!expiresAt) return <span className="text-stone-400">—</span>;
+  const days = daysUntilExpiry(expiresAt, now);
+  const text = days < 0 ? "Sudah lewat" : days === 0 ? "Hari ini" : days === 1 ? "Besok" : formatDate(expiresAt);
+  return <span className={days <= EXPIRY_WARNING_DAYS ? "font-medium text-rose-700" : undefined}>{text}</span>;
 }
 
 function StockBar({ item }: { item: CatalogItem }) {
@@ -33,35 +49,37 @@ function StockBar({ item }: { item: CatalogItem }) {
   );
 }
 
-export function StockOverviewView({ items, options }: StockOverviewViewProps) {
+export function StockOverviewView({ items, options, batches, now: nowIso }: StockOverviewViewProps) {
+  const now = new Date(nowIso);
   const [tab, setTab] = useState<StockTab>("semua");
   const [query, setQuery] = useState("");
   const [movementFor, setMovementFor] = useState<number | "new" | null>(null);
 
-  const active = useMemo(() => items.filter((item) => item.isActive), [items]);
+  const active = items.filter((item) => item.isActive);
   const toBuy = active.filter((item) => stockLevel(item) !== "aman");
+  const expiring = (item: CatalogItem) => item.nearestExpiry !== null && daysUntilExpiry(item.nearestExpiry, now) <= EXPIRY_WARNING_DAYS;
+  const expiringItems = active.filter(expiring);
+  const soonBatches = batches.filter((b) => b.expiresAt && daysUntilExpiry(b.expiresAt, now) <= BATCH_LIST_DAYS);
   const stockValue = active.reduce((sum, item) => sum + Math.max(item.stock, 0) * item.lastPrice, 0);
 
-  const groups = useMemo(() => {
-    const q = query.toLowerCase().trim();
-    return options.categories
-      .map((category) => ({
-        category,
-        rows: active.filter(
-          (item) =>
-            item.categorySlug === category.slug &&
-            (tab === "semua" || stockLevel(item) !== "aman") &&
-            (!q || [item.name, item.code, item.typeName].some((field) => field.toLowerCase().includes(q)))
-        ),
-      }))
-      .filter((group) => group.rows.length > 0);
-  }, [active, options.categories, tab, query]);
+  const q = query.toLowerCase().trim();
+  const groups = options.categories
+    .map((category) => ({
+      category,
+      rows: active.filter(
+        (item) =>
+          item.categorySlug === category.slug &&
+          (tab === "semua" || (tab === "beli" ? stockLevel(item) !== "aman" : expiring(item))) &&
+          (!q || [item.name, item.code, item.typeName].some((field) => field.toLowerCase().includes(q)))
+      ),
+    }))
+    .filter((group) => group.rows.length > 0);
 
   const columns: DataColumn<CatalogItem>[] = [
     {
       key: "name",
       header: "Bahan",
-      width: "w-[24%]",
+      width: "w-[20%]",
       mobile: "title",
       cell: (item) => (
         <>
@@ -70,9 +88,10 @@ export function StockOverviewView({ items, options }: StockOverviewViewProps) {
         </>
       ),
     },
-    { key: "type", header: "Jenis", width: "w-[13%]", cell: (item) => item.typeName },
-    { key: "location", header: "Lokasi utama", width: "w-[14%]", cell: (item) => item.locationName },
-    { key: "stock", header: "Stok", width: "w-[11%]", align: "right", isNumeric: true, cell: (item) => formatQuantity(item.stock, item.unit) },
+    { key: "type", header: "Jenis", width: "w-[10%]", cell: (item) => item.typeName },
+    { key: "location", header: "Lokasi utama", width: "w-[12%]", cell: (item) => item.locationName },
+    { key: "stock", header: "Stok", width: "w-[10%]", align: "right", isNumeric: true, cell: (item) => formatQuantity(item.stock, item.unit) },
+    { key: "expiry", header: "Kedaluwarsa terdekat", width: "w-[11%]", cell: (item) => <ExpiryLabel expiresAt={item.nearestExpiry} now={now} /> },
     {
       key: "min",
       header: "Minimum",
@@ -124,9 +143,10 @@ export function StockOverviewView({ items, options }: StockOverviewViewProps) {
 
   return (
     <div className="space-y-6">
-      <KpiGrid label="Ringkasan stok" columns={3}>
+      <KpiGrid label="Ringkasan stok" columns={4}>
         <KpiCard label="Jenis bahan" value={active.length} subtext={`${options.categories.length} kategori`} />
         <KpiCard label="Perlu dibeli" tone="warning" value={toBuy.length} subtext="Di bawah stok minimum" />
+        <KpiCard label="Segera kedaluwarsa" tone="danger" value={expiringItems.length} subtext={`Dalam ${EXPIRY_WARNING_DAYS} hari`} />
         <KpiCard label="Nilai stok" value={formatRupiahShort(stockValue)} subtext="Harga beli terakhir" />
       </KpiGrid>
 
@@ -139,6 +159,7 @@ export function StockOverviewView({ items, options }: StockOverviewViewProps) {
         tabs={[
           { id: "semua", label: "Semua", count: active.length },
           { id: "beli", label: "Perlu dibeli", count: toBuy.length },
+          { id: "kedaluwarsa", label: "Segera kedaluwarsa", count: expiringItems.length },
         ]}
         tab={tab}
         onTabChange={setTab}
@@ -162,6 +183,28 @@ export function StockOverviewView({ items, options }: StockOverviewViewProps) {
           </section>
         ))
       )}
+
+      <section aria-labelledby="batch-title" className="space-y-3">
+        <h2 id="batch-title" className="text-[15px] font-semibold text-stone-900">
+          Batch kedaluwarsa dalam {BATCH_LIST_DAYS} hari
+        </h2>
+        {soonBatches.length === 0 ? (
+          <p className="text-[13px] text-stone-600">Tidak ada. Isi tanggal kedaluwarsa saat menerima barang agar batch muncul di sini.</p>
+        ) : (
+          <DataList
+            rows={soonBatches}
+            rowKey={(b) => `${b.batchId}:${b.locationId}`}
+            columns={[
+              { key: "item", header: "Bahan", mobile: "title", cell: (b) => <span className="font-medium text-stone-900">{b.ingredientName}</span> },
+              { key: "batch", header: "Batch", mobile: "subtitle", cell: (b) => <span className="font-mono text-[13px]">{b.batchCode}</span> },
+              { key: "location", header: "Lokasi", cell: (b) => b.locationName },
+              { key: "qty", header: "Sisa", align: "right", isNumeric: true, cell: (b) => formatQuantity(b.quantity, b.unit) },
+              { key: "expiry", header: "Kedaluwarsa", mobile: "status", cell: (b) => <ExpiryLabel expiresAt={b.expiresAt} now={now} /> },
+            ]}
+          />
+        )}
+        <p className="text-[12px] text-stone-500">Bahan keluar, transfer, dan produksi selalu mengambil batch yang paling cepat kedaluwarsa (FEFO).</p>
+      </section>
 
       {movementFor !== null && (
         <MovementFormDialog

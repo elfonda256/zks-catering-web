@@ -35,6 +35,8 @@ export interface ProductionRow {
   materialsIssuedAt: string | null;
   orderCode: string | null;
   needs: MaterialNeed[];
+  /** What cooking actually took from stock, per batch, for traceability. */
+  issued: { ingredientName: string; unit: string; quantity: number; batchCode: string | null; expiresAt: string | null; locationName: string }[];
 }
 
 /** A paid customer order line that can be scheduled for production. */

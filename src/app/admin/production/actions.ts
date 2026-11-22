@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/require-admin";
-import { lockIngredients, quantitiesAt } from "@/modules/inventory/services/stock-ledger";
+import { lockIngredients, planWithdrawals } from "@/modules/inventory/services/stock-ledger";
 import { ensurePackageMenuItem } from "@/modules/menu/package-menu-item";
 import { materialRequirements, nextProductionStatus, productionCode } from "@/modules/production/rules";
 import { parseProductionInput, parseRecipeInput, parseSafetyCheckInput } from "@/modules/production/validation";
@@ -127,29 +127,31 @@ export async function advanceProductionAction(productionOrderId: number): Promis
         const lineById = new Map<number, RecipeIngredient>(recipe.map((line: RecipeIngredient) => [line.ingredientId, line]));
         await lockIngredients(tx, needs.map((need) => need.ingredientId));
 
-        const shortages: string[] = [];
+        // Each ingredient is taken from its storage location, batch by batch, earliest expiry first.
+        const byLocation = new Map<number, { ingredientId: number; quantity: number }[]>();
         for (const need of needs) {
-          const { ingredient } = lineById.get(need.ingredientId)!;
-          const stock = await quantitiesAt(tx, ingredient.defaultLocationId, [need.ingredientId]);
-          const available = stock.get(need.ingredientId) ?? 0;
-          if (need.quantity > available + 1e-9) {
-            shortages.push(`${ingredient.name} (perlu ${need.quantity.toLocaleString("id-ID")}, ada ${available.toLocaleString("id-ID")} ${ingredient.unit})`);
+          const locationId = lineById.get(need.ingredientId)!.ingredient.defaultLocationId;
+          byLocation.set(locationId, [...(byLocation.get(locationId) ?? []), need]);
+        }
+
+        const reference = productionCode(order.id);
+        const note = `Produksi ${reference} · ${order.menuItem.name} ${order.portions} porsi`;
+        const shortages: string[] = [];
+        const movements: Prisma.StockMovementCreateManyInput[] = [];
+        for (const [locationId, locationNeeds] of byLocation) {
+          const result = await planWithdrawals(tx, locationId, locationNeeds);
+          for (const short of result.shortages) {
+            const { ingredient } = lineById.get(short.ingredientId)!;
+            shortages.push(`${ingredient.name} (perlu ${short.required.toLocaleString("id-ID")}, ada ${short.available.toLocaleString("id-ID")} ${ingredient.unit})`);
+          }
+          for (const [ingredientId, allocations] of result.plans) {
+            for (const a of allocations) {
+              movements.push({ ingredientId, type: "OUT", quantity: a.quantity, fromLocationId: locationId, batchId: a.batchId, reference, note, createdById: adminId });
+            }
           }
         }
         if (shortages.length > 0) throw new RejectedError(`Stok belum cukup: ${shortages.join("; ")}.`);
-
-        const reference = productionCode(order.id);
-        await tx.stockMovement.createMany({
-          data: needs.map((need) => ({
-            ingredientId: need.ingredientId,
-            type: "OUT" as const,
-            quantity: need.quantity,
-            fromLocationId: lineById.get(need.ingredientId)!.ingredient.defaultLocationId,
-            reference,
-            note: `Produksi ${reference} · ${order.menuItem.name} ${order.portions} porsi`,
-            createdById: adminId,
-          })),
-        });
+        await tx.stockMovement.createMany({ data: movements });
       }
 
       await tx.productionOrder.update({

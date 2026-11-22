@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/require-admin";
-import { lockIngredients, quantitiesAt } from "@/modules/inventory/services/stock-ledger";
+import { lockIngredients, planWithdrawals, quantitiesAt } from "@/modules/inventory/services/stock-ledger";
 import { parseIngredientInput, parseMovementInput, parseOpnameInput } from "@/modules/inventory/validation";
 import { opnameAdjustments, opnameReference } from "@/modules/inventory/opname";
 
@@ -72,16 +72,33 @@ export async function recordMovementAction(form: FormData): Promise<InventoryAct
     const movement = parsed.value;
     const createdById = Number(admin.id) || null;
 
+    const { batch, ...data } = movement;
     await prisma.$transaction(async (tx) => {
-      await lockIngredients(tx, [movement.ingredientId]);
+      await lockIngredients(tx, [data.ingredientId]);
 
-      if (movement.fromLocationId !== null) {
-        const stock = await quantitiesAt(tx, movement.fromLocationId, [movement.ingredientId]);
-        const available = stock.get(movement.ingredientId) ?? 0;
-        if (movement.quantity > available + 1e-9) throw new InsufficientStockError(available);
+      // Stock leaving a location is taken batch by batch, earliest expiry first.
+      if (data.fromLocationId !== null) {
+        const { plans, shortages } = await planWithdrawals(tx, data.fromLocationId, [{ ingredientId: data.ingredientId, quantity: data.quantity }]);
+        if (shortages.length > 0) throw new InsufficientStockError(shortages[0].available);
+        await tx.stockMovement.createMany({
+          data: plans.get(data.ingredientId)!.map((a) => ({ ...data, quantity: a.quantity, batchId: a.batchId, createdById })),
+        });
+        return;
       }
 
-      await tx.stockMovement.create({ data: { ...movement, createdById } });
+      // Stock coming in from outside may carry a lot and expiry date.
+      const batchId = batch
+        ? (
+            await tx.stockBatch.create({
+              data: {
+                ingredientId: data.ingredientId,
+                batchCode: batch.code ?? data.reference ?? `MASUK-${Date.now().toString(36).toUpperCase()}`,
+                expiresAt: batch.expiresAt,
+              },
+            })
+          ).id
+        : null;
+      await tx.stockMovement.create({ data: { ...data, batchId, createdById } });
     });
 
     revalidateInventory();
@@ -129,17 +146,24 @@ export async function recordOpnameAction(form: FormData): Promise<OpnameActionRe
       const adjustments = opnameAdjustments(counts, system);
       if (adjustments.length === 0) return 0;
 
+      // A shortfall is taken from batches earliest-expiry first; a surplus has no known batch.
+      const minus = adjustments.filter((a) => a.direction === "minus");
+      const { plans } = await planWithdrawals(tx, locationId, minus.map((a) => ({ ingredientId: a.ingredientId, quantity: a.quantity })));
+      const base = { type: "ADJUSTMENT" as const, reference, note: note ?? `Stock opname ${location.name}`, createdById };
+
       await tx.stockMovement.createMany({
-        data: adjustments.map((a) => ({
-          ingredientId: a.ingredientId,
-          type: "ADJUSTMENT" as const,
-          quantity: a.quantity,
-          toLocationId: a.direction === "plus" ? locationId : null,
-          fromLocationId: a.direction === "minus" ? locationId : null,
-          reference,
-          note: note ?? `Stock opname ${location.name}`,
-          createdById,
-        })),
+        data: adjustments.flatMap<Prisma.StockMovementCreateManyInput>((a) =>
+          a.direction === "plus"
+            ? [{ ...base, ingredientId: a.ingredientId, quantity: a.quantity, toLocationId: locationId, fromLocationId: null, batchId: null }]
+            : (plans.get(a.ingredientId) ?? []).map((part) => ({
+                ...base,
+                ingredientId: a.ingredientId,
+                quantity: part.quantity,
+                fromLocationId: locationId,
+                toLocationId: null,
+                batchId: part.batchId,
+              }))
+        ),
       });
       return adjustments.length;
     });
